@@ -1,0 +1,36 @@
+{
+  "name": "@workspace/client",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "generate": "openapi-codegen generate core"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.2",
+    "axios": "^1.12.2",
+    "next-themes": "^0.4.6",
+    "react": "^19.1.2",
+    "react-dom": "^19.1.2",
+    "react-query-swagger": "^15.13.1"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.90.1",
+    "@openapi-codegen/cli": "^3.1.0",
+    "@openapi-codegen/typescript": "^11.1.0",
+    "@turbo/gen": "^2.5.5",
+    "@types/node": "^20.19.9",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "openapi-typescript-codegen": "^0.30.0",
+    "typescript": "^5.9.2"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  }
+}
