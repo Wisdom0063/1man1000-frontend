@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSubmissionsControllerGetInfluencerSubmissions } from "@workspace/client";
 import {
   Card,
   CardContent,
@@ -16,93 +17,80 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import {
-  Upload,
-  Eye,
-  CheckCircle,
-  XCircle,
-  Clock,
-  FileImage,
-} from "lucide-react";
+import { ExternalLink, ImageIcon } from "lucide-react";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
-const submissions = [
-  {
-    id: "1",
-    campaign: "Summer Product Launch",
-    status: "approved",
-    views: 3200,
-    submittedAt: "Dec 28, 2025",
-    reviewedAt: "Dec 29, 2025",
-  },
-  {
-    id: "2",
-    campaign: "Brand Awareness Q4",
-    status: "pending",
-    views: 1500,
-    submittedAt: "Dec 30, 2025",
-    reviewedAt: null,
-  },
-  {
-    id: "3",
-    campaign: "Holiday Promotion",
-    status: "rejected",
-    views: 500,
-    submittedAt: "Dec 25, 2025",
-    reviewedAt: "Dec 26, 2025",
-    reason: "Screenshot unclear",
-  },
-  {
-    id: "4",
-    campaign: "Fall Collection",
-    status: "approved",
-    views: 5200,
-    submittedAt: "Dec 15, 2025",
-    reviewedAt: "Dec 16, 2025",
-  },
-];
-
-const statusColors = {
-  pending: "bg-yellow-100 text-yellow-800",
-  approved: "bg-green-100 text-green-800",
-  rejected: "bg-red-100 text-red-800",
-};
-
-const statusIcons = {
-  pending: Clock,
-  approved: CheckCircle,
-  rejected: XCircle,
+type Submission = {
+  id: string;
+  campaignId: string;
+  campaign?: { id: string; brandName: string; title?: string };
+  screenshotUrl: string;
+  extractedViewCount: number;
+  approvalStatus: string;
+  reviewNote?: string;
+  reviewedAt?: string;
+  createdAt: string;
 };
 
 export default function InfluencerSubmissionsPage() {
   const [activeTab, setActiveTab] = useState("all");
 
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useSubmissionsControllerGetInfluencerSubmissions();
+  const submissions = (response?.data || []) as Submission[];
+
   const filteredSubmissions = submissions.filter((s) => {
     if (activeTab === "all") return true;
-    return s.status === activeTab;
+    return s.approvalStatus === activeTab;
   });
+
+  const pendingCount = submissions.filter(
+    (s) => s.approvalStatus === "pending"
+  ).length;
+  const approvedCount = submissions.filter(
+    (s) => s.approvalStatus === "approved"
+  ).length;
+  const rejectedCount = submissions.filter(
+    (s) => s.approvalStatus === "rejected"
+  ).length;
+
+  if (isLoading) {
+    return <LoadingState text="Loading your submissions..." />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Failed to load submissions"
+        message="There was an error loading your submissions. Please try again."
+        onRetry={() => refetch()}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Submissions</h1>
-          <p className="text-muted-foreground">
-            Track your campaign submissions and their status
-          </p>
-        </div>
-        <Button>
-          <Upload className="mr-2 h-4 w-4" />
-          New Submission
-        </Button>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          My Submissions
+        </h1>
+        <p className="text-muted-foreground">
+          Track your campaign submissions and their status
+        </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Submissions
             </CardTitle>
-            <FileImage className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{submissions.length}</div>
@@ -110,29 +98,40 @@ export default function InfluencerSubmissionsPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Approved
+              Pending Review
             </CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {submissions.filter((s) => s.status === "approved").length}
+            <div className="text-2xl font-bold text-yellow-600">
+              {pendingCount}
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Pending Review
+              Approved
             </CardTitle>
-            <Clock className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {submissions.filter((s) => s.status === "pending").length}
+            <div className="text-2xl font-bold text-emerald-600">
+              {approvedCount}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Rejected
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              {rejectedCount}
             </div>
           </CardContent>
         </Card>
@@ -140,10 +139,17 @@ export default function InfluencerSubmissionsPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="approved">Approved</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected</TabsTrigger>
+          <TabsTrigger value="all">All ({submissions.length})</TabsTrigger>
+          <TabsTrigger value="pending">
+            Pending
+            {pendingCount > 0 && (
+              <Badge className="ml-2 bg-yellow-500/15 text-yellow-600 border-0">
+                {pendingCount}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="approved">Approved ({approvedCount})</TabsTrigger>
+          <TabsTrigger value="rejected">Rejected ({rejectedCount})</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
@@ -155,61 +161,78 @@ export default function InfluencerSubmissionsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {filteredSubmissions.map((submission) => {
-                  const StatusIcon =
-                    statusIcons[submission.status as keyof typeof statusIcons];
-                  return (
+              {filteredSubmissions.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No submissions found
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {filteredSubmissions.map((submission) => (
                     <div
                       key={submission.id}
-                      className="flex items-center justify-between p-4 rounded-lg border"
+                      className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card hover:shadow-md transition-all"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="h-16 w-24 rounded-lg bg-muted flex items-center justify-center">
-                          <FileImage className="h-6 w-6 text-muted-foreground" />
+                        <div className="h-16 w-24 rounded-lg bg-muted overflow-hidden border border-border/60">
+                          {submission.screenshotUrl ? (
+                            <img
+                              src={submission.screenshotUrl}
+                              alt="Screenshot"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center">
+                              <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                          )}
                         </div>
                         <div className="space-y-1">
-                          <p className="font-medium">{submission.campaign}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Submitted {submission.submittedAt}
+                          <p className="font-semibold">
+                            {submission.campaign?.title ||
+                              submission.campaign?.brandName ||
+                              "Unknown Campaign"}
                           </p>
-                          {submission.status === "rejected" &&
-                            submission.reason && (
+                          <p className="text-sm text-muted-foreground">
+                            Submitted{" "}
+                            {new Date(
+                              submission.createdAt
+                            ).toLocaleDateString()}
+                          </p>
+                          {submission.approvalStatus === "rejected" &&
+                            submission.reviewNote && (
                               <p className="text-xs text-destructive">
-                                Reason: {submission.reason}
+                                Reason: {submission.reviewNote}
                               </p>
                             )}
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className="font-medium">
-                            {submission.views.toLocaleString()} views
+                          <p className="text-lg font-bold">
+                            {submission.extractedViewCount?.toLocaleString() ||
+                              0}
                           </p>
-                          {submission.reviewedAt && (
-                            <p className="text-xs text-muted-foreground">
-                              Reviewed {submission.reviewedAt}
-                            </p>
+                          <p className="text-xs text-muted-foreground">views</p>
+                        </div>
+                        <StatusBadge status={submission.approvalStatus} />
+                        <div className="flex items-center gap-2">
+                          {submission.screenshotUrl && (
+                            <Button variant="outline" size="icon-sm" asChild>
+                              <a
+                                href={submission.screenshotUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            </Button>
                           )}
                         </div>
-                        <Badge
-                          className={
-                            statusColors[
-                              submission.status as keyof typeof statusColors
-                            ]
-                          }
-                        >
-                          <StatusIcon className="mr-1 h-3 w-3" />
-                          {submission.status}
-                        </Badge>
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

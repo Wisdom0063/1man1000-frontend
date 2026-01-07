@@ -1,6 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useUsersControllerFindAll,
+  useUsersControllerUpdateStatus,
+  useUsersControllerDelete,
+  getUsersControllerFindAllQueryKey,
+  UpdateUserStatusDtoStatus,
+} from "@workspace/client";
 import {
   Card,
   CardContent,
@@ -20,6 +28,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import {
@@ -28,84 +37,155 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { Search, MoreHorizontal, UserCheck, UserX, Eye } from "lucide-react";
-
-const users = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "influencer",
-    status: "approved",
-    joinedAt: "Dec 15, 2025",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "influencer",
-    status: "pending",
-    joinedAt: "Dec 28, 2025",
-  },
-  {
-    id: "3",
-    name: "ABC Company",
-    email: "contact@abc.com",
-    role: "client",
-    status: "approved",
-    joinedAt: "Nov 10, 2025",
-  },
-  {
-    id: "4",
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    role: "influencer",
-    status: "approved",
-    joinedAt: "Dec 1, 2025",
-  },
-  {
-    id: "5",
-    name: "XYZ Corp",
-    email: "info@xyz.com",
-    role: "client",
-    status: "approved",
-    joinedAt: "Oct 5, 2025",
-  },
-  {
-    id: "6",
-    name: "Sarah Wilson",
-    email: "sarah@example.com",
-    role: "influencer",
-    status: "suspended",
-    joinedAt: "Sep 20, 2025",
-  },
-];
-
-const statusColors = {
-  approved: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  suspended: "bg-red-100 text-red-800",
-};
+import {
+  Search,
+  MoreHorizontal,
+  UserCheck,
+  UserX,
+  Eye,
+  Trash2,
+} from "lucide-react";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
+import Link from "next/link";
 
 export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const queryClient = useQueryClient();
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useUsersControllerFindAll();
+  const users = (response?.data || []) as Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    status: string;
+    avatarUrl?: string;
+    createdAt: string;
+  }>;
+
+  const updateStatusMutation = useUsersControllerUpdateStatus({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getUsersControllerFindAllQueryKey(),
+        });
+      },
+    },
+  });
+
+  const deleteMutation = useUsersControllerDelete({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getUsersControllerFindAllQueryKey(),
+        });
+      },
+    },
+  });
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTab = activeTab === "all" || user.role === activeTab;
+      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTab =
+      activeTab === "all" ||
+      (activeTab === "influencer" && user.role === "influencer") ||
+      (activeTab === "client" && user.role === "client");
     return matchesSearch && matchesTab;
   });
+
+  const handleApprove = (id: string) => {
+    updateStatusMutation.mutate({
+      id,
+      data: { status: UpdateUserStatusDtoStatus.approved },
+    });
+  };
+
+  const handleReject = (id: string) => {
+    updateStatusMutation.mutate({
+      id,
+      data: { status: UpdateUserStatusDtoStatus.rejected },
+    });
+  };
+
+  if (isLoading) {
+    return <LoadingState text="Loading users..." />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Failed to load users"
+        message="There was an error loading the users. Please try again."
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  const pendingCount = users.filter((u) => u.status === "pending").length;
+  const influencerCount = users.filter((u) => u.role === "influencer").length;
+  const clientCount = users.filter((u) => u.role === "client").length;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Users</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Users</h1>
         <p className="text-muted-foreground">
           Manage platform users and their permissions
         </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Users
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{users.length}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Influencers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{influencerCount}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Clients
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{clientCount}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Pending Approval
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">
+              {pendingCount}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="flex items-center gap-4">
@@ -115,16 +195,18 @@ export default function AdminUsersPage() {
             placeholder="Search users..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-10"
           />
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="all">All Users</TabsTrigger>
-          <TabsTrigger value="influencer">Influencers</TabsTrigger>
-          <TabsTrigger value="client">Clients</TabsTrigger>
+          <TabsTrigger value="all">All Users ({users.length})</TabsTrigger>
+          <TabsTrigger value="influencer">
+            Influencers ({influencerCount})
+          </TabsTrigger>
+          <TabsTrigger value="client">Clients ({clientCount})</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
@@ -136,68 +218,94 @@ export default function AdminUsersPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {filteredUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center justify-between p-4 rounded-lg border"
-                  >
-                    <div className="flex items-center gap-4">
-                      <Avatar>
-                        <AvatarFallback>
-                          {user.name.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {user.email}
-                        </p>
+              {filteredUsers.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No users found
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {filteredUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card hover:shadow-md transition-all"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-11 w-11">
+                          <AvatarImage src={user.avatarUrl} />
+                          <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white font-semibold">
+                            {user.name?.slice(0, 2).toUpperCase() || "??"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold">{user.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Badge
+                          variant="outline"
+                          className="capitalize border-border/60"
+                        >
+                          {user.role}
+                        </Badge>
+                        <StatusBadge status={user.status} />
+                        <span className="text-xs text-muted-foreground hidden sm:inline">
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon-sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/users/${user.id}`}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
+                              </Link>
+                            </DropdownMenuItem>
+                            {user.status === "pending" && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="text-emerald-600"
+                                  onClick={() => handleApprove(user.id)}
+                                  disabled={updateStatusMutation.isPending}
+                                >
+                                  <UserCheck className="mr-2 h-4 w-4" />
+                                  Approve
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-destructive"
+                                  onClick={() => handleReject(user.id)}
+                                  disabled={updateStatusMutation.isPending}
+                                >
+                                  <UserX className="mr-2 h-4 w-4" />
+                                  Reject
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() =>
+                                deleteMutation.mutate({ id: user.id })
+                              }
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Badge variant="outline" className="capitalize">
-                        {user.role}
-                      </Badge>
-                      <Badge
-                        className={
-                          statusColors[user.status as keyof typeof statusColors]
-                        }
-                      >
-                        {user.status}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {user.joinedAt}
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
-                          {user.status === "pending" && (
-                            <DropdownMenuItem className="text-green-600">
-                              <UserCheck className="mr-2 h-4 w-4" />
-                              Approve
-                            </DropdownMenuItem>
-                          )}
-                          {user.status !== "suspended" && (
-                            <DropdownMenuItem className="text-destructive">
-                              <UserX className="mr-2 h-4 w-4" />
-                              Suspend
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

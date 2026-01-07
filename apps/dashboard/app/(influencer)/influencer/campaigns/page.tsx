@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useCampaignsControllerGetInfluencerCampaigns } from "@workspace/client";
 import {
   Card,
   CardContent,
@@ -18,85 +19,118 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { Search, Upload, Eye, Clock, CheckCircle } from "lucide-react";
+import {
+  Search,
+  Upload,
+  Eye,
+  Clock,
+  CheckCircle,
+  Target,
+  DollarSign,
+} from "lucide-react";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
-const campaigns = [
-  {
-    id: "1",
-    name: "Summer Product Launch",
-    brand: "ABC Company",
-    status: "in_progress",
-    deadline: "Jan 15, 2026",
-    reward: 250,
-    views: 1500,
-    target: 5000,
-  },
-  {
-    id: "2",
-    name: "Brand Awareness Q4",
-    brand: "XYZ Corp",
-    status: "pending_submission",
-    deadline: "Jan 10, 2026",
-    reward: 180,
-    views: 0,
-    target: 3000,
-  },
-  {
-    id: "3",
-    name: "Holiday Promotion",
-    brand: "123 Brand",
-    status: "assigned",
-    deadline: "Jan 20, 2026",
-    reward: 320,
-    views: 0,
-    target: 4000,
-  },
-  {
-    id: "4",
-    name: "Fall Collection",
-    brand: "Fashion Inc",
-    status: "completed",
-    deadline: "Dec 15, 2025",
-    reward: 400,
-    views: 5200,
-    target: 5000,
-  },
-];
-
-const statusColors = {
-  assigned: "bg-blue-100 text-blue-800",
-  in_progress: "bg-yellow-100 text-yellow-800",
-  pending_submission: "bg-orange-100 text-orange-800",
-  completed: "bg-green-100 text-green-800",
-};
-
-const statusLabels = {
-  assigned: "Assigned",
-  in_progress: "In Progress",
-  pending_submission: "Submit Now",
-  completed: "Completed",
+type Campaign = {
+  id: string;
+  brandName: string;
+  title?: string;
+  description?: string;
+  budget: number;
+  targetViewRange: { min: number; max: number };
+  status: string;
+  ratePerView?: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
 };
 
 export default function InfluencerCampaignsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("active");
 
-  const activeCampaigns = campaigns.filter((c) => c.status !== "completed");
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useCampaignsControllerGetInfluencerCampaigns();
+  const campaigns = (response?.data || []) as Campaign[];
+
+  const activeCampaigns = campaigns.filter(
+    (c) => c.status === "active" || c.status === "approved"
+  );
   const completedCampaigns = campaigns.filter((c) => c.status === "completed");
 
   const filteredCampaigns = (
     activeTab === "active" ? activeCampaigns : completedCampaigns
-  ).filter((campaign) =>
-    campaign.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ).filter(
+    (campaign) =>
+      campaign.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      campaign.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+    return <LoadingState text="Loading your campaigns..." />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Failed to load campaigns"
+        message="There was an error loading your campaigns. Please try again."
+        onRetry={() => refetch()}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">My Campaigns</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          My Campaigns
+        </h1>
         <p className="text-muted-foreground">
           View and manage your assigned campaigns
         </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Active Campaigns
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600">
+              {activeCampaigns.length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Completed
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {completedCampaigns.length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Assigned
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{campaigns.length}</div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="flex items-center gap-4">
@@ -106,7 +140,7 @@ export default function InfluencerCampaignsPage() {
             placeholder="Search campaigns..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-10"
           />
         </div>
       </div>
@@ -115,103 +149,110 @@ export default function InfluencerCampaignsPage() {
         <TabsList>
           <TabsTrigger value="active">
             Active
-            <Badge variant="secondary" className="ml-2">
-              {activeCampaigns.length}
-            </Badge>
+            {activeCampaigns.length > 0 && (
+              <Badge className="ml-2 bg-emerald-500/15 text-emerald-600 border-0">
+                {activeCampaigns.length}
+              </Badge>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="completed">
+            Completed ({completedCampaigns.length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
-          <div className="grid gap-4 md:grid-cols-2">
-            {filteredCampaigns.map((campaign) => (
-              <Card key={campaign.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{campaign.name}</CardTitle>
-                    <Badge
-                      className={
-                        statusColors[
-                          campaign.status as keyof typeof statusColors
-                        ]
-                      }
-                    >
-                      {
-                        statusLabels[
-                          campaign.status as keyof typeof statusLabels
-                        ]
-                      }
-                    </Badge>
-                  </div>
-                  <CardDescription>{campaign.brand}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {campaign.status !== "assigned" && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          Your Progress
-                        </span>
-                        <span className="font-medium">
-                          {campaign.views.toLocaleString()} /{" "}
-                          {campaign.target.toLocaleString()} views
-                        </span>
+          {filteredCampaigns.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground">
+                  {activeTab === "active"
+                    ? "You don't have any active campaigns assigned yet."
+                    : "No completed campaigns yet."}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {filteredCampaigns.map((campaign) => (
+                <Card key={campaign.id} className="overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">
+                        {campaign.title || campaign.brandName}
+                      </CardTitle>
+                      <StatusBadge status={campaign.status} />
+                    </div>
+                    <CardDescription>{campaign.brandName}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Target className="h-3.5 w-3.5" />
+                          Target Views
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {campaign.targetViewRange?.min?.toLocaleString()} -{" "}
+                          {campaign.targetViewRange?.max?.toLocaleString()}
+                        </p>
                       </div>
-                      <div className="h-2 rounded-full bg-secondary">
-                        <div
-                          className="h-2 rounded-full bg-primary transition-all"
-                          style={{
-                            width: `${Math.min((campaign.views / campaign.target) * 100, 100)}%`,
-                          }}
-                        />
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <DollarSign className="h-3.5 w-3.5" />
+                          Rate per View
+                        </p>
+                        <p className="text-sm font-semibold text-emerald-600">
+                          GH₵{campaign.ratePerView?.toFixed(2) || "0.00"}
+                        </p>
                       </div>
                     </div>
-                  )}
 
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      Due {campaign.deadline}
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        {new Date(campaign.endDate).toLocaleDateString()}
+                      </div>
                     </div>
-                    <div className="font-medium text-green-600">
-                      GH₵{campaign.reward}
-                    </div>
-                  </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      asChild
-                    >
-                      <Link href={`/influencer/campaigns/${campaign.id}`}>
-                        <Eye className="mr-1 h-4 w-4" />
-                        Details
-                      </Link>
-                    </Button>
-                    {campaign.status === "pending_submission" && (
-                      <Button size="sm" className="flex-1">
-                        <Upload className="mr-1 h-4 w-4" />
-                        Submit
-                      </Button>
-                    )}
-                    {campaign.status === "completed" && (
+                    <div className="flex gap-2 pt-2">
                       <Button
                         variant="outline"
                         size="sm"
                         className="flex-1"
-                        disabled
+                        asChild
                       >
-                        <CheckCircle className="mr-1 h-4 w-4" />
-                        Paid
+                        <Link href={`/influencer/campaigns/${campaign.id}`}>
+                          <Eye className="mr-1.5 h-4 w-4" />
+                          Details
+                        </Link>
                       </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      {campaign.status !== "completed" && (
+                        <Button size="sm" className="flex-1" asChild>
+                          <Link
+                            href={`/influencer/campaigns/${campaign.id}/submit`}
+                          >
+                            <Upload className="mr-1.5 h-4 w-4" />
+                            Submit
+                          </Link>
+                        </Button>
+                      )}
+                      {campaign.status === "completed" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-emerald-600"
+                          disabled
+                        >
+                          <CheckCircle className="mr-1.5 h-4 w-4" />
+                          Completed
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

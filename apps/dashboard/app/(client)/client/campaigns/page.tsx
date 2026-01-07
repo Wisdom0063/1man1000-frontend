@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useCampaignsControllerGetClientCampaigns } from "@workspace/client";
 import {
   Card,
   CardContent,
@@ -9,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import {
@@ -18,75 +18,77 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { Search, Plus, Eye, Users, BarChart3 } from "lucide-react";
+import { Search, Plus, Eye, Users, Edit } from "lucide-react";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
-const campaigns = [
-  {
-    id: "1",
-    name: "Summer Product Launch",
-    status: "active",
-    influencers: 12,
-    views: 45000,
-    target: 100000,
-    budget: 5000,
-    createdAt: "Dec 1, 2025",
-  },
-  {
-    id: "2",
-    name: "Brand Awareness Q4",
-    status: "active",
-    influencers: 8,
-    views: 32000,
-    target: 50000,
-    budget: 3000,
-    createdAt: "Nov 15, 2025",
-  },
-  {
-    id: "3",
-    name: "Holiday Promotion",
-    status: "pending",
-    influencers: 0,
-    views: 0,
-    target: 80000,
-    budget: 4000,
-    createdAt: "Dec 28, 2025",
-  },
-  {
-    id: "4",
-    name: "Fall Collection",
-    status: "completed",
-    influencers: 15,
-    views: 120000,
-    target: 100000,
-    budget: 6000,
-    createdAt: "Sep 1, 2025",
-  },
-];
-
-const statusColors = {
-  active: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  completed: "bg-blue-100 text-blue-800",
-  draft: "bg-gray-100 text-gray-800",
+type Campaign = {
+  id: string;
+  brandName: string;
+  title?: string;
+  description?: string;
+  budget: number;
+  targetViewRange: { min: number; max: number };
+  status: string;
+  assignedInfluencers?: Array<{ id: string }>;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
 };
 
 export default function ClientCampaignsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useCampaignsControllerGetClientCampaigns();
+  const campaigns = (response || []) as Campaign[];
+
   const filteredCampaigns = campaigns.filter((campaign) => {
-    const matchesSearch = campaign.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesTab = activeTab === "all" || campaign.status === activeTab;
+    const matchesSearch =
+      campaign.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      campaign.title?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTab =
+      activeTab === "all" ||
+      campaign.status === activeTab ||
+      (activeTab === "active" && campaign.status === "approved");
     return matchesSearch && matchesTab;
   });
 
+  const activeCount = campaigns.filter(
+    (c) => c.status === "active" || c.status === "approved"
+  ).length;
+  const pendingCount = campaigns.filter((c) => c.status === "pending").length;
+  const completedCount = campaigns.filter(
+    (c) => c.status === "completed"
+  ).length;
+
+  if (isLoading) {
+    return <LoadingState text="Loading your campaigns..." />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Failed to load campaigns"
+        message="There was an error loading your campaigns. Please try again."
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Campaigns</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            My Campaigns
+          </h1>
           <p className="text-muted-foreground">
             Create and manage your marketing campaigns
           </p>
@@ -99,6 +101,55 @@ export default function ClientCampaignsPage() {
         </Button>
       </div>
 
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Campaigns
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{campaigns.length}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Active
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600">
+              {activeCount}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Pending Approval
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">
+              {pendingCount}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Completed
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {completedCount}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -106,97 +157,117 @@ export default function ClientCampaignsPage() {
             placeholder="Search campaigns..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-10"
           />
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="all">All ({campaigns.length})</TabsTrigger>
+          <TabsTrigger value="active">Active ({activeCount})</TabsTrigger>
+          <TabsTrigger value="pending">Pending ({pendingCount})</TabsTrigger>
+          <TabsTrigger value="completed">
+            Completed ({completedCount})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
-          <div className="grid gap-4 md:grid-cols-2">
-            {filteredCampaigns.map((campaign) => (
-              <Card key={campaign.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{campaign.name}</CardTitle>
-                    <Badge
-                      className={
-                        statusColors[
-                          campaign.status as keyof typeof statusColors
-                        ]
-                      }
-                    >
-                      {campaign.status}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    Created {campaign.createdAt}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="font-medium">
-                        {campaign.views.toLocaleString()} /{" "}
-                        {campaign.target.toLocaleString()} views
-                      </span>
+          {filteredCampaigns.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground mb-4">
+                  {activeTab === "all"
+                    ? "You haven't created any campaigns yet."
+                    : `No ${activeTab} campaigns found.`}
+                </p>
+                <Button asChild>
+                  <Link href="/client/campaigns/new">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Your First Campaign
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {filteredCampaigns.map((campaign) => (
+                <Card key={campaign.id} className="overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">
+                        {campaign.title || campaign.brandName}
+                      </CardTitle>
+                      <StatusBadge status={campaign.status} />
                     </div>
-                    <div className="h-2 rounded-full bg-secondary">
-                      <div
-                        className="h-2 rounded-full bg-primary transition-all"
-                        style={{
-                          width: `${Math.min((campaign.views / campaign.target) * 100, 100)}%`,
-                        }}
-                      />
+                    <CardDescription>
+                      {campaign.brandName} • Created{" "}
+                      {new Date(campaign.createdAt).toLocaleDateString()}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          Target Views
+                        </span>
+                        <span className="font-medium">
+                          {campaign.targetViewRange?.min?.toLocaleString()} -{" "}
+                          {campaign.targetViewRange?.max?.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="h-2.5 rounded-full bg-secondary">
+                        <div
+                          className="h-2.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all"
+                          style={{ width: "0%" }}
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Users className="h-4 w-4" />
-                      {campaign.influencers} influencers
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <Users className="h-4 w-4" />
+                        {campaign.assignedInfluencers?.length || 0} influencers
+                      </div>
+                      <div className="font-semibold">
+                        GH₵{campaign.budget?.toLocaleString()}
+                      </div>
                     </div>
-                    <div className="font-medium">
-                      Budget: GH₵{campaign.budget.toLocaleString()}
-                    </div>
-                  </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      asChild
-                    >
-                      <Link href={`/client/campaigns/${campaign.id}`}>
-                        <Eye className="mr-1 h-4 w-4" />
-                        View
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      asChild
-                    >
-                      <Link href={`/client/campaigns/${campaign.id}/analytics`}>
-                        <BarChart3 className="mr-1 h-4 w-4" />
-                        Analytics
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(campaign.startDate).toLocaleDateString()} -{" "}
+                      {new Date(campaign.endDate).toLocaleDateString()}
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        asChild
+                      >
+                        <Link href={`/client/campaigns/${campaign.id}`}>
+                          <Eye className="mr-1.5 h-4 w-4" />
+                          View
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        asChild
+                      >
+                        <Link href={`/client/campaigns/${campaign.id}/edit`}>
+                          <Edit className="mr-1.5 h-4 w-4" />
+                          Edit
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

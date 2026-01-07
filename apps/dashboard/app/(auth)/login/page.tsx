@@ -14,9 +14,14 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
-import { AuthService } from "@workspace/client";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthControllerLogin } from "@workspace/client";
+import { useAuthStore, User } from "@/lib/auth-store";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+
+type LoginResponse = {
+  accessToken: string;
+  user: User;
+};
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,37 +29,36 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const loginMutation = useAuthControllerLogin({
+    mutation: {
+      onSuccess: (data) => {
+        const response = data as unknown as LoginResponse;
+        setToken(response.accessToken);
+        setUser(response.user);
+
+        const redirectPath =
+          response.user.role === "admin"
+            ? "/admin"
+            : response.user.role === "client"
+              ? "/client"
+              : "/influencer";
+
+        router.push(redirectPath);
+      },
+      onError: () => {
+        setError("Invalid email or password");
+      },
+    },
+  });
+
+  const isLoading = loginMutation.isPending;
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true);
-
-    try {
-      const response = await AuthService.authControllerLogin({
-        email,
-        password,
-      });
-      setToken(response.access_token);
-      setUser(response.user);
-
-      const redirectPath =
-        response.user.role === "admin"
-          ? "/admin"
-          : response.user.role === "client"
-            ? "/client"
-            : "/influencer";
-
-      router.push(redirectPath);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Invalid email or password";
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
+    loginMutation.mutate({ data: { email, password } });
   };
 
   return (

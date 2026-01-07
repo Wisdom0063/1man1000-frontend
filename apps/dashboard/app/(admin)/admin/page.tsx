@@ -162,24 +162,32 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Pending Approvals</CardTitle>
+            <CardTitle className="text-base">Pending Approvals</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Influencer Applications</span>
-                <Badge variant="secondary">12</Badge>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+                <span className="text-sm font-medium">
+                  Influencer Applications
+                </span>
+                <Badge className="bg-orange-500/15 text-orange-600 border-0">
+                  12
+                </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Campaign Reviews</span>
-                <Badge variant="secondary">8</Badge>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+                <span className="text-sm font-medium">Campaign Reviews</span>
+                <Badge className="bg-blue-500/15 text-blue-600 border-0">
+                  8
+                </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Submission Reviews</span>
-                <Badge variant="secondary">23</Badge>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+                <span className="text-sm font-medium">Submission Reviews</span>
+                <Badge className="bg-violet-500/15 text-violet-600 border-0">
+                  23
+                </Badge>
               </div>
             </div>
           </CardContent>
@@ -187,19 +195,22 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Top Influencers</CardTitle>
+            <CardTitle className="text-base">Top Influencers</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {["Jane Smith", "Mike Johnson", "Sarah Wilson"].map((name, i) => (
-                <div key={name} className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-medium">
+                <div
+                  key={name}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-muted/30"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white text-sm font-bold shadow-sm">
                     {i + 1}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">{name}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold">{name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {1000 - i * 200} views delivered
+                      {(1000 - i * 200).toLocaleString()} views
                     </p>
                   </div>
                 </div>
@@ -210,21 +221,27 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Active Surveys</CardTitle>
+            <CardTitle className="text-base">Active Surveys</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Running</span>
-                <Badge className="bg-green-100 text-green-800">15</Badge>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+                <span className="text-sm font-medium">Running</span>
+                <Badge className="bg-emerald-500/15 text-emerald-600 border-0">
+                  15
+                </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Pending Approval</span>
-                <Badge className="bg-yellow-100 text-yellow-800">5</Badge>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+                <span className="text-sm font-medium">Pending Approval</span>
+                <Badge className="bg-yellow-500/15 text-yellow-600 border-0">
+                  5
+                </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Completed Today</span>
-                <Badge className="bg-blue-100 text-blue-800">8</Badge>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+                <span className="text-sm font-medium">Completed Today</span>
+                <Badge className="bg-blue-500/15 text-blue-600 border-0">
+                  8
+                </Badge>
               </div>
             </div>
           </CardContent>
