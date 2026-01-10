@@ -44,9 +44,197 @@ export interface RegisterDto {
   phone: string;
 }
 
+export type AuthUserDtoRole = typeof AuthUserDtoRole[keyof typeof AuthUserDtoRole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AuthUserDtoRole = {
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
+} as const;
+
+export type AuthUserDtoStatus = typeof AuthUserDtoStatus[keyof typeof AuthUserDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AuthUserDtoStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export interface AuthUserDto {
+  id: string;
+  email: string;
+  role: AuthUserDtoRole;
+  status: AuthUserDtoStatus;
+  name?: string;
+  company?: string;
+  phone?: string;
+  profileCompleted: boolean;
+}
+
+export interface LoginResponseDto {
+  accessToken: string;
+  user: AuthUserDto;
+}
+
 export interface LoginDto {
   email: string;
   password: string;
+}
+
+export type ProfileResponseDtoRole = typeof ProfileResponseDtoRole[keyof typeof ProfileResponseDtoRole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ProfileResponseDtoRole = {
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
+} as const;
+
+export type ProfileResponseDtoStatus = typeof ProfileResponseDtoStatus[keyof typeof ProfileResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ProfileResponseDtoStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export type ProfileResponseDtoMobileMoneyNetwork = typeof ProfileResponseDtoMobileMoneyNetwork[keyof typeof ProfileResponseDtoMobileMoneyNetwork];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ProfileResponseDtoMobileMoneyNetwork = {
+  MTN: 'MTN',
+  Vodafone: 'Vodafone',
+  AirtelTigo: 'AirtelTigo',
+} as const;
+
+export type ProfileResponseDtoGender = typeof ProfileResponseDtoGender[keyof typeof ProfileResponseDtoGender];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ProfileResponseDtoGender = {
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other',
+  PreferNotToSay: 'PreferNotToSay',
+} as const;
+
+export type ProfileResponseDtoAgeBracket = typeof ProfileResponseDtoAgeBracket[keyof typeof ProfileResponseDtoAgeBracket];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ProfileResponseDtoAgeBracket = {
+  age_18_24: 'age_18_24',
+  age_25_34: 'age_25_34',
+  age_35_44: 'age_35_44',
+  age_45_54: 'age_45_54',
+  age_55_plus: 'age_55_plus',
+} as const;
+
+export interface ProfileResponseDto {
+  id: string;
+  email: string;
+  role: ProfileResponseDtoRole;
+  status: ProfileResponseDtoStatus;
+  name?: string;
+  company?: string;
+  phone?: string;
+  profileCompleted: boolean;
+  mobileMoneyNumber?: string;
+  mobileMoneyNetwork?: ProfileResponseDtoMobileMoneyNetwork;
+  occupation?: string;
+  isStudent: boolean;
+  schoolName?: string;
+  gender?: ProfileResponseDtoGender;
+  ageBracket?: ProfileResponseDtoAgeBracket;
+  createdAt: string;
+}
+
+export type UserResponseDtoRole = typeof UserResponseDtoRole[keyof typeof UserResponseDtoRole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserResponseDtoRole = {
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
+} as const;
+
+export type UserResponseDtoStatus = typeof UserResponseDtoStatus[keyof typeof UserResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserResponseDtoStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export type UserResponseDtoMobileMoneyNetwork = typeof UserResponseDtoMobileMoneyNetwork[keyof typeof UserResponseDtoMobileMoneyNetwork];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserResponseDtoMobileMoneyNetwork = {
+  MTN: 'MTN',
+  Vodafone: 'Vodafone',
+  AirtelTigo: 'AirtelTigo',
+} as const;
+
+export type UserResponseDtoGender = typeof UserResponseDtoGender[keyof typeof UserResponseDtoGender];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserResponseDtoGender = {
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other',
+  PreferNotToSay: 'PreferNotToSay',
+} as const;
+
+export type UserResponseDtoAgeBracket = typeof UserResponseDtoAgeBracket[keyof typeof UserResponseDtoAgeBracket];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserResponseDtoAgeBracket = {
+  age_18_24: 'age_18_24',
+  age_25_34: 'age_25_34',
+  age_35_44: 'age_35_44',
+  age_45_54: 'age_45_54',
+  age_55_plus: 'age_55_plus',
+} as const;
+
+export interface UserResponseDto {
+  id: string;
+  email: string;
+  role: UserResponseDtoRole;
+  status: UserResponseDtoStatus;
+  name?: string;
+  company?: string;
+  phone?: string;
+  mobileMoneyNumber?: string;
+  mobileMoneyNetwork?: UserResponseDtoMobileMoneyNetwork;
+  occupation?: string;
+  isStudent: boolean;
+  schoolName?: string;
+  gender?: UserResponseDtoGender;
+  ageBracket?: UserResponseDtoAgeBracket;
+  profileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type UsersListResponseDtoMeta = { [key: string]: unknown };
+
+export interface UsersListResponseDto {
+  data: UserResponseDto[];
+  meta: UsersListResponseDtoMeta;
 }
 
 export type UpdateUserDtoMobileMoneyNetwork = typeof UpdateUserDtoMobileMoneyNetwork[keyof typeof UpdateUserDtoMobileMoneyNetwork];
@@ -140,6 +328,187 @@ export interface CreateCampaignDto {
   paymentViewsThreshold?: number;
 }
 
+export interface TargetViewRangeResponseDto {
+  min: number;
+  max: number;
+}
+
+export interface ClientInfoDto {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export type InfluencerAssignmentDtoInfluencer = { [key: string]: unknown };
+
+export interface InfluencerAssignmentDto {
+  id: string;
+  influencer?: InfluencerAssignmentDtoInfluencer;
+}
+
+export type CampaignResponseDtoStatus = typeof CampaignResponseDtoStatus[keyof typeof CampaignResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CampaignResponseDtoStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
+} as const;
+
+export type CampaignResponseDtoPaymentType = typeof CampaignResponseDtoPaymentType[keyof typeof CampaignResponseDtoPaymentType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CampaignResponseDtoPaymentType = {
+  per_view: 'per_view',
+  per_views: 'per_views',
+} as const;
+
+export interface CampaignResponseDto {
+  id: string;
+  brandName: string;
+  title?: string;
+  description?: string;
+  budget: number;
+  startDate: string;
+  endDate: string;
+  targetViewRange: TargetViewRangeResponseDto;
+  targetAudience: string;
+  industry: string;
+  adCreatives: string[];
+  status: CampaignResponseDtoStatus;
+  totalViews: number;
+  ratePerView: number;
+  submissionDeadlineDays: number;
+  paymentType: CampaignResponseDtoPaymentType;
+  paymentViewsThreshold: number;
+  client?: ClientInfoDto;
+  assignedInfluencers?: InfluencerAssignmentDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CampaignsListResponseDtoMeta = { [key: string]: unknown };
+
+export interface CampaignsListResponseDto {
+  data: CampaignResponseDto[];
+  meta: CampaignsListResponseDtoMeta;
+}
+
+export interface TargetViewRangeDetailDto {
+  min: number;
+  max: number;
+}
+
+export interface CampaignDetailClientDto {
+  id: string;
+  name: string;
+  email: string;
+  company?: string;
+}
+
+export interface CampaignDetailInfluencerDto {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export type CampaignDetailAssignmentDtoStatus = typeof CampaignDetailAssignmentDtoStatus[keyof typeof CampaignDetailAssignmentDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CampaignDetailAssignmentDtoStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  rejected: 'rejected',
+} as const;
+
+export interface CampaignDetailAssignmentDto {
+  id: string;
+  campaignId: string;
+  influencerId: string;
+  assignedDate: string;
+  status: CampaignDetailAssignmentDtoStatus;
+  influencer?: CampaignDetailInfluencerDto;
+}
+
+export type CampaignDetailSubmissionDtoApprovalStatus = typeof CampaignDetailSubmissionDtoApprovalStatus[keyof typeof CampaignDetailSubmissionDtoApprovalStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CampaignDetailSubmissionDtoApprovalStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export interface CampaignDetailSubmissionDto {
+  id: string;
+  campaignId: string;
+  influencerId: string;
+  screenshotUrl?: string;
+  extractedViewCount: number;
+  submissionDate: string;
+  verified: boolean;
+  approvalStatus: CampaignDetailSubmissionDtoApprovalStatus;
+  influencer?: CampaignDetailInfluencerDto;
+}
+
+export interface CampaignDetailCountDto {
+  assignments: number;
+  submissions: number;
+}
+
+export type CampaignDetailResponseDtoStatus = typeof CampaignDetailResponseDtoStatus[keyof typeof CampaignDetailResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CampaignDetailResponseDtoStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
+} as const;
+
+export type CampaignDetailResponseDtoPaymentType = typeof CampaignDetailResponseDtoPaymentType[keyof typeof CampaignDetailResponseDtoPaymentType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CampaignDetailResponseDtoPaymentType = {
+  per_view: 'per_view',
+  per_views: 'per_views',
+} as const;
+
+export interface CampaignDetailResponseDto {
+  id: string;
+  brandName: string;
+  title?: string;
+  description?: string;
+  budget: number;
+  startDate: string;
+  endDate: string;
+  targetViewRange: TargetViewRangeDetailDto;
+  targetAudience: string;
+  industry: string;
+  adCreatives: string[];
+  status: CampaignDetailResponseDtoStatus;
+  totalViews: number;
+  ratePerView: number;
+  submissionDeadlineDays: number;
+  paymentType: CampaignDetailResponseDtoPaymentType;
+  paymentViewsThreshold: number;
+  client?: CampaignDetailClientDto;
+  assignments?: CampaignDetailAssignmentDto[];
+  submissions?: CampaignDetailSubmissionDto[];
+  _count?: CampaignDetailCountDto;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type UpdateCampaignDtoStatus = typeof UpdateCampaignDtoStatus[keyof typeof UpdateCampaignDtoStatus];
 
 
@@ -185,6 +554,62 @@ export interface CreateSubmissionDto {
   extractedViewCount: number;
   description?: string;
   feedback?: string;
+}
+
+export interface SubmissionCampaignDto {
+  id: string;
+  brandName: string;
+  title?: string;
+}
+
+export interface SubmissionInfluencerDto {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface SubmissionReviewerDto {
+  id: string;
+  name: string;
+}
+
+export type SubmissionResponseDtoApprovalStatus = typeof SubmissionResponseDtoApprovalStatus[keyof typeof SubmissionResponseDtoApprovalStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SubmissionResponseDtoApprovalStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export interface SubmissionResponseDto {
+  id: string;
+  campaignId: string;
+  influencerId: string;
+  screenshotUrl?: string;
+  extractedViewCount: number;
+  description?: string;
+  submissionDate: string;
+  verified: boolean;
+  feedback?: string;
+  approvalStatus: SubmissionResponseDtoApprovalStatus;
+  reviewNotes?: string;
+  reviewedAt?: string;
+  isFlagged: boolean;
+  flagReasons: string[];
+  campaign?: SubmissionCampaignDto;
+  influencer?: SubmissionInfluencerDto;
+  reviewedBy?: SubmissionReviewerDto;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SubmissionsListResponseDtoMeta = { [key: string]: unknown };
+
+export interface SubmissionsListResponseDto {
+  data: SubmissionResponseDto[];
+  meta: SubmissionsListResponseDtoMeta;
 }
 
 export type ReviewSubmissionDtoApprovalStatus = typeof ReviewSubmissionDtoApprovalStatus[keyof typeof ReviewSubmissionDtoApprovalStatus];
@@ -285,6 +710,15 @@ export interface CreateNotificationDto {
 export type UsersControllerFindAllParams = {
 role?: UsersControllerFindAllRole;
 status?: UsersControllerFindAllStatus;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
 export type UsersControllerFindAllRole = typeof UsersControllerFindAllRole[keyof typeof UsersControllerFindAllRole];
@@ -324,6 +758,15 @@ export const UsersControllerGetInfluencersStatus = {
 export type CampaignsControllerFindAllParams = {
 status?: CampaignsControllerFindAllStatus;
 clientId?: string;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
 export type CampaignsControllerFindAllStatus = typeof CampaignsControllerFindAllStatus[keyof typeof CampaignsControllerFindAllStatus];
@@ -342,6 +785,15 @@ export type SubmissionsControllerFindAllParams = {
 campaignId?: string;
 influencerId?: string;
 approvalStatus?: SubmissionsControllerFindAllApprovalStatus;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
 export type SubmissionsControllerFindAllApprovalStatus = typeof SubmissionsControllerFindAllApprovalStatus[keyof typeof SubmissionsControllerFindAllApprovalStatus];
@@ -383,7 +835,7 @@ export const authControllerRegister = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<LoginResponseDto>(
       {url: `/api/auth/register`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: registerDto, signal
@@ -448,7 +900,7 @@ export const authControllerLogin = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<LoginResponseDto>(
       {url: `/api/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: loginDto, signal
@@ -513,7 +965,7 @@ export const authControllerGetProfile = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<ProfileResponseDto>(
       {url: `/api/auth/me`, method: 'GET', signal
     },
       );
@@ -598,7 +1050,7 @@ export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof au
 
 
 /**
- * @summary Get all users (Admin only)
+ * @summary Get all users (Admin only, paginated)
  */
 export const usersControllerFindAll = (
     params?: UsersControllerFindAllParams,
@@ -606,7 +1058,7 @@ export const usersControllerFindAll = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<UsersListResponseDto>(
       {url: `/api/users`, method: 'GET',
         params, signal
     },
@@ -670,7 +1122,7 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get all users (Admin only)
+ * @summary Get all users (Admin only, paginated)
  */
 
 export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
@@ -887,7 +1339,7 @@ export const usersControllerFindOne = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<UserResponseDto>(
       {url: `/api/users/${id}`, method: 'GET', signal
     },
       );
@@ -980,7 +1432,7 @@ export const usersControllerUpdate = (
  ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<UserResponseDto>(
       {url: `/api/users/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateUserDto
@@ -1107,7 +1559,7 @@ export const usersControllerUpdateStatus = (
  ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<UserResponseDto>(
       {url: `/api/users/${id}/status`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateUserStatusDto
@@ -1172,7 +1624,7 @@ export const campaignsControllerCreate = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<CampaignResponseDto>(
       {url: `/api/campaigns`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createCampaignDto, signal
@@ -1229,7 +1681,7 @@ export const useCampaignsControllerCreate = <TError = unknown,
     }
     
 /**
- * @summary Get all campaigns
+ * @summary Get all campaigns (paginated)
  */
 export const campaignsControllerFindAll = (
     params?: CampaignsControllerFindAllParams,
@@ -1237,7 +1689,7 @@ export const campaignsControllerFindAll = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<CampaignsListResponseDto>(
       {url: `/api/campaigns`, method: 'GET',
         params, signal
     },
@@ -1301,7 +1753,7 @@ export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof 
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get all campaigns
+ * @summary Get all campaigns (paginated)
  */
 
 export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError = unknown>(
@@ -1517,7 +1969,7 @@ export const campaignsControllerFindOne = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<CampaignDetailResponseDto>(
       {url: `/api/campaigns/${id}`, method: 'GET', signal
     },
       );
@@ -1926,7 +2378,7 @@ export const submissionsControllerCreate = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<SubmissionResponseDto>(
       {url: `/api/submissions`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSubmissionDto, signal
@@ -1983,7 +2435,7 @@ export const useSubmissionsControllerCreate = <TError = unknown,
     }
     
 /**
- * @summary Get all submissions
+ * @summary Get all submissions (paginated)
  */
 export const submissionsControllerFindAll = (
     params?: SubmissionsControllerFindAllParams,
@@ -1991,7 +2443,7 @@ export const submissionsControllerFindAll = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<SubmissionsListResponseDto>(
       {url: `/api/submissions`, method: 'GET',
         params, signal
     },
@@ -2055,7 +2507,7 @@ export function useSubmissionsControllerFindAll<TData = Awaited<ReturnType<typeo
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get all submissions
+ * @summary Get all submissions (paginated)
  */
 
 export function useSubmissionsControllerFindAll<TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError = unknown>(
@@ -2271,7 +2723,7 @@ export const submissionsControllerFindOne = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<SubmissionResponseDto>(
       {url: `/api/submissions/${id}`, method: 'GET', signal
     },
       );
@@ -2426,7 +2878,7 @@ export const submissionsControllerReview = (
  ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<SubmissionResponseDto>(
       {url: `/api/submissions/${id}/review`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: reviewSubmissionDto

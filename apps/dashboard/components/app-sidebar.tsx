@@ -56,7 +56,6 @@ const adminNavItems = [
 const clientNavItems = [
   { title: "Dashboard", href: "/client", icon: LayoutDashboard },
   { title: "Campaigns", href: "/client/campaigns", icon: Megaphone },
-  { title: "Submissions", href: "/client/submissions", icon: FileImage },
   { title: "Surveys", href: "/client/surveys", icon: ClipboardList },
   { title: "Analytics", href: "/client/analytics", icon: TrendingUp },
 ];

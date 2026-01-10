@@ -7,6 +7,7 @@ import {
   useCampaignsControllerUpdate,
   getCampaignsControllerFindAllQueryKey,
   UpdateCampaignDtoStatus,
+  CampaignResponseDto,
 } from "@workspace/client";
 import {
   Card,
@@ -48,20 +49,7 @@ export default function AdminCampaignsPage() {
     isError,
     refetch,
   } = useCampaignsControllerFindAll();
-  const campaigns = (response || []) as Array<{
-    id: string;
-    brandName: string;
-    title?: string;
-    description?: string;
-    client?: { id: string; name: string; email: string };
-    budget: number;
-    targetViewRange: { min: number; max: number };
-    status: string;
-    assignedInfluencers?: Array<{ id: string; influencer?: { name: string } }>;
-    startDate: string;
-    endDate: string;
-    createdAt: string;
-  }>;
+  const campaigns = response?.data || [];
 
   const updateStatusMutation = useCampaignsControllerUpdate({
     mutation: {
@@ -118,7 +106,7 @@ export default function AdminCampaignsPage() {
     );
   }
 
-  const CampaignCard = ({ campaign }: { campaign: Campaign }) => (
+  const CampaignCard = ({ campaign }: { campaign: CampaignResponseDto }) => (
     <div className="p-4 rounded-xl border border-border/60 bg-card space-y-3 hover:shadow-md transition-all">
       <div className="flex items-center justify-between">
         <div>

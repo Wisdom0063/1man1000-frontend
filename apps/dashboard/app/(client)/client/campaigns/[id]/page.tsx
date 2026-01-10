@@ -4,11 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useCampaignsControllerFindOne,
-  useCampaignsControllerUpdate,
   useCampaignsControllerDelete,
-  getCampaignsControllerFindOneQueryKey,
   getCampaignsControllerFindAllQueryKey,
-  UpdateCampaignDtoStatus,
 } from "@workspace/client";
 import {
   Card,
@@ -26,10 +23,6 @@ import {
   Target,
   Edit,
   Trash2,
-  CheckCircle,
-  XCircle,
-  UserPlus,
-  Loader2,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -88,26 +81,13 @@ export default function CampaignDetailPage() {
   } = useCampaignsControllerFindOne(campaignId);
   const campaign = response;
 
-  const updateMutation = useCampaignsControllerUpdate({
-    mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getCampaignsControllerFindOneQueryKey(campaignId),
-        });
-        queryClient.invalidateQueries({
-          queryKey: getCampaignsControllerFindAllQueryKey(),
-        });
-      },
-    },
-  });
-
   const deleteMutation = useCampaignsControllerDelete({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: getCampaignsControllerFindAllQueryKey(),
         });
-        router.push("/admin/campaigns");
+        router.push("/client/campaigns");
       },
     },
   });
@@ -133,7 +113,7 @@ export default function CampaignDetailPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/admin/campaigns">
+            <Link href="/client/campaigns">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
@@ -150,44 +130,8 @@ export default function CampaignDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {c.status === "pending" && (
-            <>
-              <Button
-                variant="outline"
-                className="text-emerald-600 border-emerald-600 hover:bg-emerald-50"
-                onClick={() =>
-                  updateMutation.mutate({
-                    id: campaignId,
-                    data: { status: UpdateCampaignDtoStatus.approved },
-                  })
-                }
-                disabled={updateMutation.isPending}
-              >
-                {updateMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                )}
-                Approve
-              </Button>
-              <Button
-                variant="outline"
-                className="text-destructive border-destructive hover:bg-destructive/10"
-                onClick={() =>
-                  updateMutation.mutate({
-                    id: campaignId,
-                    data: { status: UpdateCampaignDtoStatus.rejected },
-                  })
-                }
-                disabled={updateMutation.isPending}
-              >
-                <XCircle className="h-4 w-4 mr-2" />
-                Reject
-              </Button>
-            </>
-          )}
           <Button variant="outline" asChild>
-            <Link href={`/admin/campaigns/${campaignId}/edit`}>
+            <Link href={`/client/campaigns/${campaignId}/edit`}>
               <Edit className="h-4 w-4 mr-2" />
               Edit
             </Link>
@@ -370,47 +314,6 @@ export default function CampaignDetailPage() {
                     </a>
                   ))}
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Assigned Influencers</CardTitle>
-            <Button size="sm" asChild>
-              <Link href={`/admin/campaigns/${campaignId}/influencers`}>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Assign
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {!c.assignedInfluencers || c.assignedInfluencers.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No influencers assigned yet
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {c.assignedInfluencers.map((assignment) => (
-                  <div
-                    key={assignment.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"
-                  >
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold">
-                      {assignment.influencer?.name?.slice(0, 2).toUpperCase() ||
-                        "??"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {assignment.influencer?.name || "Unknown"}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {assignment.influencer?.email}
-                      </p>
-                    </div>
-                  </div>
-                ))}
               </div>
             )}
           </CardContent>
