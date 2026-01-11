@@ -6,7 +6,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "lint": "eslint . --max-warnings 0",
-    "generate": "openapi-codegen generate core"
+    "generate": "orval"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",

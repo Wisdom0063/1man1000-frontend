@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import { useSurveysControllerGetInfluencerSurveys } from "@workspace/client";
 import {
   Card,
   CardContent,
@@ -16,64 +18,8 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { ClipboardList, Clock, CheckCircle, Star, Play } from "lucide-react";
-import { useState } from "react";
-
-const surveys = [
-  {
-    id: "1",
-    title: "Consumer Behavior Study",
-    client: "Research Co",
-    reward: 15,
-    duration: "10 min",
-    status: "available",
-    category: "Research",
-  },
-  {
-    id: "2",
-    title: "Product Feedback Survey",
-    client: "Tech Startup",
-    reward: 8,
-    duration: "5 min",
-    status: "available",
-    category: "Product",
-  },
-  {
-    id: "3",
-    title: "Brand Perception",
-    client: "ABC Company",
-    reward: 12,
-    duration: "8 min",
-    status: "available",
-    category: "Brand",
-  },
-  {
-    id: "4",
-    title: "Market Research Q4",
-    client: "XYZ Corp",
-    reward: 20,
-    duration: "15 min",
-    status: "in_progress",
-    category: "Research",
-  },
-  {
-    id: "5",
-    title: "Customer Satisfaction",
-    client: "Fashion Inc",
-    reward: 10,
-    duration: "7 min",
-    status: "completed",
-    category: "Feedback",
-  },
-  {
-    id: "6",
-    title: "App Usability Test",
-    client: "Tech Co",
-    reward: 25,
-    duration: "20 min",
-    status: "completed",
-    category: "UX",
-  },
-];
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
 const stats = {
   completed: 12,
@@ -84,12 +30,56 @@ const stats = {
 export default function InfluencerSurveysPage() {
   const [activeTab, setActiveTab] = useState("available");
 
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useSurveysControllerGetInfluencerSurveys();
+
+  const surveys = useMemo(() => {
+    const assignments = (response || []) as Array<any>;
+
+    return assignments.map((a) => {
+      const status =
+        a.status === "completed"
+          ? "completed"
+          : a.status === "in_progress"
+            ? "in_progress"
+            : "available";
+
+      return {
+        id: a.surveyId || a.survey?.id,
+        title: a.survey?.title,
+        client: a.survey?.client?.name,
+        reward: a.paymentAmount || a.survey?.paymentPerResponse || 0,
+        duration: "",
+        status,
+        category: "Survey",
+      };
+    });
+  }, [response]);
+
   const filteredSurveys = surveys.filter((s) => {
     if (activeTab === "available") return s.status === "available";
     if (activeTab === "in_progress") return s.status === "in_progress";
     if (activeTab === "completed") return s.status === "completed";
     return true;
   });
+
+  if (isLoading) {
+    return <LoadingState text="Loading surveys..." />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Failed to load surveys"
+        message="There was an error loading surveys."
+        onRetry={() => refetch()}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
