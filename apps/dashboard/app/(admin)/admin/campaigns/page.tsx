@@ -1,31 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   useCampaignsControllerFindAll,
   useCampaignsControllerUpdate,
-  getCampaignsControllerFindAllQueryKey,
   UpdateCampaignDtoStatus,
-  CampaignResponseDto,
+  CampaignsListResponseDto,
 } from "@workspace/client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
 import {
   Eye,
-  Search,
   MoreHorizontal,
   CheckCircle,
   XCircle,
   Users,
   Plus,
+  Loader2,
+  ArrowUpDown,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,171 +26,320 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { DataTable } from "@workspace/ui/components/data-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { LoadingState } from "@/components/ui/loading-state";
-import { ErrorState } from "@/components/ui/error-state";
 import Link from "next/link";
 
 export default function AdminCampaignsPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const queryClient = useQueryClient();
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [campaigns, setCampaigns] = useState<CampaignsListResponseDto["data"]>(
+    []
+  );
+
+  const queryParams: Record<string, string | number> = {};
+  if (statusFilter && statusFilter !== "all") {
+    queryParams.status = statusFilter;
+  }
 
   const {
     data: response,
     isLoading,
-    isError,
+    error,
     refetch,
-  } = useCampaignsControllerFindAll();
-  const campaigns = response?.data || [];
+  } = useCampaignsControllerFindAll({
+    page,
+    limit,
+    ...queryParams,
+  });
+
+  useEffect(() => {
+    if (response && !isLoading) {
+      setCampaigns(response.data || []);
+    }
+  }, [response, isLoading]);
 
   const updateStatusMutation = useCampaignsControllerUpdate({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getCampaignsControllerFindAllQueryKey(),
-        });
+        refetch();
       },
     },
   });
 
-  const filteredCampaigns = campaigns.filter(
-    (campaign) =>
-      campaign.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.client?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleApprove = useCallback(
+    async (id: string) => {
+      if (window.confirm("Are you sure you want to approve this campaign?")) {
+        try {
+          await updateStatusMutation.mutateAsync({
+            id,
+            data: { status: UpdateCampaignDtoStatus.approved },
+          });
+        } catch (error) {
+          console.error("Error approving campaign:", error);
+        }
+      }
+    },
+    [updateStatusMutation]
   );
 
-  const pendingCampaigns = filteredCampaigns.filter(
-    (c) => c.status === "pending"
+  const handleReject = useCallback(
+    async (id: string) => {
+      if (window.confirm("Are you sure you want to reject this campaign?")) {
+        try {
+          await updateStatusMutation.mutateAsync({
+            id,
+            data: { status: UpdateCampaignDtoStatus.rejected },
+          });
+        } catch (error) {
+          console.error("Error rejecting campaign:", error);
+        }
+      }
+    },
+    [updateStatusMutation]
   );
-  const activeCampaigns = filteredCampaigns.filter(
-    (c) => c.status === "active" || c.status === "approved"
-  );
-  const completedCampaigns = filteredCampaigns.filter(
-    (c) => c.status === "completed" || c.status === "rejected"
-  );
 
-  const handleApprove = (id: string) => {
-    updateStatusMutation.mutate({
-      id,
-      data: { status: UpdateCampaignDtoStatus.approved },
-    });
-  };
-
-  const handleReject = (id: string) => {
-    updateStatusMutation.mutate({
-      id,
-      data: { status: UpdateCampaignDtoStatus.rejected },
-    });
-  };
-
-  if (isLoading) {
-    return <LoadingState text="Loading campaigns..." />;
-  }
-
-  if (isError) {
-    return (
-      <ErrorState
-        title="Failed to load campaigns"
-        message="There was an error loading the campaigns. Please try again."
-        onRetry={() => refetch()}
-      />
-    );
-  }
-
-  const CampaignCard = ({ campaign }: { campaign: CampaignResponseDto }) => (
-    <div className="p-4 rounded-xl border border-border/60 bg-card space-y-3 hover:shadow-md transition-all">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="font-semibold">
-            {campaign.title || campaign.brandName}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {campaign.client?.name || "Unknown Client"} • {campaign.brandName}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <StatusBadge status={campaign.status} />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm">
-                <MoreHorizontal className="h-4 w-4" />
+  const columns: ColumnDef<CampaignsListResponseDto["data"][number]>[] =
+    useMemo(
+      () => [
+        {
+          accessorKey: "title",
+          size: 200,
+          header: ({ column }) => {
+            return (
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
+              >
+                Campaign
+                <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={`/admin/campaigns/${campaign.id}`}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/admin/campaigns/${campaign.id}/influencers`}>
-                  <Users className="mr-2 h-4 w-4" />
-                  Manage Influencers
-                </Link>
-              </DropdownMenuItem>
-              {campaign.status === "pending" && (
-                <>
-                  <DropdownMenuSeparator />
+            );
+          },
+          cell: ({ row }) => {
+            const campaign = row.original;
+            return (
+              <div className="flex flex-col">
+                <span className="font-medium">
+                  {campaign.title || campaign.brandName}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {campaign.brandName}
+                </span>
+              </div>
+            );
+          },
+        },
+        {
+          accessorKey: "client",
+          size: 150,
+          header: "Client",
+          cell: ({ row }) => {
+            const client = row.original.client;
+            return client?.name || "Unknown";
+          },
+        },
+        {
+          accessorKey: "status",
+          size: 100,
+          header: "Status",
+          cell: ({ row }) => {
+            const status = row.original.status;
+            return <StatusBadge status={status} />;
+          },
+        },
+        {
+          id: "influencers",
+          size: 100,
+          header: "Influencers",
+          cell: ({ row }) => {
+            const count = row.original.assignedInfluencers?.length || 0;
+            return (
+              <div className="flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span>{count}</span>
+              </div>
+            );
+          },
+        },
+        {
+          id: "targetViews",
+          size: 150,
+          header: "Target Views",
+          cell: ({ row }) => {
+            const range = row.original.targetViewRange;
+            if (!range) return "N/A";
+            return (
+              <span className="text-sm">
+                {range.min?.toLocaleString()} - {range.max?.toLocaleString()}
+              </span>
+            );
+          },
+        },
+        {
+          accessorKey: "budget",
+          size: 100,
+          header: "Budget",
+          cell: ({ row }) => {
+            const budget = row.original.budget;
+            return budget ? `GH₵${budget.toLocaleString()}` : "N/A";
+          },
+        },
+        {
+          id: "dates",
+          size: 150,
+          header: "Campaign Period",
+          cell: ({ row }) => {
+            const campaign = row.original;
+            return (
+              <div className="text-sm">
+                <div>{new Date(campaign.startDate).toLocaleDateString()}</div>
+                <div className="text-muted-foreground">
+                  {new Date(campaign.endDate).toLocaleDateString()}
+                </div>
+              </div>
+            );
+          },
+        },
+        {
+          id: "actions",
+          size: 60,
+          header: "Actions",
+          cell: ({ row }) => {
+            const campaign = row.original;
+            return (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem
-                    className="text-emerald-600"
-                    onClick={() => handleApprove(campaign.id)}
-                    disabled={updateStatusMutation.isPending}
+                    onClick={() =>
+                      router.push(`/admin/campaigns/${campaign.id}`)
+                    }
                   >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Approve
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Details
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => handleReject(campaign.id)}
-                    disabled={updateStatusMutation.isPending}
+                    onClick={() =>
+                      router.push(`/admin/campaigns/${campaign.id}/influencers`)
+                    }
                   >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Reject
+                    <Users className="mr-2 h-4 w-4" />
+                    Manage Influencers
                   </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  {campaign.status === "pending" && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-emerald-600"
+                        onClick={() => handleApprove(campaign.id)}
+                        disabled={updateStatusMutation.isPending}
+                      >
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Approve
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={() => handleReject(campaign.id)}
+                        disabled={updateStatusMutation.isPending}
+                      >
+                        <XCircle className="mr-2 h-4 w-4" />
+                        Reject
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          },
+        },
+      ],
+      [router, updateStatusMutation.isPending, handleApprove, handleReject]
+    );
+
+  const CampaignFilter = useCallback(() => {
+    return (
+      <div className="flex items-center space-x-2 flex-1">
+        <div className="relative flex-1 max-w-sm">
+          <input
+            placeholder="Search campaigns..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          />
         </div>
+        <select
+          value={statusFilter || "all"}
+          onChange={(e) => {
+            const value = e.target.value;
+            setStatusFilter(value === "all" ? "" : value);
+            setPage(1);
+          }}
+          className="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-[180px]"
+        >
+          <option value="all">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="rejected">Rejected</option>
+        </select>
       </div>
-      <div className="flex items-center gap-6 text-sm">
-        <div className="flex items-center gap-1.5">
-          <Users className="h-4 w-4 text-muted-foreground" />
-          <span>{campaign.assignedInfluencers?.length || 0} influencers</span>
-        </div>
-        <div>
-          <span className="text-muted-foreground">Target: </span>
-          <span className="font-medium">
-            {campaign.targetViewRange?.min?.toLocaleString()} -{" "}
-            {campaign.targetViewRange?.max?.toLocaleString()} views
-          </span>
-        </div>
-        <div>
-          <span className="text-muted-foreground">Budget: </span>
-          <span className="font-medium">
-            GH₵{campaign.budget?.toLocaleString()}
-          </span>
-        </div>
-      </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>
-          {new Date(campaign.startDate).toLocaleDateString()} -{" "}
-          {new Date(campaign.endDate).toLocaleDateString()}
-        </span>
-        <span>Created {new Date(campaign.createdAt).toLocaleDateString()}</span>
-      </div>
+    );
+  }, [searchQuery, statusFilter]);
+
+  const TableLoadingComponent = () => (
+    <div className="flex items-center justify-center py-12">
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <span className="ml-3 text-muted-foreground">Loading campaigns...</span>
     </div>
   );
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Campaigns</h1>
+            <p className="text-muted-foreground">
+              Manage and monitor all platform campaigns
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/admin/campaigns/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Campaign
+            </Link>
+          </Button>
+        </div>
+        <div className="rounded-md border p-8 text-center">
+          <h3 className="text-lg font-semibold mb-2">
+            Failed to load campaigns
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            There was an error loading campaigns. Please try again.
+          </p>
+          <Button onClick={() => refetch()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Campaigns
-          </h1>
+          <h1 className="text-3xl font-bold">Campaigns</h1>
           <p className="text-muted-foreground">
             Manage and monitor all platform campaigns
           </p>
@@ -211,88 +352,28 @@ export default function AdminCampaignsPage() {
         </Button>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search campaigns..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-yellow-500" />
-              Pending Approval
-            </CardTitle>
-            <CardDescription>
-              {pendingCampaigns.length} campaigns
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {pendingCampaigns.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">
-                No pending campaigns
-              </p>
-            ) : (
-              pendingCampaigns.map((campaign) => (
-                <CampaignCard key={campaign.id} campaign={campaign} />
-              ))
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
-              Active
-            </CardTitle>
-            <CardDescription>
-              {activeCampaigns.length} campaigns
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {activeCampaigns.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">
-                No active campaigns
-              </p>
-            ) : (
-              activeCampaigns.map((campaign) => (
-                <CampaignCard key={campaign.id} campaign={campaign} />
-              ))
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-gray-500" />
-              Completed / Rejected
-            </CardTitle>
-            <CardDescription>
-              {completedCampaigns.length} campaigns
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {completedCampaigns.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">
-                No completed campaigns
-              </p>
-            ) : (
-              completedCampaigns.map((campaign) => (
-                <CampaignCard key={campaign.id} campaign={campaign} />
-              ))
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <DataTable
+        columns={columns}
+        data={campaigns}
+        showColumnVisibility={true}
+        onRowClick={(campaign) =>
+          router.push(`/admin/campaigns/${campaign.id}`)
+        }
+        FilterComponent={CampaignFilter}
+        LoadingComponent={TableLoadingComponent}
+        isLoading={isLoading && campaigns.length === 0}
+        pagination={{
+          page,
+          limit,
+          total: (response?.meta?.total as number) ?? 0,
+          totalPages: (response?.meta?.totalPages as number) ?? 0,
+          onPageChange: (newPage) => setPage(newPage),
+          onPageSizeChange: (newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          },
+        }}
+      />
     </div>
   );
 }

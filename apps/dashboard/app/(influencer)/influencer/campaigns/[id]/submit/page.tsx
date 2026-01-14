@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +28,7 @@ import {
   Upload,
   ImageIcon,
   AlertCircle,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { submissionSchema, type SubmissionFormData } from "@/lib/schemas";
@@ -49,14 +50,16 @@ export default function SubmitCampaignPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const campaignId = params.id as string;
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const {
     data: response,
     isLoading: campaignLoading,
     isError: campaignError,
   } = useCampaignsControllerFindOne(campaignId);
-  const campaign = response?.data as Campaign | undefined;
+  const campaign = response as Campaign | undefined;
 
   const {
     register,
@@ -86,17 +89,83 @@ export default function SubmitCampaignPage() {
   });
 
   const onSubmit = (data: SubmissionFormData) => {
-    submitMutation.mutate({ data: data as CreateSubmissionDto });
+    if (!selectedFile) {
+      return;
+    }
+
+    // Create FormData to send file with submission data
+    const formData = new FormData();
+    formData.append("screenshot", selectedFile);
+    formData.append("campaignId", data.campaignId);
+    formData.append("extractedViewCount", data.extractedViewCount.toString());
+    if (data.description) {
+      formData.append("description", data.description);
+    }
+
+    submitMutation.mutate({
+      data: formData as any,
+    });
   };
 
-  const handleScreenshotUrlChange = (url: string) => {
-    setValue("screenshotUrl", url);
-    if (url && url.startsWith("http")) {
+  const handleFileSelect = useCallback(
+    (file: File) => {
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file");
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        // 10MB limit
+        alert("File size must be less than 10MB");
+        return;
+      }
+
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
       setPreviewUrl(url);
-    } else {
-      setPreviewUrl(null);
-    }
-  };
+      setValue("screenshotUrl", url);
+    },
+    [setValue]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        handleFileSelect(file);
+      }
+    },
+    [handleFileSelect]
+  );
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleFileInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        handleFileSelect(file);
+      }
+    },
+    [handleFileSelect]
+  );
+
+  const removeFile = useCallback(() => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setValue("screenshotUrl", "");
+  }, [setValue]);
 
   if (campaignLoading) {
     return <LoadingState text="Loading campaign details..." />;
@@ -167,49 +236,79 @@ export default function SubmitCampaignPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="screenshotUrl">
-                Screenshot URL <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="screenshotUrl"
-                type="url"
-                placeholder="https://example.com/screenshot.png"
-                {...register("screenshotUrl")}
-                onChange={(e) => handleScreenshotUrlChange(e.target.value)}
-                className={errors.screenshotUrl ? "border-destructive" : ""}
-              />
-              {errors.screenshotUrl && (
-                <p className="text-xs text-destructive">
-                  {errors.screenshotUrl.message}
+            {!previewUrl ? (
+              <div
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
+                  isDragging
+                    ? "border-primary bg-primary/5"
+                    : "border-border/60 hover:border-border"
+                }`}
+              >
+                <input
+                  type="file"
+                  id="screenshot-upload"
+                  accept="image/*"
+                  onChange={handleFileInputChange}
+                  className="hidden"
+                  {...register("screenshotUrl")}
+                />
+                <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium mb-1">
+                  Drag and drop your screenshot here
                 </p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Upload your screenshot to an image hosting service and paste the
-                URL here.
-              </p>
-            </div>
-
-            {previewUrl && (
-              <div className="space-y-2">
-                <Label>Preview</Label>
-                <div className="rounded-xl border border-border/60 overflow-hidden bg-muted/30">
+                <p className="text-xs text-muted-foreground mb-4">
+                  or click to browse
+                </p>
+                <label htmlFor="screenshot-upload">
+                  <Button type="button" variant="outline" size="sm" asChild>
+                    <span>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choose File
+                    </span>
+                  </Button>
+                </label>
+                <p className="text-xs text-muted-foreground mt-4">
+                  Supported formats: JPG, PNG, GIF (Max 10MB)
+                </p>
+                {errors.screenshotUrl && (
+                  <p className="text-xs text-destructive mt-2">
+                    {errors.screenshotUrl.message}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Screenshot Preview</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={removeFile}
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Remove
+                  </Button>
+                </div>
+                <div className="rounded-xl border border-border/60 overflow-hidden bg-muted/30 relative">
                   <img
                     src={previewUrl}
                     alt="Screenshot preview"
-                    className="w-full max-h-[300px] object-contain"
-                    onError={() => setPreviewUrl(null)}
+                    className="w-full max-h-[400px] object-contain"
                   />
                 </div>
-              </div>
-            )}
-
-            {!previewUrl && (
-              <div className="rounded-xl border-2 border-dashed border-border/60 p-8 text-center">
-                <ImageIcon className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  Enter a screenshot URL above to see a preview
-                </p>
+                {selectedFile && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <ImageIcon className="h-4 w-4" />
+                    <span>{selectedFile.name}</span>
+                    <span>
+                      ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>

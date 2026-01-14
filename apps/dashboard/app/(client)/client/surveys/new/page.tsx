@@ -40,12 +40,12 @@ export default function CreateClientSurveyPage() {
       paymentPerResponse: data.paymentPerResponse,
       questions: data.questions.map((q) => ({
         questionText: q.questionText,
-        questionType: q.questionType as any,
+        questionType: q.questionType,
         questionOrder: q.questionOrder,
         isRequired: q.isRequired,
         options: q.options,
         imageUrls: q.imageUrls,
-        ratingScaleType: q.ratingScaleType as any,
+        ratingScaleType: q.ratingScaleType,
       })),
     };
 

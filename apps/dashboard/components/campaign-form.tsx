@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@workspace/ui/components/button";
@@ -13,7 +13,7 @@ import {
 } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { Loader2, Info } from "lucide-react";
+import { Loader2, Info, Upload, X, FileImage } from "lucide-react";
 import Link from "next/link";
 import { campaignSchema, type CampaignFormData } from "@/lib/schemas";
 
@@ -37,7 +37,7 @@ export type CampaignFormProps = {
   submitLabel: string;
   cancelHref: string;
   isSubmitting: boolean;
-  onSubmit: (data: CampaignFormData) => void;
+  onSubmit: (data: CampaignFormData, file?: File) => void;
   isError?: boolean;
   errorText?: string;
   showBudgetEstimate?: boolean;
@@ -77,12 +77,49 @@ export function CampaignForm({
     defaultValues: mergedDefaults,
   });
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   const budget = watch("budget");
   const targetMax = watch("targetViewRange.max");
 
+  const handleFileSelect = useCallback((file: File) => {
+    const validTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+      "video/webm",
+    ];
+    if (!validTypes.includes(file.type)) {
+      alert("Please select a valid image or video file");
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      alert("File size must be less than 50MB");
+      return;
+    }
+    setSelectedFile(file);
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+  }, []);
+
+  const removeFile = useCallback(() => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setSelectedFile(null);
+    setPreviewUrl(null);
+  }, [previewUrl]);
+
+  const handleFormSubmit = (data: CampaignFormData) => {
+    onSubmit(data, selectedFile || undefined);
+  };
+
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       className={containerClassName || "space-y-6"}
     >
       <Card>
@@ -289,6 +326,89 @@ export function CampaignForm({
                   reach approximately {(targetMax || 0).toLocaleString()} views
                   depending on the rate per view set by the platform.
                 </p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Campaign Asset (Optional)</CardTitle>
+          <CardDescription>
+            Upload an image or video that influencers can download and use in
+            their posts
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!selectedFile ? (
+            <div
+              className="border-2 border-dashed border-border/60 rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+              onClick={() => document.getElementById("campaignAsset")?.click()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const file = e.dataTransfer.files[0];
+                if (file) handleFileSelect(file);
+              }}
+            >
+              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-sm font-medium mb-1">
+                Click to upload or drag and drop
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Images (PNG, JPG, GIF, WebP) or Videos (MP4, WebM) up to 50MB
+              </p>
+              <input
+                id="campaignAsset"
+                type="file"
+                accept="image/*,video/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileSelect(file);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                {selectedFile.type.startsWith("video/") ? (
+                  <video
+                    src={previewUrl || ""}
+                    className="w-full h-full object-cover"
+                    controls
+                  />
+                ) : (
+                  <img
+                    src={previewUrl || ""}
+                    alt="Campaign asset preview"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <FileImage className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium truncate">
+                    {selectedFile.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </span>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={removeFile}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           )}

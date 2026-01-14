@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { CampaignAssetModal } from "@/components/campaign-asset-modal";
 import { useCampaignsControllerGetInfluencerCampaigns } from "@workspace/client";
 import {
   Card,
@@ -43,19 +44,26 @@ type Campaign = {
   ratePerView?: number;
   startDate: string;
   endDate: string;
+  campaignAsset?: string;
   createdAt: string;
 };
 
 export default function InfluencerCampaignsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("active");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20);
+  const [selectedAsset, setSelectedAsset] = useState<{
+    url: string;
+    title: string;
+  } | null>(null);
 
   const {
     data: response,
     isLoading,
     isError,
     refetch,
-  } = useCampaignsControllerGetInfluencerCampaigns();
+  } = useCampaignsControllerGetInfluencerCampaigns({ page, limit });
   const campaigns = (response?.data || []) as Campaign[];
 
   const activeCampaigns = campaigns.filter(
@@ -87,14 +95,48 @@ export default function InfluencerCampaignsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          My Campaigns
-        </h1>
-        <p className="text-muted-foreground">
-          View and manage your assigned campaigns
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            My Campaigns
+          </h1>
+          <p className="text-muted-foreground">
+            View and manage your assigned campaigns
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/influencer/campaigns/available">
+            <Target className="h-4 w-4 mr-2" />
+            Browse Available Campaigns
+          </Link>
+        </Button>
       </div>
+
+      {response?.meta && response.meta.totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {response.meta.totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              setPage((p) => Math.min(response.meta.totalPages, p + 1))
+            }
+            disabled={page === response.meta.totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
@@ -185,6 +227,44 @@ export default function InfluencerCampaignsPage() {
                     <CardDescription>{campaign.brandName}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {campaign.campaignAsset && (
+                      <div
+                        className="relative aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() =>
+                          setSelectedAsset({
+                            url: campaign.campaignAsset!,
+                            title: campaign.title || campaign.brandName,
+                          })
+                        }
+                      >
+                        {campaign.campaignAsset.match(/\.(mp4|webm|ogg)$/i) ? (
+                          <div className="relative w-full h-full flex items-center justify-center bg-black/80">
+                            <video
+                              src={campaign.campaignAsset}
+                              className="w-full h-full object-cover"
+                              muted
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="bg-white/90 rounded-full p-3">
+                                <svg
+                                  className="w-8 h-8 text-black"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8 5v14l11-7z" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <img
+                            src={campaign.campaignAsset}
+                            alt="Campaign asset"
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -255,6 +335,15 @@ export default function InfluencerCampaignsPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {selectedAsset && (
+        <CampaignAssetModal
+          assetUrl={selectedAsset.url}
+          campaignTitle={selectedAsset.title}
+          isOpen={!!selectedAsset}
+          onClose={() => setSelectedAsset(null)}
+        />
+      )}
     </div>
   );
 }

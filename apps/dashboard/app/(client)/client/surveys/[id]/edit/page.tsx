@@ -58,8 +58,8 @@ export default function ClientEditSurveyPage() {
       locationFilter: (survey.locationFilter as string[]) || undefined,
       paymentPerResponse: survey.paymentPerResponse || undefined,
       questions: (survey.questions || [])
-        .sort((a: any, b: any) => a.questionOrder - b.questionOrder)
-        .map((q: any) => ({
+        .sort((a, b) => a.questionOrder - b.questionOrder)
+        .map((q) => ({
           questionText: q.questionText,
           questionType: q.questionType,
           questionOrder: q.questionOrder,
@@ -95,12 +95,12 @@ export default function ClientEditSurveyPage() {
       paymentPerResponse: data.paymentPerResponse,
       questions: data.questions.map((q) => ({
         questionText: q.questionText,
-        questionType: q.questionType as any,
+        questionType: q.questionType,
         questionOrder: q.questionOrder,
         isRequired: q.isRequired,
         options: q.options,
         imageUrls: q.imageUrls,
-        ratingScaleType: q.ratingScaleType as any,
+        ratingScaleType: q.ratingScaleType,
       })),
     };
 

@@ -25,11 +25,34 @@ export default function CreateClientCampaignPage() {
         });
         router.push("/client/campaigns");
       },
+      onError: (error) => {
+        console.error("Error creating campaign:", error);
+      },
     },
   });
 
-  const onSubmit = (data: CampaignFormData) => {
-    createMutation.mutate({ data: data as CreateCampaignDto });
+  const onSubmit = (data: CampaignFormData, file?: File) => {
+    if (file) {
+      // Create FormData to send file with campaign data
+      const formData = new FormData();
+      formData.append("campaignAsset", file);
+
+      // Append all campaign fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (typeof value === "object") {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, value.toString());
+          }
+        }
+      });
+
+      createMutation.mutate({ data: formData as any });
+    } else {
+      // No file, send as regular JSON
+      createMutation.mutate({ data: data as CreateCampaignDto });
+    }
   };
 
   return (
