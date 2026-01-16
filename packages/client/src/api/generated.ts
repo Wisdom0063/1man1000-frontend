@@ -5,7 +5,10 @@
  * Micro-influencer marketing platform API
  * OpenAPI spec version: 1.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -18,17 +21,17 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
-import { axiosInstance } from "./axios-instance";
-export type RegisterDtoRole =
-  (typeof RegisterDtoRole)[keyof typeof RegisterDtoRole];
+import { axiosInstance } from './axios-instance';
+export type RegisterDtoRole = typeof RegisterDtoRole[keyof typeof RegisterDtoRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RegisterDtoRole = {
-  client: "client",
-  influencer: "influencer",
+  client: 'client',
+  influencer: 'influencer',
 } as const;
 
 export interface RegisterDto {
@@ -41,24 +44,24 @@ export interface RegisterDto {
   phone: string;
 }
 
-export type AuthUserDtoRole =
-  (typeof AuthUserDtoRole)[keyof typeof AuthUserDtoRole];
+export type AuthUserDtoRole = typeof AuthUserDtoRole[keyof typeof AuthUserDtoRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AuthUserDtoRole = {
-  client: "client",
-  influencer: "influencer",
-  admin: "admin",
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
 } as const;
 
-export type AuthUserDtoStatus =
-  (typeof AuthUserDtoStatus)[keyof typeof AuthUserDtoStatus];
+export type AuthUserDtoStatus = typeof AuthUserDtoStatus[keyof typeof AuthUserDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AuthUserDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export interface AuthUserDto {
@@ -82,57 +85,57 @@ export interface LoginDto {
   password: string;
 }
 
-export type ProfileResponseDtoRole =
-  (typeof ProfileResponseDtoRole)[keyof typeof ProfileResponseDtoRole];
+export type ProfileResponseDtoRole = typeof ProfileResponseDtoRole[keyof typeof ProfileResponseDtoRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ProfileResponseDtoRole = {
-  client: "client",
-  influencer: "influencer",
-  admin: "admin",
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
 } as const;
 
-export type ProfileResponseDtoStatus =
-  (typeof ProfileResponseDtoStatus)[keyof typeof ProfileResponseDtoStatus];
+export type ProfileResponseDtoStatus = typeof ProfileResponseDtoStatus[keyof typeof ProfileResponseDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ProfileResponseDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
-export type ProfileResponseDtoMobileMoneyNetwork =
-  (typeof ProfileResponseDtoMobileMoneyNetwork)[keyof typeof ProfileResponseDtoMobileMoneyNetwork];
+export type ProfileResponseDtoMobileMoneyNetwork = typeof ProfileResponseDtoMobileMoneyNetwork[keyof typeof ProfileResponseDtoMobileMoneyNetwork];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ProfileResponseDtoMobileMoneyNetwork = {
-  MTN: "MTN",
-  Vodafone: "Vodafone",
-  AirtelTigo: "AirtelTigo",
+  MTN: 'MTN',
+  Vodafone: 'Vodafone',
+  AirtelTigo: 'AirtelTigo',
 } as const;
 
-export type ProfileResponseDtoGender =
-  (typeof ProfileResponseDtoGender)[keyof typeof ProfileResponseDtoGender];
+export type ProfileResponseDtoGender = typeof ProfileResponseDtoGender[keyof typeof ProfileResponseDtoGender];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ProfileResponseDtoGender = {
-  Male: "Male",
-  Female: "Female",
-  Other: "Other",
-  PreferNotToSay: "PreferNotToSay",
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other',
+  PreferNotToSay: 'PreferNotToSay',
 } as const;
 
-export type ProfileResponseDtoAgeBracket =
-  (typeof ProfileResponseDtoAgeBracket)[keyof typeof ProfileResponseDtoAgeBracket];
+export type ProfileResponseDtoAgeBracket = typeof ProfileResponseDtoAgeBracket[keyof typeof ProfileResponseDtoAgeBracket];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ProfileResponseDtoAgeBracket = {
-  age_18_24: "age_18_24",
-  age_25_34: "age_25_34",
-  age_35_44: "age_35_44",
-  age_45_54: "age_45_54",
-  age_55_plus: "age_55_plus",
+  age_18_24: 'age_18_24',
+  age_25_34: 'age_25_34',
+  age_35_44: 'age_35_44',
+  age_45_54: 'age_45_54',
+  age_55_plus: 'age_55_plus',
 } as const;
 
 export interface ProfileResponseDto {
@@ -154,57 +157,77 @@ export interface ProfileResponseDto {
   createdAt: string;
 }
 
-export type UserResponseDtoRole =
-  (typeof UserResponseDtoRole)[keyof typeof UserResponseDtoRole];
+export interface SendVerificationCodeDto {
+  email: string;
+  phone: string;
+}
+
+export interface VerifyEmailDto {
+  email: string;
+  code: string;
+}
+
+export interface VerifyPhoneDto {
+  phone: string;
+  code: string;
+}
+
+export interface VerificationStatusDto {
+  emailVerified: boolean;
+  phoneVerified: boolean;
+}
+
+export type UserResponseDtoRole = typeof UserResponseDtoRole[keyof typeof UserResponseDtoRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserResponseDtoRole = {
-  client: "client",
-  influencer: "influencer",
-  admin: "admin",
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
 } as const;
 
-export type UserResponseDtoStatus =
-  (typeof UserResponseDtoStatus)[keyof typeof UserResponseDtoStatus];
+export type UserResponseDtoStatus = typeof UserResponseDtoStatus[keyof typeof UserResponseDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserResponseDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
-export type UserResponseDtoMobileMoneyNetwork =
-  (typeof UserResponseDtoMobileMoneyNetwork)[keyof typeof UserResponseDtoMobileMoneyNetwork];
+export type UserResponseDtoMobileMoneyNetwork = typeof UserResponseDtoMobileMoneyNetwork[keyof typeof UserResponseDtoMobileMoneyNetwork];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserResponseDtoMobileMoneyNetwork = {
-  MTN: "MTN",
-  Vodafone: "Vodafone",
-  AirtelTigo: "AirtelTigo",
+  MTN: 'MTN',
+  Vodafone: 'Vodafone',
+  AirtelTigo: 'AirtelTigo',
 } as const;
 
-export type UserResponseDtoGender =
-  (typeof UserResponseDtoGender)[keyof typeof UserResponseDtoGender];
+export type UserResponseDtoGender = typeof UserResponseDtoGender[keyof typeof UserResponseDtoGender];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserResponseDtoGender = {
-  Male: "Male",
-  Female: "Female",
-  Other: "Other",
-  PreferNotToSay: "PreferNotToSay",
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other',
+  PreferNotToSay: 'PreferNotToSay',
 } as const;
 
-export type UserResponseDtoAgeBracket =
-  (typeof UserResponseDtoAgeBracket)[keyof typeof UserResponseDtoAgeBracket];
+export type UserResponseDtoAgeBracket = typeof UserResponseDtoAgeBracket[keyof typeof UserResponseDtoAgeBracket];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserResponseDtoAgeBracket = {
-  age_18_24: "age_18_24",
-  age_25_34: "age_25_34",
-  age_35_44: "age_35_44",
-  age_45_54: "age_45_54",
-  age_55_plus: "age_55_plus",
+  age_18_24: 'age_18_24',
+  age_25_34: 'age_25_34',
+  age_35_44: 'age_35_44',
+  age_45_54: 'age_45_54',
+  age_55_plus: 'age_55_plus',
 } as const;
 
 export interface UserResponseDto {
@@ -234,37 +257,37 @@ export interface UsersListResponseDto {
   meta: UsersListResponseDtoMeta;
 }
 
-export type UpdateUserDtoMobileMoneyNetwork =
-  (typeof UpdateUserDtoMobileMoneyNetwork)[keyof typeof UpdateUserDtoMobileMoneyNetwork];
+export type UpdateUserDtoMobileMoneyNetwork = typeof UpdateUserDtoMobileMoneyNetwork[keyof typeof UpdateUserDtoMobileMoneyNetwork];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateUserDtoMobileMoneyNetwork = {
-  MTN: "MTN",
-  Vodafone: "Vodafone",
-  AirtelTigo: "AirtelTigo",
+  MTN: 'MTN',
+  Vodafone: 'Vodafone',
+  AirtelTigo: 'AirtelTigo',
 } as const;
 
-export type UpdateUserDtoGender =
-  (typeof UpdateUserDtoGender)[keyof typeof UpdateUserDtoGender];
+export type UpdateUserDtoGender = typeof UpdateUserDtoGender[keyof typeof UpdateUserDtoGender];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateUserDtoGender = {
-  Male: "Male",
-  Female: "Female",
-  Other: "Other",
-  PreferNotToSay: "PreferNotToSay",
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other',
+  PreferNotToSay: 'PreferNotToSay',
 } as const;
 
-export type UpdateUserDtoAgeBracket =
-  (typeof UpdateUserDtoAgeBracket)[keyof typeof UpdateUserDtoAgeBracket];
+export type UpdateUserDtoAgeBracket = typeof UpdateUserDtoAgeBracket[keyof typeof UpdateUserDtoAgeBracket];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateUserDtoAgeBracket = {
-  age_18_24: "age_18_24",
-  age_25_34: "age_25_34",
-  age_35_44: "age_35_44",
-  age_45_54: "age_45_54",
-  age_55_plus: "age_55_plus",
+  age_18_24: 'age_18_24',
+  age_25_34: 'age_25_34',
+  age_35_44: 'age_35_44',
+  age_45_54: 'age_45_54',
+  age_55_plus: 'age_55_plus',
 } as const;
 
 export interface UpdateUserDto {
@@ -280,14 +303,14 @@ export interface UpdateUserDto {
   ageBracket?: UpdateUserDtoAgeBracket;
 }
 
-export type UpdateUserStatusDtoStatus =
-  (typeof UpdateUserStatusDtoStatus)[keyof typeof UpdateUserStatusDtoStatus];
+export type UpdateUserStatusDtoStatus = typeof UpdateUserStatusDtoStatus[keyof typeof UpdateUserStatusDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateUserStatusDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export interface UpdateUserStatusDto {
@@ -299,13 +322,13 @@ export interface TargetViewRangeDto {
   max: number;
 }
 
-export type CreateCampaignDtoPaymentType =
-  (typeof CreateCampaignDtoPaymentType)[keyof typeof CreateCampaignDtoPaymentType];
+export type CreateCampaignDtoPaymentType = typeof CreateCampaignDtoPaymentType[keyof typeof CreateCampaignDtoPaymentType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateCampaignDtoPaymentType = {
-  per_view: "per_view",
-  per_views: "per_views",
+  per_view: 'per_view',
+  per_views: 'per_views',
 } as const;
 
 export interface CreateCampaignDto {
@@ -344,25 +367,25 @@ export interface InfluencerAssignmentDto {
   influencer?: InfluencerAssignmentDtoInfluencer;
 }
 
-export type CampaignResponseDtoStatus =
-  (typeof CampaignResponseDtoStatus)[keyof typeof CampaignResponseDtoStatus];
+export type CampaignResponseDtoStatus = typeof CampaignResponseDtoStatus[keyof typeof CampaignResponseDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignResponseDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  active: "active",
-  completed: "completed",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
 } as const;
 
-export type CampaignResponseDtoPaymentType =
-  (typeof CampaignResponseDtoPaymentType)[keyof typeof CampaignResponseDtoPaymentType];
+export type CampaignResponseDtoPaymentType = typeof CampaignResponseDtoPaymentType[keyof typeof CampaignResponseDtoPaymentType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignResponseDtoPaymentType = {
-  per_view: "per_view",
-  per_views: "per_views",
+  per_view: 'per_view',
+  per_views: 'per_views',
 } as const;
 
 export interface CampaignResponseDto {
@@ -415,14 +438,14 @@ export interface CampaignDetailInfluencerDto {
   email: string;
 }
 
-export type CampaignDetailAssignmentDtoStatus =
-  (typeof CampaignDetailAssignmentDtoStatus)[keyof typeof CampaignDetailAssignmentDtoStatus];
+export type CampaignDetailAssignmentDtoStatus = typeof CampaignDetailAssignmentDtoStatus[keyof typeof CampaignDetailAssignmentDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignDetailAssignmentDtoStatus = {
-  pending: "pending",
-  accepted: "accepted",
-  rejected: "rejected",
+  pending: 'pending',
+  accepted: 'accepted',
+  rejected: 'rejected',
 } as const;
 
 export interface CampaignDetailAssignmentDto {
@@ -434,14 +457,14 @@ export interface CampaignDetailAssignmentDto {
   influencer?: CampaignDetailInfluencerDto;
 }
 
-export type CampaignDetailSubmissionDtoApprovalStatus =
-  (typeof CampaignDetailSubmissionDtoApprovalStatus)[keyof typeof CampaignDetailSubmissionDtoApprovalStatus];
+export type CampaignDetailSubmissionDtoApprovalStatus = typeof CampaignDetailSubmissionDtoApprovalStatus[keyof typeof CampaignDetailSubmissionDtoApprovalStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignDetailSubmissionDtoApprovalStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export interface CampaignDetailSubmissionDto {
@@ -461,25 +484,25 @@ export interface CampaignDetailCountDto {
   submissions: number;
 }
 
-export type CampaignDetailResponseDtoStatus =
-  (typeof CampaignDetailResponseDtoStatus)[keyof typeof CampaignDetailResponseDtoStatus];
+export type CampaignDetailResponseDtoStatus = typeof CampaignDetailResponseDtoStatus[keyof typeof CampaignDetailResponseDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignDetailResponseDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  active: "active",
-  completed: "completed",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
 } as const;
 
-export type CampaignDetailResponseDtoPaymentType =
-  (typeof CampaignDetailResponseDtoPaymentType)[keyof typeof CampaignDetailResponseDtoPaymentType];
+export type CampaignDetailResponseDtoPaymentType = typeof CampaignDetailResponseDtoPaymentType[keyof typeof CampaignDetailResponseDtoPaymentType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignDetailResponseDtoPaymentType = {
-  per_view: "per_view",
-  per_views: "per_views",
+  per_view: 'per_view',
+  per_views: 'per_views',
 } as const;
 
 export interface CampaignDetailResponseDto {
@@ -508,25 +531,25 @@ export interface CampaignDetailResponseDto {
   updatedAt: string;
 }
 
-export type UpdateCampaignDtoStatus =
-  (typeof UpdateCampaignDtoStatus)[keyof typeof UpdateCampaignDtoStatus];
+export type UpdateCampaignDtoStatus = typeof UpdateCampaignDtoStatus[keyof typeof UpdateCampaignDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateCampaignDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  active: "active",
-  completed: "completed",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
 } as const;
 
-export type UpdateCampaignDtoPaymentType =
-  (typeof UpdateCampaignDtoPaymentType)[keyof typeof UpdateCampaignDtoPaymentType];
+export type UpdateCampaignDtoPaymentType = typeof UpdateCampaignDtoPaymentType[keyof typeof UpdateCampaignDtoPaymentType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateCampaignDtoPaymentType = {
-  per_view: "per_view",
-  per_views: "per_views",
+  per_view: 'per_view',
+  per_views: 'per_views',
 } as const;
 
 export interface UpdateCampaignDto {
@@ -573,14 +596,14 @@ export interface SubmissionReviewerDto {
   name: string;
 }
 
-export type SubmissionResponseDtoApprovalStatus =
-  (typeof SubmissionResponseDtoApprovalStatus)[keyof typeof SubmissionResponseDtoApprovalStatus];
+export type SubmissionResponseDtoApprovalStatus = typeof SubmissionResponseDtoApprovalStatus[keyof typeof SubmissionResponseDtoApprovalStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SubmissionResponseDtoApprovalStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export interface SubmissionResponseDto {
@@ -612,14 +635,14 @@ export interface SubmissionsListResponseDto {
   meta: SubmissionsListResponseDtoMeta;
 }
 
-export type ReviewSubmissionDtoApprovalStatus =
-  (typeof ReviewSubmissionDtoApprovalStatus)[keyof typeof ReviewSubmissionDtoApprovalStatus];
+export type ReviewSubmissionDtoApprovalStatus = typeof ReviewSubmissionDtoApprovalStatus[keyof typeof ReviewSubmissionDtoApprovalStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ReviewSubmissionDtoApprovalStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export interface ReviewSubmissionDto {
@@ -635,43 +658,43 @@ export interface CreatePaymentDto {
   totalAmount: number;
 }
 
-export type UpdatePaymentStatusDtoStatus =
-  (typeof UpdatePaymentStatusDtoStatus)[keyof typeof UpdatePaymentStatusDtoStatus];
+export type UpdatePaymentStatusDtoStatus = typeof UpdatePaymentStatusDtoStatus[keyof typeof UpdatePaymentStatusDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdatePaymentStatusDtoStatus = {
-  pending: "pending",
-  paid: "paid",
+  pending: 'pending',
+  paid: 'paid',
 } as const;
 
 export interface UpdatePaymentStatusDto {
   status: UpdatePaymentStatusDtoStatus;
 }
 
-export type CreateQuestionDtoQuestionType =
-  (typeof CreateQuestionDtoQuestionType)[keyof typeof CreateQuestionDtoQuestionType];
+export type CreateQuestionDtoQuestionType = typeof CreateQuestionDtoQuestionType[keyof typeof CreateQuestionDtoQuestionType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateQuestionDtoQuestionType = {
-  multiple_choice_single: "multiple_choice_single",
-  multiple_choice_multiple: "multiple_choice_multiple",
-  yes_no: "yes_no",
-  rating_stars: "rating_stars",
-  rating_scale: "rating_scale",
-  likert: "likert",
-  short_text: "short_text",
-  long_text: "long_text",
-  image_selection: "image_selection",
+  multiple_choice_single: 'multiple_choice_single',
+  multiple_choice_multiple: 'multiple_choice_multiple',
+  yes_no: 'yes_no',
+  rating_stars: 'rating_stars',
+  rating_scale: 'rating_scale',
+  likert: 'likert',
+  short_text: 'short_text',
+  long_text: 'long_text',
+  image_selection: 'image_selection',
 } as const;
 
-export type CreateQuestionDtoRatingScaleType =
-  (typeof CreateQuestionDtoRatingScaleType)[keyof typeof CreateQuestionDtoRatingScaleType];
+export type CreateQuestionDtoRatingScaleType = typeof CreateQuestionDtoRatingScaleType[keyof typeof CreateQuestionDtoRatingScaleType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateQuestionDtoRatingScaleType = {
-  stars_1_5: "stars_1_5",
-  scale_1_10: "scale_1_10",
-  likert: "likert",
+  stars_1_5: 'stars_1_5',
+  scale_1_10: 'scale_1_10',
+  likert: 'likert',
 } as const;
 
 export interface CreateQuestionDto {
@@ -702,30 +725,30 @@ export interface SurveyClientDto {
   email: string;
 }
 
-export type SurveyQuestionDtoQuestionType =
-  (typeof SurveyQuestionDtoQuestionType)[keyof typeof SurveyQuestionDtoQuestionType];
+export type SurveyQuestionDtoQuestionType = typeof SurveyQuestionDtoQuestionType[keyof typeof SurveyQuestionDtoQuestionType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SurveyQuestionDtoQuestionType = {
-  multiple_choice_single: "multiple_choice_single",
-  multiple_choice_multiple: "multiple_choice_multiple",
-  yes_no: "yes_no",
-  rating_stars: "rating_stars",
-  rating_scale: "rating_scale",
-  likert: "likert",
-  short_text: "short_text",
-  long_text: "long_text",
-  image_selection: "image_selection",
+  multiple_choice_single: 'multiple_choice_single',
+  multiple_choice_multiple: 'multiple_choice_multiple',
+  yes_no: 'yes_no',
+  rating_stars: 'rating_stars',
+  rating_scale: 'rating_scale',
+  likert: 'likert',
+  short_text: 'short_text',
+  long_text: 'long_text',
+  image_selection: 'image_selection',
 } as const;
 
-export type SurveyQuestionDtoRatingScaleType =
-  (typeof SurveyQuestionDtoRatingScaleType)[keyof typeof SurveyQuestionDtoRatingScaleType];
+export type SurveyQuestionDtoRatingScaleType = typeof SurveyQuestionDtoRatingScaleType[keyof typeof SurveyQuestionDtoRatingScaleType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SurveyQuestionDtoRatingScaleType = {
-  stars_1_5: "stars_1_5",
-  scale_1_10: "scale_1_10",
-  likert: "likert",
+  stars_1_5: 'stars_1_5',
+  scale_1_10: 'scale_1_10',
+  likert: 'likert',
 } as const;
 
 export interface SurveyQuestionDto {
@@ -745,16 +768,16 @@ export interface SurveyCountsDto {
   assignments?: number;
 }
 
-export type SurveyResponseDtoStatus =
-  (typeof SurveyResponseDtoStatus)[keyof typeof SurveyResponseDtoStatus];
+export type SurveyResponseDtoStatus = typeof SurveyResponseDtoStatus[keyof typeof SurveyResponseDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SurveyResponseDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  active: "active",
-  completed: "completed",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
 } as const;
 
 export interface SurveyResponseDto {
@@ -798,16 +821,16 @@ export interface UpdateSurveyDto {
   questions?: CreateQuestionDto[];
 }
 
-export type UpdateSurveyStatusDtoStatus =
-  (typeof UpdateSurveyStatusDtoStatus)[keyof typeof UpdateSurveyStatusDtoStatus];
+export type UpdateSurveyStatusDtoStatus = typeof UpdateSurveyStatusDtoStatus[keyof typeof UpdateSurveyStatusDtoStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateSurveyStatusDtoStatus = {
-  pending: "pending",
-  approved: "approved",
-  active: "active",
-  completed: "completed",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
 } as const;
 
 export interface UpdateSurveyStatusDto {
@@ -825,123 +848,138 @@ export interface CreateNotificationDto {
   metadata?: CreateNotificationDtoMetadata;
 }
 
-export type UsersControllerFindAllParams = {
-  role?: UsersControllerFindAllRole;
-  status?: UsersControllerFindAllStatus;
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
+export type AuthControllerGetVerificationStatusParams = {
+email: string;
 };
 
-export type UsersControllerFindAllRole =
-  (typeof UsersControllerFindAllRole)[keyof typeof UsersControllerFindAllRole];
+export type AuthControllerResendVerificationCodeParams = {
+email: string;
+type: AuthControllerResendVerificationCodeType;
+};
+
+export type AuthControllerResendVerificationCodeType = typeof AuthControllerResendVerificationCodeType[keyof typeof AuthControllerResendVerificationCodeType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AuthControllerResendVerificationCodeType = {
+  email: 'email',
+  phone: 'phone',
+} as const;
+
+export type UsersControllerFindAllParams = {
+role?: UsersControllerFindAllRole;
+status?: UsersControllerFindAllStatus;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
+
+export type UsersControllerFindAllRole = typeof UsersControllerFindAllRole[keyof typeof UsersControllerFindAllRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersControllerFindAllRole = {
-  client: "client",
-  influencer: "influencer",
-  admin: "admin",
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
 } as const;
 
-export type UsersControllerFindAllStatus =
-  (typeof UsersControllerFindAllStatus)[keyof typeof UsersControllerFindAllStatus];
+export type UsersControllerFindAllStatus = typeof UsersControllerFindAllStatus[keyof typeof UsersControllerFindAllStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersControllerFindAllStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export type UsersControllerGetInfluencersParams = {
-  status?: UsersControllerGetInfluencersStatus;
+status?: UsersControllerGetInfluencersStatus;
 };
 
-export type UsersControllerGetInfluencersStatus =
-  (typeof UsersControllerGetInfluencersStatus)[keyof typeof UsersControllerGetInfluencersStatus];
+export type UsersControllerGetInfluencersStatus = typeof UsersControllerGetInfluencersStatus[keyof typeof UsersControllerGetInfluencersStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersControllerGetInfluencersStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export type CampaignsControllerFindAllParams = {
-  status?: CampaignsControllerFindAllStatus;
-  clientId?: string;
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
+status?: CampaignsControllerFindAllStatus;
+clientId?: string;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
-export type CampaignsControllerFindAllStatus =
-  (typeof CampaignsControllerFindAllStatus)[keyof typeof CampaignsControllerFindAllStatus];
+export type CampaignsControllerFindAllStatus = typeof CampaignsControllerFindAllStatus[keyof typeof CampaignsControllerFindAllStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignsControllerFindAllStatus = {
-  pending: "pending",
-  approved: "approved",
-  active: "active",
-  completed: "completed",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
 } as const;
 
 export type CampaignsControllerGetAvailableCampaignsParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
 export type CampaignsControllerGetInfluencerCampaignsParams = {
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
-export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus =
-  (typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus)[keyof typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus];
+export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus = typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus[keyof typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus =
-  {
-    pending: "pending",
-    accepted: "accepted",
-    rejected: "rejected",
-  } as const;
+export const CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  rejected: 'rejected',
+} as const;
 
 export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOf = {
   assignedDate?: string;
   assignmentStatus?: CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus;
 };
 
-export type CampaignsControllerGetInfluencerCampaigns200DataItem =
-  CampaignResponseDto &
-    CampaignsControllerGetInfluencerCampaigns200DataItemAllOf;
+export type CampaignsControllerGetInfluencerCampaigns200DataItem = CampaignResponseDto & CampaignsControllerGetInfluencerCampaigns200DataItemAllOf;
 
 export type CampaignsControllerGetInfluencerCampaigns200Meta = {
   page?: number;
@@ -957,14 +995,14 @@ export type CampaignsControllerGetInfluencerCampaigns200 = {
   meta?: CampaignsControllerGetInfluencerCampaigns200Meta;
 };
 
-export type CampaignsControllerRequestParticipation201Status =
-  (typeof CampaignsControllerRequestParticipation201Status)[keyof typeof CampaignsControllerRequestParticipation201Status];
+export type CampaignsControllerRequestParticipation201Status = typeof CampaignsControllerRequestParticipation201Status[keyof typeof CampaignsControllerRequestParticipation201Status];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CampaignsControllerRequestParticipation201Status = {
-  pending: "pending",
-  accepted: "accepted",
-  rejected: "rejected",
+  pending: 'pending',
+  accepted: 'accepted',
+  rejected: 'rejected',
 } as const;
 
 export type CampaignsControllerRequestParticipation201Campaign = {
@@ -990,6356 +1028,4508 @@ export type CampaignsControllerRequestParticipation201 = {
 };
 
 export type SubmissionsControllerFindAllParams = {
-  campaignId?: string;
-  influencerId?: string;
-  approvalStatus?: SubmissionsControllerFindAllApprovalStatus;
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
+campaignId?: string;
+influencerId?: string;
+approvalStatus?: SubmissionsControllerFindAllApprovalStatus;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
-export type SubmissionsControllerFindAllApprovalStatus =
-  (typeof SubmissionsControllerFindAllApprovalStatus)[keyof typeof SubmissionsControllerFindAllApprovalStatus];
+export type SubmissionsControllerFindAllApprovalStatus = typeof SubmissionsControllerFindAllApprovalStatus[keyof typeof SubmissionsControllerFindAllApprovalStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SubmissionsControllerFindAllApprovalStatus = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
 } as const;
 
 export type PaymentsControllerFindAllParams = {
-  influencerId?: string;
-  campaignId?: string;
-  status?: PaymentsControllerFindAllStatus;
+influencerId?: string;
+campaignId?: string;
+status?: PaymentsControllerFindAllStatus;
 };
 
-export type PaymentsControllerFindAllStatus =
-  (typeof PaymentsControllerFindAllStatus)[keyof typeof PaymentsControllerFindAllStatus];
+export type PaymentsControllerFindAllStatus = typeof PaymentsControllerFindAllStatus[keyof typeof PaymentsControllerFindAllStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PaymentsControllerFindAllStatus = {
-  pending: "pending",
-  paid: "paid",
+  pending: 'pending',
+  paid: 'paid',
 } as const;
 
 export type SurveysControllerFindAllParams = {
-  status?: string;
-  clientId?: string;
-  /**
-   * @minimum 1
-   */
-  page?: number;
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
+status?: string;
+clientId?: string;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 
 /**
  * @summary Register a new user
  */
 export const authControllerRegister = (
-  registerDto: RegisterDto,
-  signal?: AbortSignal
+    registerDto: RegisterDto,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<LoginResponseDto>({
-    url: `/api/auth/register`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: registerDto,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<LoginResponseDto>(
+      {url: `/api/auth/register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerDto, signal
+    },
+      );
+    }
+  
 
-export const getAuthControllerRegisterMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authControllerRegister>>,
-    TError,
-    { data: RegisterDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof authControllerRegister>>,
-  TError,
-  { data: RegisterDto },
-  TContext
-> => {
-  const mutationKey = ["authControllerRegister"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authControllerRegister>>,
-    { data: RegisterDto }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getAuthControllerRegisterMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext> => {
 
-    return authControllerRegister(data);
-  };
+const mutationKey = ['authControllerRegister'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type AuthControllerRegisterMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authControllerRegister>>
->;
-export type AuthControllerRegisterMutationBody = RegisterDto;
-export type AuthControllerRegisterMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerRegister>>, {data: RegisterDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerRegister(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRegister>>>
+    export type AuthControllerRegisterMutationBody = RegisterDto
+    export type AuthControllerRegisterMutationError = void
+
+    /**
  * @summary Register a new user
  */
-export const useAuthControllerRegister = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authControllerRegister>>,
-      TError,
-      { data: RegisterDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof authControllerRegister>>,
-  TError,
-  { data: RegisterDto },
-  TContext
-> => {
-  const mutationOptions = getAuthControllerRegisterMutationOptions(options);
+export const useAuthControllerRegister = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerRegister>>,
+        TError,
+        {data: RegisterDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getAuthControllerRegisterMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Login user
  */
 export const authControllerLogin = (
-  loginDto: LoginDto,
-  signal?: AbortSignal
+    loginDto: LoginDto,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<LoginResponseDto>({
-    url: `/api/auth/login`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: loginDto,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<LoginResponseDto>(
+      {url: `/api/auth/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: loginDto, signal
+    },
+      );
+    }
+  
 
-export const getAuthControllerLoginMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof authControllerLogin>>,
-    TError,
-    { data: LoginDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof authControllerLogin>>,
-  TError,
-  { data: LoginDto },
-  TContext
-> => {
-  const mutationKey = ["authControllerLogin"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof authControllerLogin>>,
-    { data: LoginDto }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getAuthControllerLoginMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext> => {
 
-    return authControllerLogin(data);
-  };
+const mutationKey = ['authControllerLogin'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type AuthControllerLoginMutationResult = NonNullable<
-  Awaited<ReturnType<typeof authControllerLogin>>
->;
-export type AuthControllerLoginMutationBody = LoginDto;
-export type AuthControllerLoginMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogin>>, {data: LoginDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerLogin(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogin>>>
+    export type AuthControllerLoginMutationBody = LoginDto
+    export type AuthControllerLoginMutationError = void
+
+    /**
  * @summary Login user
  */
-export const useAuthControllerLogin = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof authControllerLogin>>,
-      TError,
-      { data: LoginDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof authControllerLogin>>,
-  TError,
-  { data: LoginDto },
-  TContext
-> => {
-  const mutationOptions = getAuthControllerLoginMutationOptions(options);
+export const useAuthControllerLogin = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerLogin>>,
+        TError,
+        {data: LoginDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getAuthControllerLoginMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get current user profile
  */
-export const authControllerGetProfile = (signal?: AbortSignal) => {
-  return axiosInstance<ProfileResponseDto>({
-    url: `/api/auth/me`,
-    method: "GET",
-    signal,
-  });
-};
+export const authControllerGetProfile = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<ProfileResponseDto>(
+      {url: `/api/auth/me`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getAuthControllerGetProfileQueryKey = () => {
-  return [`/api/auth/me`] as const;
-};
+    return [
+    `/api/auth/me`
+    ] as const;
+    }
 
-export const getAuthControllerGetProfileQueryOptions = <
-  TData = Awaited<ReturnType<typeof authControllerGetProfile>>,
-  TError = void,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof authControllerGetProfile>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getAuthControllerGetProfileQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ?? getAuthControllerGetProfileQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authControllerGetProfile>>
-  > = ({ signal }) => authControllerGetProfile(signal);
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetProfileQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof authControllerGetProfile>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type AuthControllerGetProfileQueryResult = NonNullable<
-  Awaited<ReturnType<typeof authControllerGetProfile>>
->;
-export type AuthControllerGetProfileQueryError = void;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetProfile>>> = ({ signal }) => authControllerGetProfile(signal);
 
-export function useAuthControllerGetProfile<
-  TData = Awaited<ReturnType<typeof authControllerGetProfile>>,
-  TError = void,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerGetProfile>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerGetProfileQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetProfile>>>
+export type AuthControllerGetProfileQueryError = void
+
+
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = void>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof authControllerGetProfile>>,
           TError,
           Awaited<ReturnType<typeof authControllerGetProfile>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthControllerGetProfile<
-  TData = Awaited<ReturnType<typeof authControllerGetProfile>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerGetProfile>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof authControllerGetProfile>>,
           TError,
           Awaited<ReturnType<typeof authControllerGetProfile>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthControllerGetProfile<
-  TData = Awaited<ReturnType<typeof authControllerGetProfile>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerGetProfile>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current user profile
  */
 
-export function useAuthControllerGetProfile<
-  TData = Awaited<ReturnType<typeof authControllerGetProfile>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authControllerGetProfile>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthControllerGetProfileQueryOptions(options);
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getAuthControllerGetProfileQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
+/**
+ * @summary Send verification codes to email and phone
+ */
+export const authControllerSendVerificationCode = (
+    sendVerificationCodeDto: SendVerificationCodeDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/auth/send-verification-code`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sendVerificationCodeDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAuthControllerSendVerificationCodeMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSendVerificationCode>>, TError,{data: SendVerificationCodeDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerSendVerificationCode>>, TError,{data: SendVerificationCodeDto}, TContext> => {
+
+const mutationKey = ['authControllerSendVerificationCode'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerSendVerificationCode>>, {data: SendVerificationCodeDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerSendVerificationCode(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerSendVerificationCodeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerSendVerificationCode>>>
+    export type AuthControllerSendVerificationCodeMutationBody = SendVerificationCodeDto
+    export type AuthControllerSendVerificationCodeMutationError = void
+
+    /**
+ * @summary Send verification codes to email and phone
+ */
+export const useAuthControllerSendVerificationCode = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerSendVerificationCode>>, TError,{data: SendVerificationCodeDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerSendVerificationCode>>,
+        TError,
+        {data: SendVerificationCodeDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthControllerSendVerificationCodeMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Verify email with code
+ */
+export const authControllerVerifyEmail = (
+    verifyEmailDto: VerifyEmailDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/auth/verify-email`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyEmailDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAuthControllerVerifyEmailMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyEmail>>, TError,{data: VerifyEmailDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyEmail>>, TError,{data: VerifyEmailDto}, TContext> => {
+
+const mutationKey = ['authControllerVerifyEmail'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerifyEmail>>, {data: VerifyEmailDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerVerifyEmail(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerVerifyEmailMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyEmail>>>
+    export type AuthControllerVerifyEmailMutationBody = VerifyEmailDto
+    export type AuthControllerVerifyEmailMutationError = void
+
+    /**
+ * @summary Verify email with code
+ */
+export const useAuthControllerVerifyEmail = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyEmail>>, TError,{data: VerifyEmailDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerVerifyEmail>>,
+        TError,
+        {data: VerifyEmailDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthControllerVerifyEmailMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Verify phone with code
+ */
+export const authControllerVerifyPhone = (
+    verifyPhoneDto: VerifyPhoneDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/auth/verify-phone`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyPhoneDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAuthControllerVerifyPhoneMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyPhone>>, TError,{data: VerifyPhoneDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyPhone>>, TError,{data: VerifyPhoneDto}, TContext> => {
+
+const mutationKey = ['authControllerVerifyPhone'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerifyPhone>>, {data: VerifyPhoneDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerVerifyPhone(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerVerifyPhoneMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyPhone>>>
+    export type AuthControllerVerifyPhoneMutationBody = VerifyPhoneDto
+    export type AuthControllerVerifyPhoneMutationError = void
+
+    /**
+ * @summary Verify phone with code
+ */
+export const useAuthControllerVerifyPhone = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyPhone>>, TError,{data: VerifyPhoneDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerVerifyPhone>>,
+        TError,
+        {data: VerifyPhoneDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthControllerVerifyPhoneMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Get verification status for email
+ */
+export const authControllerGetVerificationStatus = (
+    params: AuthControllerGetVerificationStatusParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<VerificationStatusDto>(
+      {url: `/api/auth/verification-status`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAuthControllerGetVerificationStatusQueryKey = (params?: AuthControllerGetVerificationStatusParams,) => {
+    return [
+    `/api/auth/verification-status`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAuthControllerGetVerificationStatusQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError = unknown>(params: AuthControllerGetVerificationStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetVerificationStatusQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>> = ({ signal }) => authControllerGetVerificationStatus(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerGetVerificationStatusQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>>
+export type AuthControllerGetVerificationStatusQueryError = unknown
+
+
+export function useAuthControllerGetVerificationStatus<TData = Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError = unknown>(
+ params: AuthControllerGetVerificationStatusParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerGetVerificationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerGetVerificationStatus>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerGetVerificationStatus<TData = Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError = unknown>(
+ params: AuthControllerGetVerificationStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerGetVerificationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerGetVerificationStatus>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerGetVerificationStatus<TData = Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError = unknown>(
+ params: AuthControllerGetVerificationStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get verification status for email
+ */
+
+export function useAuthControllerGetVerificationStatus<TData = Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError = unknown>(
+ params: AuthControllerGetVerificationStatusParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetVerificationStatus>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerGetVerificationStatusQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary Resend verification code
+ */
+export const authControllerResendVerificationCode = (
+    params: AuthControllerResendVerificationCodeParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/auth/resend-verification-code`, method: 'POST',
+        params, signal
+    },
+      );
+    }
+  
+
+
+export const getAuthControllerResendVerificationCodeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResendVerificationCode>>, TError,{params: AuthControllerResendVerificationCodeParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerResendVerificationCode>>, TError,{params: AuthControllerResendVerificationCodeParams}, TContext> => {
+
+const mutationKey = ['authControllerResendVerificationCode'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerResendVerificationCode>>, {params: AuthControllerResendVerificationCodeParams}> = (props) => {
+          const {params} = props ?? {};
+
+          return  authControllerResendVerificationCode(params,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerResendVerificationCodeMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerResendVerificationCode>>>
+    
+    export type AuthControllerResendVerificationCodeMutationError = unknown
+
+    /**
+ * @summary Resend verification code
+ */
+export const useAuthControllerResendVerificationCode = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResendVerificationCode>>, TError,{params: AuthControllerResendVerificationCodeParams}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerResendVerificationCode>>,
+        TError,
+        {params: AuthControllerResendVerificationCodeParams},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthControllerResendVerificationCodeMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get all users (Admin only, paginated)
  */
 export const usersControllerFindAll = (
-  params?: UsersControllerFindAllParams,
-  signal?: AbortSignal
+    params?: UsersControllerFindAllParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<UsersListResponseDto>({
-    url: `/api/users`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<UsersListResponseDto>(
+      {url: `/api/users`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getUsersControllerFindAllQueryKey = (
-  params?: UsersControllerFindAllParams
+
+
+export const getUsersControllerFindAllQueryKey = (params?: UsersControllerFindAllParams,) => {
+    return [
+    `/api/users`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getUsersControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
 ) => {
-  return [`/api/users`, ...(params ? [params] : [])] as const;
-};
 
-export const getUsersControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof usersControllerFindAll>>,
-  TError = unknown,
->(
-  params?: UsersControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getUsersControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof usersControllerFindAll>>
-  > = ({ signal }) => usersControllerFindAll(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof usersControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerFindAll>>> = ({ signal }) => usersControllerFindAll(params, signal);
 
-export type UsersControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerFindAll>>
->;
-export type UsersControllerFindAllQueryError = unknown;
+      
 
-export function useUsersControllerFindAll<
-  TData = Awaited<ReturnType<typeof usersControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | UsersControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerFindAll>>>
+export type UsersControllerFindAllQueryError = unknown
+
+
+export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
+ params: undefined |  UsersControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof usersControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerFindAll<
-  TData = Awaited<ReturnType<typeof usersControllerFindAll>>,
-  TError = unknown,
->(
-  params?: UsersControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
+ params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof usersControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerFindAll<
-  TData = Awaited<ReturnType<typeof usersControllerFindAll>>,
-  TError = unknown,
->(
-  params?: UsersControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
+ params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all users (Admin only, paginated)
  */
 
-export function useUsersControllerFindAll<
-  TData = Awaited<ReturnType<typeof usersControllerFindAll>>,
-  TError = unknown,
->(
-  params?: UsersControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getUsersControllerFindAllQueryOptions(params, options);
+export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
+ params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getUsersControllerFindAllQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get all influencers (Admin only)
  */
 export const usersControllerGetInfluencers = (
-  params?: UsersControllerGetInfluencersParams,
-  signal?: AbortSignal
+    params?: UsersControllerGetInfluencersParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/users/influencers`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/users/influencers`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getUsersControllerGetInfluencersQueryKey = (
-  params?: UsersControllerGetInfluencersParams
+
+
+export const getUsersControllerGetInfluencersQueryKey = (params?: UsersControllerGetInfluencersParams,) => {
+    return [
+    `/api/users/influencers`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getUsersControllerGetInfluencersQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError = unknown>(params?: UsersControllerGetInfluencersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError, TData>>, }
 ) => {
-  return [`/api/users/influencers`, ...(params ? [params] : [])] as const;
-};
 
-export const getUsersControllerGetInfluencersQueryOptions = <
-  TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-  TError = unknown,
->(
-  params?: UsersControllerGetInfluencersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getUsersControllerGetInfluencersQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerGetInfluencersQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof usersControllerGetInfluencers>>
-  > = ({ signal }) => usersControllerGetInfluencers(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerGetInfluencers>>> = ({ signal }) => usersControllerGetInfluencers(params, signal);
 
-export type UsersControllerGetInfluencersQueryResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerGetInfluencers>>
->;
-export type UsersControllerGetInfluencersQueryError = unknown;
+      
 
-export function useUsersControllerGetInfluencers<
-  TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-  TError = unknown,
->(
-  params: undefined | UsersControllerGetInfluencersParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerGetInfluencersQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerGetInfluencers>>>
+export type UsersControllerGetInfluencersQueryError = unknown
+
+
+export function useUsersControllerGetInfluencers<TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError = unknown>(
+ params: undefined |  UsersControllerGetInfluencersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
           TError,
           Awaited<ReturnType<typeof usersControllerGetInfluencers>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerGetInfluencers<
-  TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-  TError = unknown,
->(
-  params?: UsersControllerGetInfluencersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetInfluencers<TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError = unknown>(
+ params?: UsersControllerGetInfluencersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
           TError,
           Awaited<ReturnType<typeof usersControllerGetInfluencers>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerGetInfluencers<
-  TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-  TError = unknown,
->(
-  params?: UsersControllerGetInfluencersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetInfluencers<TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError = unknown>(
+ params?: UsersControllerGetInfluencersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all influencers (Admin only)
  */
 
-export function useUsersControllerGetInfluencers<
-  TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-  TError = unknown,
->(
-  params?: UsersControllerGetInfluencersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetInfluencers>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getUsersControllerGetInfluencersQueryOptions(
-    params,
-    options
-  );
+export function useUsersControllerGetInfluencers<TData = Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError = unknown>(
+ params?: UsersControllerGetInfluencersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetInfluencers>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getUsersControllerGetInfluencersQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get all clients (Admin only)
  */
-export const usersControllerGetClients = (signal?: AbortSignal) => {
-  return axiosInstance<void>({
-    url: `/api/users/clients`,
-    method: "GET",
-    signal,
-  });
-};
+export const usersControllerGetClients = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/users/clients`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getUsersControllerGetClientsQueryKey = () => {
-  return [`/api/users/clients`] as const;
-};
+    return [
+    `/api/users/clients`
+    ] as const;
+    }
 
-export const getUsersControllerGetClientsQueryOptions = <
-  TData = Awaited<ReturnType<typeof usersControllerGetClients>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof usersControllerGetClients>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getUsersControllerGetClientsQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerGetClients>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetClients>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ?? getUsersControllerGetClientsQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof usersControllerGetClients>>
-  > = ({ signal }) => usersControllerGetClients(signal);
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerGetClientsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof usersControllerGetClients>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type UsersControllerGetClientsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerGetClients>>
->;
-export type UsersControllerGetClientsQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerGetClients>>> = ({ signal }) => usersControllerGetClients(signal);
 
-export function useUsersControllerGetClients<
-  TData = Awaited<ReturnType<typeof usersControllerGetClients>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetClients>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetClients>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerGetClientsQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerGetClients>>>
+export type UsersControllerGetClientsQueryError = unknown
+
+
+export function useUsersControllerGetClients<TData = Awaited<ReturnType<typeof usersControllerGetClients>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetClients>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerGetClients>>,
           TError,
           Awaited<ReturnType<typeof usersControllerGetClients>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerGetClients<
-  TData = Awaited<ReturnType<typeof usersControllerGetClients>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetClients>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetClients<TData = Awaited<ReturnType<typeof usersControllerGetClients>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetClients>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerGetClients>>,
           TError,
           Awaited<ReturnType<typeof usersControllerGetClients>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerGetClients<
-  TData = Awaited<ReturnType<typeof usersControllerGetClients>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetClients>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetClients<TData = Awaited<ReturnType<typeof usersControllerGetClients>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetClients>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all clients (Admin only)
  */
 
-export function useUsersControllerGetClients<
-  TData = Awaited<ReturnType<typeof usersControllerGetClients>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerGetClients>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getUsersControllerGetClientsQueryOptions(options);
+export function useUsersControllerGetClients<TData = Awaited<ReturnType<typeof usersControllerGetClients>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetClients>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getUsersControllerGetClientsQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get user by ID
  */
-export const usersControllerFindOne = (id: string, signal?: AbortSignal) => {
-  return axiosInstance<UserResponseDto>({
-    url: `/api/users/${id}`,
-    method: "GET",
-    signal,
-  });
-};
-
-export const getUsersControllerFindOneQueryKey = (id?: string) => {
-  return [`/api/users/${id}`] as const;
-};
-
-export const getUsersControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof usersControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  }
+export const usersControllerFindOne = (
+    id: string,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
+      
+      
+      return axiosInstance<UserResponseDto>(
+      {url: `/api/users/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-  const queryKey =
-    queryOptions?.queryKey ?? getUsersControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof usersControllerFindOne>>
-  > = ({ signal }) => usersControllerFindOne(id, signal);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof usersControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+export const getUsersControllerFindOneQueryKey = (id?: string,) => {
+    return [
+    `/api/users/${id}`
+    ] as const;
+    }
 
-export type UsersControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerFindOne>>
->;
-export type UsersControllerFindOneQueryError = void;
+    
+export const getUsersControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>>, }
+) => {
 
-export function useUsersControllerFindOne<
-  TData = Awaited<ReturnType<typeof usersControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerFindOneQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerFindOne>>> = ({ signal }) => usersControllerFindOne(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerFindOne>>>
+export type UsersControllerFindOneQueryError = void
+
+
+export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof usersControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerFindOne<
-  TData = Awaited<ReturnType<typeof usersControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof usersControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useUsersControllerFindOne<
-  TData = Awaited<ReturnType<typeof usersControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get user by ID
  */
 
-export function useUsersControllerFindOne<
-  TData = Awaited<ReturnType<typeof usersControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof usersControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getUsersControllerFindOneQueryOptions(id, options);
+export function useUsersControllerFindOne<TData = Awaited<ReturnType<typeof usersControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getUsersControllerFindOneQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Update user profile
  */
 export const usersControllerUpdate = (
-  id: string,
-  updateUserDto: UpdateUserDto
-) => {
-  return axiosInstance<UserResponseDto>({
-    url: `/api/users/${id}`,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    data: updateUserDto,
-  });
-};
+    id: string,
+    updateUserDto: UpdateUserDto,
+ ) => {
+      
+      
+      return axiosInstance<UserResponseDto>(
+      {url: `/api/users/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateUserDto
+    },
+      );
+    }
+  
 
-export const getUsersControllerUpdateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateUserDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateUserDto },
-  TContext
-> => {
-  const mutationKey = ["usersControllerUpdate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersControllerUpdate>>,
-    { id: string; data: UpdateUserDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getUsersControllerUpdateMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdate>>, TError,{id: string;data: UpdateUserDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdate>>, TError,{id: string;data: UpdateUserDto}, TContext> => {
 
-    return usersControllerUpdate(id, data);
-  };
+const mutationKey = ['usersControllerUpdate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type UsersControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerUpdate>>
->;
-export type UsersControllerUpdateMutationBody = UpdateUserDto;
-export type UsersControllerUpdateMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerUpdate>>, {id: string;data: UpdateUserDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  usersControllerUpdate(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerUpdate>>>
+    export type UsersControllerUpdateMutationBody = UpdateUserDto
+    export type UsersControllerUpdateMutationError = void
+
+    /**
  * @summary Update user profile
  */
-export const useUsersControllerUpdate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof usersControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateUserDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof usersControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateUserDto },
-  TContext
-> => {
-  const mutationOptions = getUsersControllerUpdateMutationOptions(options);
+export const useUsersControllerUpdate = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdate>>, TError,{id: string;data: UpdateUserDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerUpdate>>,
+        TError,
+        {id: string;data: UpdateUserDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getUsersControllerUpdateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Delete user (Admin only)
  */
-export const usersControllerDelete = (id: string) => {
-  return axiosInstance<void>({ url: `/api/users/${id}`, method: "DELETE" });
-};
+export const usersControllerDelete = (
+    id: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/users/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-export const getUsersControllerDeleteMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersControllerDelete>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["usersControllerDelete"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersControllerDelete>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getUsersControllerDeleteMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerDelete>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerDelete>>, TError,{id: string}, TContext> => {
 
-    return usersControllerDelete(id);
-  };
+const mutationKey = ['usersControllerDelete'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type UsersControllerDeleteMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerDelete>>
->;
 
-export type UsersControllerDeleteMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerDelete>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  usersControllerDelete(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerDelete>>>
+    
+    export type UsersControllerDeleteMutationError = void
+
+    /**
  * @summary Delete user (Admin only)
  */
-export const useUsersControllerDelete = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof usersControllerDelete>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof usersControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions = getUsersControllerDeleteMutationOptions(options);
+export const useUsersControllerDelete = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerDelete>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerDelete>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getUsersControllerDeleteMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Update user status (Admin only)
  */
 export const usersControllerUpdateStatus = (
-  id: string,
-  updateUserStatusDto: UpdateUserStatusDto
-) => {
-  return axiosInstance<UserResponseDto>({
-    url: `/api/users/${id}/status`,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    data: updateUserStatusDto,
-  });
-};
+    id: string,
+    updateUserStatusDto: UpdateUserStatusDto,
+ ) => {
+      
+      
+      return axiosInstance<UserResponseDto>(
+      {url: `/api/users/${id}/status`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateUserStatusDto
+    },
+      );
+    }
+  
 
-export const getUsersControllerUpdateStatusMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof usersControllerUpdateStatus>>,
-    TError,
-    { id: string; data: UpdateUserStatusDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof usersControllerUpdateStatus>>,
-  TError,
-  { id: string; data: UpdateUserStatusDto },
-  TContext
-> => {
-  const mutationKey = ["usersControllerUpdateStatus"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof usersControllerUpdateStatus>>,
-    { id: string; data: UpdateUserStatusDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getUsersControllerUpdateStatusMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateStatus>>, TError,{id: string;data: UpdateUserStatusDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateStatus>>, TError,{id: string;data: UpdateUserStatusDto}, TContext> => {
 
-    return usersControllerUpdateStatus(id, data);
-  };
+const mutationKey = ['usersControllerUpdateStatus'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type UsersControllerUpdateStatusMutationResult = NonNullable<
-  Awaited<ReturnType<typeof usersControllerUpdateStatus>>
->;
-export type UsersControllerUpdateStatusMutationBody = UpdateUserStatusDto;
-export type UsersControllerUpdateStatusMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerUpdateStatus>>, {id: string;data: UpdateUserStatusDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  usersControllerUpdateStatus(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerUpdateStatusMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerUpdateStatus>>>
+    export type UsersControllerUpdateStatusMutationBody = UpdateUserStatusDto
+    export type UsersControllerUpdateStatusMutationError = void
+
+    /**
  * @summary Update user status (Admin only)
  */
-export const useUsersControllerUpdateStatus = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof usersControllerUpdateStatus>>,
-      TError,
-      { id: string; data: UpdateUserStatusDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof usersControllerUpdateStatus>>,
-  TError,
-  { id: string; data: UpdateUserStatusDto },
-  TContext
-> => {
-  const mutationOptions =
-    getUsersControllerUpdateStatusMutationOptions(options);
+export const useUsersControllerUpdateStatus = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerUpdateStatus>>, TError,{id: string;data: UpdateUserStatusDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerUpdateStatus>>,
+        TError,
+        {id: string;data: UpdateUserStatusDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getUsersControllerUpdateStatusMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Create a new campaign with optional asset upload
  */
 export const campaignsControllerCreate = (
-  createCampaignDto: CreateCampaignDto,
-  signal?: AbortSignal
+    createCampaignDto: CreateCampaignDto,
+ signal?: AbortSignal
 ) => {
-  console.log(createCampaignDto);
+      
+      const formData = new FormData();
+formData.append(`brandName`, createCampaignDto.brandName)
+if(createCampaignDto.title !== undefined) {
+ formData.append(`title`, createCampaignDto.title)
+ }
+if(createCampaignDto.description !== undefined) {
+ formData.append(`description`, createCampaignDto.description)
+ }
+formData.append(`budget`, createCampaignDto.budget.toString())
+formData.append(`startDate`, createCampaignDto.startDate)
+formData.append(`endDate`, createCampaignDto.endDate)
+formData.append(`targetViewRange`, JSON.stringify(createCampaignDto.targetViewRange));
+formData.append(`targetAudience`, createCampaignDto.targetAudience)
+formData.append(`industry`, createCampaignDto.industry)
+if(createCampaignDto.adCreatives !== undefined) {
+ createCampaignDto.adCreatives.forEach(value => formData.append(`adCreatives`, value));
+ }
+if(createCampaignDto.campaignAsset !== undefined) {
+ formData.append(`campaignAsset`, createCampaignDto.campaignAsset)
+ }
+if(createCampaignDto.ratePerView !== undefined) {
+ formData.append(`ratePerView`, createCampaignDto.ratePerView.toString())
+ }
+if(createCampaignDto.submissionDeadlineDays !== undefined) {
+ formData.append(`submissionDeadlineDays`, createCampaignDto.submissionDeadlineDays.toString())
+ }
+if(createCampaignDto.paymentType !== undefined) {
+ formData.append(`paymentType`, createCampaignDto.paymentType)
+ }
+if(createCampaignDto.paymentViewsThreshold !== undefined) {
+ formData.append(`paymentViewsThreshold`, createCampaignDto.paymentViewsThreshold.toString())
+ }
 
-  const formData = new FormData();
-  formData.append(`brandName`, createCampaignDto.brandName);
-  if (createCampaignDto.title !== undefined) {
-    formData.append(`title`, createCampaignDto.title);
-  }
-  if (createCampaignDto.description !== undefined) {
-    formData.append(`description`, createCampaignDto.description);
-  }
-  formData.append(`budget`, `${createCampaignDto.budget}`);
-  formData.append(`startDate`, createCampaignDto.startDate);
-  formData.append(`endDate`, createCampaignDto.endDate);
-  formData.append(
-    `targetViewRange`,
-    JSON.stringify(createCampaignDto.targetViewRange)
-  );
-  formData.append(`targetAudience`, createCampaignDto.targetAudience);
-  formData.append(`industry`, createCampaignDto.industry);
-  if (createCampaignDto.adCreatives !== undefined) {
-    createCampaignDto.adCreatives.forEach((value) =>
-      formData.append(`adCreatives`, value)
-    );
-  }
-  if (createCampaignDto.campaignAsset !== undefined) {
-    formData.append(`campaignAsset`, createCampaignDto.campaignAsset);
-  }
-  if (createCampaignDto.ratePerView !== undefined) {
-    formData.append(`ratePerView`, createCampaignDto.ratePerView.toString());
-  }
-  if (createCampaignDto.submissionDeadlineDays !== undefined) {
-    formData.append(
-      `submissionDeadlineDays`,
-      createCampaignDto.submissionDeadlineDays.toString()
-    );
-  }
-  if (createCampaignDto.paymentType !== undefined) {
-    formData.append(`paymentType`, createCampaignDto.paymentType);
-  }
-  if (createCampaignDto.paymentViewsThreshold !== undefined) {
-    formData.append(
-      `paymentViewsThreshold`,
-      createCampaignDto.paymentViewsThreshold.toString()
-    );
-  }
+      return axiosInstance<CampaignResponseDto>(
+      {url: `/api/campaigns`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      );
+    }
+  
 
-  return axiosInstance<CampaignResponseDto>({
-    url: `/api/campaigns`,
-    method: "POST",
-    headers: { "Content-Type": "multipart/form-data" },
-    data: formData,
-    signal,
-  });
-};
 
-export const getCampaignsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof campaignsControllerCreate>>,
-    TError,
-    { data: CreateCampaignDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof campaignsControllerCreate>>,
-  TError,
-  { data: CreateCampaignDto },
-  TContext
-> => {
-  const mutationKey = ["campaignsControllerCreate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
+export const getCampaignsControllerCreateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerCreate>>, TError,{data: CreateCampaignDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerCreate>>, TError,{data: CreateCampaignDto}, TContext> => {
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof campaignsControllerCreate>>,
-    { data: CreateCampaignDto }
-  > = (props) => {
-    const { data } = props ?? {};
+const mutationKey = ['campaignsControllerCreate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-    return campaignsControllerCreate(data);
-  };
+      
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type CampaignsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerCreate>>
->;
-export type CampaignsControllerCreateMutationBody = CreateCampaignDto;
-export type CampaignsControllerCreateMutationError = unknown;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerCreate>>, {data: CreateCampaignDto}> = (props) => {
+          const {data} = props ?? {};
 
-/**
+          return  campaignsControllerCreate(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerCreate>>>
+    export type CampaignsControllerCreateMutationBody = CreateCampaignDto
+    export type CampaignsControllerCreateMutationError = unknown
+
+    /**
  * @summary Create a new campaign with optional asset upload
  */
-export const useCampaignsControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof campaignsControllerCreate>>,
-      TError,
-      { data: CreateCampaignDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof campaignsControllerCreate>>,
-  TError,
-  { data: CreateCampaignDto },
-  TContext
-> => {
-  const mutationOptions = getCampaignsControllerCreateMutationOptions(options);
+export const useCampaignsControllerCreate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerCreate>>, TError,{data: CreateCampaignDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerCreate>>,
+        TError,
+        {data: CreateCampaignDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getCampaignsControllerCreateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get all campaigns (paginated)
  */
 export const campaignsControllerFindAll = (
-  params?: CampaignsControllerFindAllParams,
-  signal?: AbortSignal
+    params?: CampaignsControllerFindAllParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<CampaignsListResponseDto>({
-    url: `/api/campaigns`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<CampaignsListResponseDto>(
+      {url: `/api/campaigns`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerFindAllQueryKey = (
-  params?: CampaignsControllerFindAllParams
+
+
+export const getCampaignsControllerFindAllQueryKey = (params?: CampaignsControllerFindAllParams,) => {
+    return [
+    `/api/campaigns`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getCampaignsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError = unknown>(params?: CampaignsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError, TData>>, }
 ) => {
-  return [`/api/campaigns`, ...(params ? [params] : [])] as const;
-};
 
-export const getCampaignsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getCampaignsControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof campaignsControllerFindAll>>
-  > = ({ signal }) => campaignsControllerFindAll(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerFindAll>>> = ({ signal }) => campaignsControllerFindAll(params, signal);
 
-export type CampaignsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerFindAll>>
->;
-export type CampaignsControllerFindAllQueryError = unknown;
+      
 
-export function useCampaignsControllerFindAll<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | CampaignsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerFindAll>>>
+export type CampaignsControllerFindAllQueryError = unknown
+
+
+export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError = unknown>(
+ params: undefined |  CampaignsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerFindAll<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError = unknown>(
+ params?: CampaignsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerFindAll<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError = unknown>(
+ params?: CampaignsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all campaigns (paginated)
  */
 
-export function useCampaignsControllerFindAll<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getCampaignsControllerFindAllQueryOptions(
-    params,
-    options
-  );
+export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError = unknown>(
+ params?: CampaignsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getCampaignsControllerFindAllQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get current client campaigns
  */
-export const campaignsControllerGetClientCampaigns = (signal?: AbortSignal) => {
-  return axiosInstance<void>({
-    url: `/api/campaigns/my-campaigns`,
-    method: "GET",
-    signal,
-  });
-};
+export const campaignsControllerGetClientCampaigns = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/my-campaigns`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getCampaignsControllerGetClientCampaignsQueryKey = () => {
-  return [`/api/campaigns/my-campaigns`] as const;
-};
+    return [
+    `/api/campaigns/my-campaigns`
+    ] as const;
+    }
 
-export const getCampaignsControllerGetClientCampaignsQueryOptions = <
-  TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getCampaignsControllerGetClientCampaignsQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getCampaignsControllerGetClientCampaignsQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>
-  > = ({ signal }) => campaignsControllerGetClientCampaigns(signal);
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerGetClientCampaignsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type CampaignsControllerGetClientCampaignsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>
->;
-export type CampaignsControllerGetClientCampaignsQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>> = ({ signal }) => campaignsControllerGetClientCampaigns(signal);
 
-export function useCampaignsControllerGetClientCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerGetClientCampaignsQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>>
+export type CampaignsControllerGetClientCampaignsQueryError = unknown
+
+
+export function useCampaignsControllerGetClientCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerGetClientCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetClientCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerGetClientCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetClientCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current client campaigns
  */
 
-export function useCampaignsControllerGetClientCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getCampaignsControllerGetClientCampaignsQueryOptions(options);
+export function useCampaignsControllerGetClientCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetClientCampaigns>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getCampaignsControllerGetClientCampaignsQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get available campaigns for influencers to join
  */
 export const campaignsControllerGetAvailableCampaigns = (
-  params?: CampaignsControllerGetAvailableCampaignsParams,
-  signal?: AbortSignal
+    params?: CampaignsControllerGetAvailableCampaignsParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<CampaignsListResponseDto>({
-    url: `/api/campaigns/available`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<CampaignsListResponseDto>(
+      {url: `/api/campaigns/available`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerGetAvailableCampaignsQueryKey = (
-  params?: CampaignsControllerGetAvailableCampaignsParams
+
+
+export const getCampaignsControllerGetAvailableCampaignsQueryKey = (params?: CampaignsControllerGetAvailableCampaignsParams,) => {
+    return [
+    `/api/campaigns/available`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getCampaignsControllerGetAvailableCampaignsQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError = unknown>(params?: CampaignsControllerGetAvailableCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError, TData>>, }
 ) => {
-  return [`/api/campaigns/available`, ...(params ? [params] : [])] as const;
-};
 
-export const getCampaignsControllerGetAvailableCampaignsQueryOptions = <
-  TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetAvailableCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getCampaignsControllerGetAvailableCampaignsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerGetAvailableCampaignsQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>
-  > = ({ signal }) => campaignsControllerGetAvailableCampaigns(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>> = ({ signal }) => campaignsControllerGetAvailableCampaigns(params, signal);
 
-export type CampaignsControllerGetAvailableCampaignsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>
->;
-export type CampaignsControllerGetAvailableCampaignsQueryError = unknown;
+      
 
-export function useCampaignsControllerGetAvailableCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-  TError = unknown,
->(
-  params: undefined | CampaignsControllerGetAvailableCampaignsParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerGetAvailableCampaignsQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>>
+export type CampaignsControllerGetAvailableCampaignsQueryError = unknown
+
+
+export function useCampaignsControllerGetAvailableCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError = unknown>(
+ params: undefined |  CampaignsControllerGetAvailableCampaignsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerGetAvailableCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetAvailableCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetAvailableCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError = unknown>(
+ params?: CampaignsControllerGetAvailableCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerGetAvailableCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetAvailableCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetAvailableCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError = unknown>(
+ params?: CampaignsControllerGetAvailableCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get available campaigns for influencers to join
  */
 
-export function useCampaignsControllerGetAvailableCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetAvailableCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getCampaignsControllerGetAvailableCampaignsQueryOptions(
-    params,
-    options
-  );
+export function useCampaignsControllerGetAvailableCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError = unknown>(
+ params?: CampaignsControllerGetAvailableCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetAvailableCampaigns>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getCampaignsControllerGetAvailableCampaignsQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get campaigns assigned to influencer
  */
 export const campaignsControllerGetInfluencerCampaigns = (
-  params?: CampaignsControllerGetInfluencerCampaignsParams,
-  signal?: AbortSignal
+    params?: CampaignsControllerGetInfluencerCampaignsParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<CampaignsControllerGetInfluencerCampaigns200>({
-    url: `/api/campaigns/assigned`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<CampaignsControllerGetInfluencerCampaigns200>(
+      {url: `/api/campaigns/assigned`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerGetInfluencerCampaignsQueryKey = (
-  params?: CampaignsControllerGetInfluencerCampaignsParams
+
+
+export const getCampaignsControllerGetInfluencerCampaignsQueryKey = (params?: CampaignsControllerGetInfluencerCampaignsParams,) => {
+    return [
+    `/api/campaigns/assigned`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getCampaignsControllerGetInfluencerCampaignsQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError = unknown>(params?: CampaignsControllerGetInfluencerCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError, TData>>, }
 ) => {
-  return [`/api/campaigns/assigned`, ...(params ? [params] : [])] as const;
-};
 
-export const getCampaignsControllerGetInfluencerCampaignsQueryOptions = <
-  TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetInfluencerCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getCampaignsControllerGetInfluencerCampaignsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerGetInfluencerCampaignsQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>
-  > = ({ signal }) => campaignsControllerGetInfluencerCampaigns(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>> = ({ signal }) => campaignsControllerGetInfluencerCampaigns(params, signal);
 
-export type CampaignsControllerGetInfluencerCampaignsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>
->;
-export type CampaignsControllerGetInfluencerCampaignsQueryError = unknown;
+      
 
-export function useCampaignsControllerGetInfluencerCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-  TError = unknown,
->(
-  params: undefined | CampaignsControllerGetInfluencerCampaignsParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerGetInfluencerCampaignsQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>>
+export type CampaignsControllerGetInfluencerCampaignsQueryError = unknown
+
+
+export function useCampaignsControllerGetInfluencerCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError = unknown>(
+ params: undefined |  CampaignsControllerGetInfluencerCampaignsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerGetInfluencerCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetInfluencerCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetInfluencerCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError = unknown>(
+ params?: CampaignsControllerGetInfluencerCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerGetInfluencerCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetInfluencerCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetInfluencerCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError = unknown>(
+ params?: CampaignsControllerGetInfluencerCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get campaigns assigned to influencer
  */
 
-export function useCampaignsControllerGetInfluencerCampaigns<
-  TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-  TError = unknown,
->(
-  params?: CampaignsControllerGetInfluencerCampaignsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getCampaignsControllerGetInfluencerCampaignsQueryOptions(
-    params,
-    options
-  );
+export function useCampaignsControllerGetInfluencerCampaigns<TData = Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError = unknown>(
+ params?: CampaignsControllerGetInfluencerCampaignsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetInfluencerCampaigns>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getCampaignsControllerGetInfluencerCampaignsQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Participate in a campaign
  */
 export const campaignsControllerRequestParticipation = (
-  id: string,
-  signal?: AbortSignal
+    id: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<CampaignsControllerRequestParticipation201>({
-    url: `/api/campaigns/${id}/request-participation`,
-    method: "POST",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<CampaignsControllerRequestParticipation201>(
+      {url: `/api/campaigns/${id}/request-participation`, method: 'POST', signal
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerRequestParticipationMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["campaignsControllerRequestParticipation"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getCampaignsControllerRequestParticipationMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>, TError,{id: string}, TContext> => {
 
-    return campaignsControllerRequestParticipation(id);
-  };
+const mutationKey = ['campaignsControllerRequestParticipation'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type CampaignsControllerRequestParticipationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>
->;
 
-export type CampaignsControllerRequestParticipationMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  campaignsControllerRequestParticipation(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerRequestParticipationMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>>
+    
+    export type CampaignsControllerRequestParticipationMutationError = void
+
+    /**
  * @summary Participate in a campaign
  */
-export const useCampaignsControllerRequestParticipation = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions =
-    getCampaignsControllerRequestParticipationMutationOptions(options);
+export const useCampaignsControllerRequestParticipation = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerRequestParticipation>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getCampaignsControllerRequestParticipationMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get campaign by ID
  */
 export const campaignsControllerFindOne = (
-  id: string,
-  signal?: AbortSignal
+    id: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<CampaignDetailResponseDto>({
-    url: `/api/campaigns/${id}`,
-    method: "GET",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<CampaignDetailResponseDto>(
+      {url: `/api/campaigns/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerFindOneQueryKey = (id?: string) => {
-  return [`/api/campaigns/${id}`] as const;
-};
 
-export const getCampaignsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  }
+
+export const getCampaignsControllerFindOneQueryKey = (id?: string,) => {
+    return [
+    `/api/campaigns/${id}`
+    ] as const;
+    }
+
+    
+export const getCampaignsControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getCampaignsControllerFindOneQueryKey(id);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof campaignsControllerFindOne>>
-  > = ({ signal }) => campaignsControllerFindOne(id, signal);
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerFindOneQueryKey(id);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type CampaignsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerFindOne>>
->;
-export type CampaignsControllerFindOneQueryError = void;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerFindOne>>> = ({ signal }) => campaignsControllerFindOne(id, signal);
 
-export function useCampaignsControllerFindOne<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerFindOne>>>
+export type CampaignsControllerFindOneQueryError = void
+
+
+export function useCampaignsControllerFindOne<TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerFindOne<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerFindOne<TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof campaignsControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof campaignsControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useCampaignsControllerFindOne<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerFindOne<TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get campaign by ID
  */
 
-export function useCampaignsControllerFindOne<
-  TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof campaignsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getCampaignsControllerFindOneQueryOptions(id, options);
+export function useCampaignsControllerFindOne<TData = Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getCampaignsControllerFindOneQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Update campaign
  */
 export const campaignsControllerUpdate = (
-  id: string,
-  updateCampaignDto: UpdateCampaignDto
-) => {
-  return axiosInstance<void>({
-    url: `/api/campaigns/${id}`,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    data: updateCampaignDto,
-  });
-};
+    id: string,
+    updateCampaignDto: UpdateCampaignDto,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCampaignDto
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerUpdateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof campaignsControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateCampaignDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof campaignsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateCampaignDto },
-  TContext
-> => {
-  const mutationKey = ["campaignsControllerUpdate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof campaignsControllerUpdate>>,
-    { id: string; data: UpdateCampaignDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getCampaignsControllerUpdateMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdate>>, TError,{id: string;data: UpdateCampaignDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdate>>, TError,{id: string;data: UpdateCampaignDto}, TContext> => {
 
-    return campaignsControllerUpdate(id, data);
-  };
+const mutationKey = ['campaignsControllerUpdate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type CampaignsControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerUpdate>>
->;
-export type CampaignsControllerUpdateMutationBody = UpdateCampaignDto;
-export type CampaignsControllerUpdateMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerUpdate>>, {id: string;data: UpdateCampaignDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  campaignsControllerUpdate(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerUpdate>>>
+    export type CampaignsControllerUpdateMutationBody = UpdateCampaignDto
+    export type CampaignsControllerUpdateMutationError = void
+
+    /**
  * @summary Update campaign
  */
-export const useCampaignsControllerUpdate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof campaignsControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateCampaignDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof campaignsControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateCampaignDto },
-  TContext
-> => {
-  const mutationOptions = getCampaignsControllerUpdateMutationOptions(options);
+export const useCampaignsControllerUpdate = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdate>>, TError,{id: string;data: UpdateCampaignDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerUpdate>>,
+        TError,
+        {id: string;data: UpdateCampaignDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getCampaignsControllerUpdateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Delete campaign
  */
-export const campaignsControllerDelete = (id: string) => {
-  return axiosInstance<void>({ url: `/api/campaigns/${id}`, method: "DELETE" });
-};
+export const campaignsControllerDelete = (
+    id: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerDeleteMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof campaignsControllerDelete>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof campaignsControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["campaignsControllerDelete"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof campaignsControllerDelete>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getCampaignsControllerDeleteMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerDelete>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerDelete>>, TError,{id: string}, TContext> => {
 
-    return campaignsControllerDelete(id);
-  };
+const mutationKey = ['campaignsControllerDelete'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type CampaignsControllerDeleteMutationResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerDelete>>
->;
 
-export type CampaignsControllerDeleteMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerDelete>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  campaignsControllerDelete(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerDelete>>>
+    
+    export type CampaignsControllerDeleteMutationError = void
+
+    /**
  * @summary Delete campaign
  */
-export const useCampaignsControllerDelete = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof campaignsControllerDelete>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof campaignsControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions = getCampaignsControllerDeleteMutationOptions(options);
+export const useCampaignsControllerDelete = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerDelete>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerDelete>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getCampaignsControllerDeleteMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Update campaign status (Admin only)
  */
-export const campaignsControllerUpdateStatus = (id: string) => {
-  return axiosInstance<void>({
-    url: `/api/campaigns/${id}/status`,
-    method: "PATCH",
-  });
-};
+export const campaignsControllerUpdateStatus = (
+    id: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/${id}/status`, method: 'PATCH'
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerUpdateStatusMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["campaignsControllerUpdateStatus"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getCampaignsControllerUpdateStatusMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string}, TContext> => {
 
-    return campaignsControllerUpdateStatus(id);
-  };
+const mutationKey = ['campaignsControllerUpdateStatus'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type CampaignsControllerUpdateStatusMutationResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>
->;
 
-export type CampaignsControllerUpdateStatusMutationError = unknown;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  campaignsControllerUpdateStatus(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerUpdateStatusMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>>
+    
+    export type CampaignsControllerUpdateStatusMutationError = unknown
+
+    /**
  * @summary Update campaign status (Admin only)
  */
-export const useCampaignsControllerUpdateStatus = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions =
-    getCampaignsControllerUpdateStatusMutationOptions(options);
+export const useCampaignsControllerUpdateStatus = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getCampaignsControllerUpdateStatusMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Assign influencer to campaign (Admin only)
  */
 export const campaignsControllerAssignInfluencer = (
-  id: string,
-  influencerId: string,
-  signal?: AbortSignal
+    id: string,
+    influencerId: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/campaigns/${id}/assign/${influencerId}`,
-    method: "POST",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/${id}/assign/${influencerId}`, method: 'POST', signal
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerAssignInfluencerMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>,
-    TError,
-    { id: string; influencerId: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>,
-  TError,
-  { id: string; influencerId: string },
-  TContext
-> => {
-  const mutationKey = ["campaignsControllerAssignInfluencer"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>,
-    { id: string; influencerId: string }
-  > = (props) => {
-    const { id, influencerId } = props ?? {};
+export const getCampaignsControllerAssignInfluencerMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>, TError,{id: string;influencerId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>, TError,{id: string;influencerId: string}, TContext> => {
 
-    return campaignsControllerAssignInfluencer(id, influencerId);
-  };
+const mutationKey = ['campaignsControllerAssignInfluencer'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type CampaignsControllerAssignInfluencerMutationResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>
->;
 
-export type CampaignsControllerAssignInfluencerMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>, {id: string;influencerId: string}> = (props) => {
+          const {id,influencerId} = props ?? {};
 
-/**
+          return  campaignsControllerAssignInfluencer(id,influencerId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerAssignInfluencerMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>>
+    
+    export type CampaignsControllerAssignInfluencerMutationError = void
+
+    /**
  * @summary Assign influencer to campaign (Admin only)
  */
-export const useCampaignsControllerAssignInfluencer = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>,
-      TError,
-      { id: string; influencerId: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>,
-  TError,
-  { id: string; influencerId: string },
-  TContext
-> => {
-  const mutationOptions =
-    getCampaignsControllerAssignInfluencerMutationOptions(options);
+export const useCampaignsControllerAssignInfluencer = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>, TError,{id: string;influencerId: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerAssignInfluencer>>,
+        TError,
+        {id: string;influencerId: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getCampaignsControllerAssignInfluencerMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Remove influencer from campaign (Admin only)
  */
 export const campaignsControllerRemoveInfluencer = (
-  id: string,
-  influencerId: string
-) => {
-  return axiosInstance<void>({
-    url: `/api/campaigns/${id}/assign/${influencerId}`,
-    method: "DELETE",
-  });
-};
+    id: string,
+    influencerId: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/${id}/assign/${influencerId}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-export const getCampaignsControllerRemoveInfluencerMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>,
-    TError,
-    { id: string; influencerId: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>,
-  TError,
-  { id: string; influencerId: string },
-  TContext
-> => {
-  const mutationKey = ["campaignsControllerRemoveInfluencer"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>,
-    { id: string; influencerId: string }
-  > = (props) => {
-    const { id, influencerId } = props ?? {};
+export const getCampaignsControllerRemoveInfluencerMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>, TError,{id: string;influencerId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>, TError,{id: string;influencerId: string}, TContext> => {
 
-    return campaignsControllerRemoveInfluencer(id, influencerId);
-  };
+const mutationKey = ['campaignsControllerRemoveInfluencer'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type CampaignsControllerRemoveInfluencerMutationResult = NonNullable<
-  Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>
->;
 
-export type CampaignsControllerRemoveInfluencerMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>, {id: string;influencerId: string}> = (props) => {
+          const {id,influencerId} = props ?? {};
 
-/**
+          return  campaignsControllerRemoveInfluencer(id,influencerId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerRemoveInfluencerMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>>
+    
+    export type CampaignsControllerRemoveInfluencerMutationError = void
+
+    /**
  * @summary Remove influencer from campaign (Admin only)
  */
-export const useCampaignsControllerRemoveInfluencer = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>,
-      TError,
-      { id: string; influencerId: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>,
-  TError,
-  { id: string; influencerId: string },
-  TContext
-> => {
-  const mutationOptions =
-    getCampaignsControllerRemoveInfluencerMutationOptions(options);
+export const useCampaignsControllerRemoveInfluencer = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>, TError,{id: string;influencerId: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerRemoveInfluencer>>,
+        TError,
+        {id: string;influencerId: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getCampaignsControllerRemoveInfluencerMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Create a new submission with screenshot upload
  */
 export const submissionsControllerCreate = (
-  createSubmissionDto: CreateSubmissionDto,
-  signal?: AbortSignal
+    createSubmissionDto: CreateSubmissionDto,
+ signal?: AbortSignal
 ) => {
-  const formData = new FormData();
-  formData.append(`campaignId`, createSubmissionDto.campaignId);
-  if (createSubmissionDto.screenshotUrl !== undefined) {
-    formData.append(`screenshotUrl`, createSubmissionDto.screenshotUrl);
-  }
-  formData.append(
-    `extractedViewCount`,
-    createSubmissionDto.extractedViewCount.toString()
-  );
-  if (createSubmissionDto.description !== undefined) {
-    formData.append(`description`, createSubmissionDto.description);
-  }
-  if (createSubmissionDto.feedback !== undefined) {
-    formData.append(`feedback`, createSubmissionDto.feedback);
-  }
+      
+      const formData = new FormData();
+formData.append(`campaignId`, createSubmissionDto.campaignId)
+if(createSubmissionDto.screenshotUrl !== undefined) {
+ formData.append(`screenshotUrl`, createSubmissionDto.screenshotUrl)
+ }
+formData.append(`extractedViewCount`, createSubmissionDto.extractedViewCount.toString())
+if(createSubmissionDto.description !== undefined) {
+ formData.append(`description`, createSubmissionDto.description)
+ }
+if(createSubmissionDto.feedback !== undefined) {
+ formData.append(`feedback`, createSubmissionDto.feedback)
+ }
 
-  return axiosInstance<SubmissionResponseDto>({
-    url: `/api/submissions`,
-    method: "POST",
-    headers: { "Content-Type": "multipart/form-data" },
-    data: formData,
-    signal,
-  });
-};
+      return axiosInstance<SubmissionResponseDto>(
+      {url: `/api/submissions`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      );
+    }
+  
 
-export const getSubmissionsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof submissionsControllerCreate>>,
-    TError,
-    { data: CreateSubmissionDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof submissionsControllerCreate>>,
-  TError,
-  { data: CreateSubmissionDto },
-  TContext
-> => {
-  const mutationKey = ["submissionsControllerCreate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof submissionsControllerCreate>>,
-    { data: CreateSubmissionDto }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getSubmissionsControllerCreateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerCreate>>, TError,{data: CreateSubmissionDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerCreate>>, TError,{data: CreateSubmissionDto}, TContext> => {
 
-    return submissionsControllerCreate(data);
-  };
+const mutationKey = ['submissionsControllerCreate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SubmissionsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof submissionsControllerCreate>>
->;
-export type SubmissionsControllerCreateMutationBody = CreateSubmissionDto;
-export type SubmissionsControllerCreateMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submissionsControllerCreate>>, {data: CreateSubmissionDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submissionsControllerCreate(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmissionsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerCreate>>>
+    export type SubmissionsControllerCreateMutationBody = CreateSubmissionDto
+    export type SubmissionsControllerCreateMutationError = unknown
+
+    /**
  * @summary Create a new submission with screenshot upload
  */
-export const useSubmissionsControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof submissionsControllerCreate>>,
-      TError,
-      { data: CreateSubmissionDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof submissionsControllerCreate>>,
-  TError,
-  { data: CreateSubmissionDto },
-  TContext
-> => {
-  const mutationOptions =
-    getSubmissionsControllerCreateMutationOptions(options);
+export const useSubmissionsControllerCreate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerCreate>>, TError,{data: CreateSubmissionDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof submissionsControllerCreate>>,
+        TError,
+        {data: CreateSubmissionDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSubmissionsControllerCreateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get all submissions (paginated)
  */
 export const submissionsControllerFindAll = (
-  params?: SubmissionsControllerFindAllParams,
-  signal?: AbortSignal
+    params?: SubmissionsControllerFindAllParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<SubmissionsListResponseDto>({
-    url: `/api/submissions`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<SubmissionsListResponseDto>(
+      {url: `/api/submissions`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getSubmissionsControllerFindAllQueryKey = (
-  params?: SubmissionsControllerFindAllParams
+
+
+export const getSubmissionsControllerFindAllQueryKey = (params?: SubmissionsControllerFindAllParams,) => {
+    return [
+    `/api/submissions`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getSubmissionsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError = unknown>(params?: SubmissionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError, TData>>, }
 ) => {
-  return [`/api/submissions`, ...(params ? [params] : [])] as const;
-};
 
-export const getSubmissionsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SubmissionsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getSubmissionsControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof submissionsControllerFindAll>>
-  > = ({ signal }) => submissionsControllerFindAll(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerFindAll>>> = ({ signal }) => submissionsControllerFindAll(params, signal);
 
-export type SubmissionsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof submissionsControllerFindAll>>
->;
-export type SubmissionsControllerFindAllQueryError = unknown;
+      
 
-export function useSubmissionsControllerFindAll<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | SubmissionsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SubmissionsControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerFindAll>>>
+export type SubmissionsControllerFindAllQueryError = unknown
+
+
+export function useSubmissionsControllerFindAll<TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError = unknown>(
+ params: undefined |  SubmissionsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof submissionsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof submissionsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerFindAll<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SubmissionsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerFindAll<TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError = unknown>(
+ params?: SubmissionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof submissionsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof submissionsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerFindAll<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SubmissionsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerFindAll<TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError = unknown>(
+ params?: SubmissionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all submissions (paginated)
  */
 
-export function useSubmissionsControllerFindAll<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SubmissionsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getSubmissionsControllerFindAllQueryOptions(
-    params,
-    options
-  );
+export function useSubmissionsControllerFindAll<TData = Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError = unknown>(
+ params?: SubmissionsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSubmissionsControllerFindAllQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get current influencer submissions
  */
 export const submissionsControllerGetInfluencerSubmissions = (
-  signal?: AbortSignal
+    
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/submissions/my-submissions`,
-    method: "GET",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/submissions/my-submissions`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getSubmissionsControllerGetInfluencerSubmissionsQueryKey = () => {
-  return [`/api/submissions/my-submissions`] as const;
-};
+    return [
+    `/api/submissions/my-submissions`
+    ] as const;
+    }
 
-export const getSubmissionsControllerGetInfluencerSubmissionsQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-  >,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getSubmissionsControllerGetInfluencerSubmissionsQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getSubmissionsControllerGetInfluencerSubmissionsQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>
-  > = ({ signal }) => submissionsControllerGetInfluencerSubmissions(signal);
+  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerGetInfluencerSubmissionsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type SubmissionsControllerGetInfluencerSubmissionsQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>
-  >;
-export type SubmissionsControllerGetInfluencerSubmissionsQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>> = ({ signal }) => submissionsControllerGetInfluencerSubmissions(signal);
 
-export function useSubmissionsControllerGetInfluencerSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-  >,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-        >,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SubmissionsControllerGetInfluencerSubmissionsQueryResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>>
+export type SubmissionsControllerGetInfluencerSubmissionsQueryError = unknown
+
+
+export function useSubmissionsControllerGetInfluencerSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-          >,
+          Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>,
           TError,
-          Awaited<
-            ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-          >
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerGetInfluencerSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-  >,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-        >,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+          Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetInfluencerSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-          >,
+          Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>,
           TError,
-          Awaited<
-            ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-          >
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerGetInfluencerSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-  >,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-        >,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+          Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetInfluencerSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current influencer submissions
  */
 
-export function useSubmissionsControllerGetInfluencerSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-  >,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof submissionsControllerGetInfluencerSubmissions>
-        >,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getSubmissionsControllerGetInfluencerSubmissionsQueryOptions(options);
+export function useSubmissionsControllerGetInfluencerSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetInfluencerSubmissions>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSubmissionsControllerGetInfluencerSubmissionsQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get submissions for a campaign
  */
 export const submissionsControllerGetCampaignSubmissions = (
-  campaignId: string,
-  signal?: AbortSignal
+    campaignId: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/submissions/campaign/${campaignId}`,
-    method: "GET",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/submissions/campaign/${campaignId}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-export const getSubmissionsControllerGetCampaignSubmissionsQueryKey = (
-  campaignId?: string
+
+
+export const getSubmissionsControllerGetCampaignSubmissionsQueryKey = (campaignId?: string,) => {
+    return [
+    `/api/submissions/campaign/${campaignId}`
+    ] as const;
+    }
+
+    
+export const getSubmissionsControllerGetCampaignSubmissionsQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
 ) => {
-  return [`/api/submissions/campaign/${campaignId}`] as const;
-};
 
-export const getSubmissionsControllerGetCampaignSubmissionsQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-  >,
-  TError = unknown,
->(
-  campaignId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getSubmissionsControllerGetCampaignSubmissionsQueryKey(campaignId);
+  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerGetCampaignSubmissionsQueryKey(campaignId);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>
-  > = ({ signal }) =>
-    submissionsControllerGetCampaignSubmissions(campaignId, signal);
+  
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!campaignId,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>> = ({ signal }) => submissionsControllerGetCampaignSubmissions(campaignId, signal);
 
-export type SubmissionsControllerGetCampaignSubmissionsQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>
-  >;
-export type SubmissionsControllerGetCampaignSubmissionsQueryError = unknown;
+      
 
-export function useSubmissionsControllerGetCampaignSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-  >,
-  TError = unknown,
->(
-  campaignId: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, enabled: !!(campaignId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SubmissionsControllerGetCampaignSubmissionsQueryResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>>
+export type SubmissionsControllerGetCampaignSubmissionsQueryError = unknown
+
+
+export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
+ campaignId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-          >,
+          Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
           TError,
-          Awaited<
-            ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-          >
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerGetCampaignSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-  >,
-  TError = unknown,
->(
-  campaignId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+          Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
+ campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-          >,
+          Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
           TError,
-          Awaited<
-            ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-          >
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerGetCampaignSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-  >,
-  TError = unknown,
->(
-  campaignId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+          Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
+ campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get submissions for a campaign
  */
 
-export function useSubmissionsControllerGetCampaignSubmissions<
-  TData = Awaited<
-    ReturnType<typeof submissionsControllerGetCampaignSubmissions>
-  >,
-  TError = unknown,
->(
-  campaignId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getSubmissionsControllerGetCampaignSubmissionsQueryOptions(
-      campaignId,
-      options
-    );
+export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
+ campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSubmissionsControllerGetCampaignSubmissionsQueryOptions(campaignId,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get submission by ID
  */
 export const submissionsControllerFindOne = (
-  id: string,
-  signal?: AbortSignal
+    id: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<SubmissionResponseDto>({
-    url: `/api/submissions/${id}`,
-    method: "GET",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<SubmissionResponseDto>(
+      {url: `/api/submissions/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-export const getSubmissionsControllerFindOneQueryKey = (id?: string) => {
-  return [`/api/submissions/${id}`] as const;
-};
 
-export const getSubmissionsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  }
+
+export const getSubmissionsControllerFindOneQueryKey = (id?: string,) => {
+    return [
+    `/api/submissions/${id}`
+    ] as const;
+    }
+
+    
+export const getSubmissionsControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getSubmissionsControllerFindOneQueryKey(id);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof submissionsControllerFindOne>>
-  > = ({ signal }) => submissionsControllerFindOne(id, signal);
+  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerFindOneQueryKey(id);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type SubmissionsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof submissionsControllerFindOne>>
->;
-export type SubmissionsControllerFindOneQueryError = void;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerFindOne>>> = ({ signal }) => submissionsControllerFindOne(id, signal);
 
-export function useSubmissionsControllerFindOne<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SubmissionsControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerFindOne>>>
+export type SubmissionsControllerFindOneQueryError = void
+
+
+export function useSubmissionsControllerFindOne<TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof submissionsControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof submissionsControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerFindOne<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerFindOne<TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof submissionsControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof submissionsControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmissionsControllerFindOne<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerFindOne<TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get submission by ID
  */
 
-export function useSubmissionsControllerFindOne<
-  TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof submissionsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getSubmissionsControllerFindOneQueryOptions(id, options);
+export function useSubmissionsControllerFindOne<TData = Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSubmissionsControllerFindOneQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-/**
- * @summary Delete submission
- */
-export const submissionsControllerDelete = (id: string) => {
-  return axiosInstance<void>({
-    url: `/api/submissions/${id}`,
-    method: "DELETE",
-  });
-};
 
-export const getSubmissionsControllerDeleteMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof submissionsControllerDelete>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof submissionsControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["submissionsControllerDelete"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof submissionsControllerDelete>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
 
-    return submissionsControllerDelete(id);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type SubmissionsControllerDeleteMutationResult = NonNullable<
-  Awaited<ReturnType<typeof submissionsControllerDelete>>
->;
-
-export type SubmissionsControllerDeleteMutationError = void;
 
 /**
  * @summary Delete submission
  */
-export const useSubmissionsControllerDelete = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof submissionsControllerDelete>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof submissionsControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions =
-    getSubmissionsControllerDeleteMutationOptions(options);
+export const submissionsControllerDelete = (
+    id: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/submissions/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-  return useMutation(mutationOptions, queryClient);
-};
 
+export const getSubmissionsControllerDeleteMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerDelete>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerDelete>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['submissionsControllerDelete'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submissionsControllerDelete>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  submissionsControllerDelete(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmissionsControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerDelete>>>
+    
+    export type SubmissionsControllerDeleteMutationError = void
+
+    /**
+ * @summary Delete submission
+ */
+export const useSubmissionsControllerDelete = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerDelete>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof submissionsControllerDelete>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSubmissionsControllerDeleteMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Review submission (Admin only)
  */
 export const submissionsControllerReview = (
-  id: string,
-  reviewSubmissionDto: ReviewSubmissionDto
-) => {
-  return axiosInstance<SubmissionResponseDto>({
-    url: `/api/submissions/${id}/review`,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    data: reviewSubmissionDto,
-  });
-};
+    id: string,
+    reviewSubmissionDto: ReviewSubmissionDto,
+ ) => {
+      
+      
+      return axiosInstance<SubmissionResponseDto>(
+      {url: `/api/submissions/${id}/review`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: reviewSubmissionDto
+    },
+      );
+    }
+  
 
-export const getSubmissionsControllerReviewMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof submissionsControllerReview>>,
-    TError,
-    { id: string; data: ReviewSubmissionDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof submissionsControllerReview>>,
-  TError,
-  { id: string; data: ReviewSubmissionDto },
-  TContext
-> => {
-  const mutationKey = ["submissionsControllerReview"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof submissionsControllerReview>>,
-    { id: string; data: ReviewSubmissionDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getSubmissionsControllerReviewMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerReview>>, TError,{id: string;data: ReviewSubmissionDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerReview>>, TError,{id: string;data: ReviewSubmissionDto}, TContext> => {
 
-    return submissionsControllerReview(id, data);
-  };
+const mutationKey = ['submissionsControllerReview'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SubmissionsControllerReviewMutationResult = NonNullable<
-  Awaited<ReturnType<typeof submissionsControllerReview>>
->;
-export type SubmissionsControllerReviewMutationBody = ReviewSubmissionDto;
-export type SubmissionsControllerReviewMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submissionsControllerReview>>, {id: string;data: ReviewSubmissionDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  submissionsControllerReview(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmissionsControllerReviewMutationResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerReview>>>
+    export type SubmissionsControllerReviewMutationBody = ReviewSubmissionDto
+    export type SubmissionsControllerReviewMutationError = void
+
+    /**
  * @summary Review submission (Admin only)
  */
-export const useSubmissionsControllerReview = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof submissionsControllerReview>>,
-      TError,
-      { id: string; data: ReviewSubmissionDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof submissionsControllerReview>>,
-  TError,
-  { id: string; data: ReviewSubmissionDto },
-  TContext
-> => {
-  const mutationOptions =
-    getSubmissionsControllerReviewMutationOptions(options);
+export const useSubmissionsControllerReview = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerReview>>, TError,{id: string;data: ReviewSubmissionDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof submissionsControllerReview>>,
+        TError,
+        {id: string;data: ReviewSubmissionDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSubmissionsControllerReviewMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Create a new payment (Admin only)
  */
 export const paymentsControllerCreate = (
-  createPaymentDto: CreatePaymentDto,
-  signal?: AbortSignal
+    createPaymentDto: CreatePaymentDto,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/payments`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: createPaymentDto,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/payments`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPaymentDto, signal
+    },
+      );
+    }
+  
 
-export const getPaymentsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof paymentsControllerCreate>>,
-    TError,
-    { data: CreatePaymentDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof paymentsControllerCreate>>,
-  TError,
-  { data: CreatePaymentDto },
-  TContext
-> => {
-  const mutationKey = ["paymentsControllerCreate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof paymentsControllerCreate>>,
-    { data: CreatePaymentDto }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPaymentsControllerCreateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof paymentsControllerCreate>>, TError,{data: CreatePaymentDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof paymentsControllerCreate>>, TError,{data: CreatePaymentDto}, TContext> => {
 
-    return paymentsControllerCreate(data);
-  };
+const mutationKey = ['paymentsControllerCreate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PaymentsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerCreate>>
->;
-export type PaymentsControllerCreateMutationBody = CreatePaymentDto;
-export type PaymentsControllerCreateMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof paymentsControllerCreate>>, {data: CreatePaymentDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  paymentsControllerCreate(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PaymentsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof paymentsControllerCreate>>>
+    export type PaymentsControllerCreateMutationBody = CreatePaymentDto
+    export type PaymentsControllerCreateMutationError = unknown
+
+    /**
  * @summary Create a new payment (Admin only)
  */
-export const usePaymentsControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof paymentsControllerCreate>>,
-      TError,
-      { data: CreatePaymentDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof paymentsControllerCreate>>,
-  TError,
-  { data: CreatePaymentDto },
-  TContext
-> => {
-  const mutationOptions = getPaymentsControllerCreateMutationOptions(options);
+export const usePaymentsControllerCreate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof paymentsControllerCreate>>, TError,{data: CreatePaymentDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof paymentsControllerCreate>>,
+        TError,
+        {data: CreatePaymentDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getPaymentsControllerCreateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get all payments (Admin only)
  */
 export const paymentsControllerFindAll = (
-  params?: PaymentsControllerFindAllParams,
-  signal?: AbortSignal
+    params?: PaymentsControllerFindAllParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/payments`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/payments`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getPaymentsControllerFindAllQueryKey = (
-  params?: PaymentsControllerFindAllParams
+
+
+export const getPaymentsControllerFindAllQueryKey = (params?: PaymentsControllerFindAllParams,) => {
+    return [
+    `/api/payments`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getPaymentsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError = unknown>(params?: PaymentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError, TData>>, }
 ) => {
-  return [`/api/payments`, ...(params ? [params] : [])] as const;
-};
 
-export const getPaymentsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getPaymentsControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getPaymentsControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof paymentsControllerFindAll>>
-  > = ({ signal }) => paymentsControllerFindAll(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof paymentsControllerFindAll>>> = ({ signal }) => paymentsControllerFindAll(params, signal);
 
-export type PaymentsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerFindAll>>
->;
-export type PaymentsControllerFindAllQueryError = unknown;
+      
 
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | PaymentsControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PaymentsControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof paymentsControllerFindAll>>>
+export type PaymentsControllerFindAllQueryError = unknown
+
+
+export function usePaymentsControllerFindAll<TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError = unknown>(
+ params: undefined |  PaymentsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerFindAll<TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError = unknown>(
+ params?: PaymentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerFindAll<TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError = unknown>(
+ params?: PaymentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all payments (Admin only)
  */
 
-export function usePaymentsControllerFindAll<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-  TError = unknown,
->(
-  params?: PaymentsControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getPaymentsControllerFindAllQueryOptions(
-    params,
-    options
-  );
+export function usePaymentsControllerFindAll<TData = Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError = unknown>(
+ params?: PaymentsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getPaymentsControllerFindAllQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get current influencer payments
  */
 export const paymentsControllerGetInfluencerPayments = (
-  signal?: AbortSignal
+    
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/payments/my-payments`,
-    method: "GET",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/payments/my-payments`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getPaymentsControllerGetInfluencerPaymentsQueryKey = () => {
-  return [`/api/payments/my-payments`] as const;
-};
+    return [
+    `/api/payments/my-payments`
+    ] as const;
+    }
 
-export const getPaymentsControllerGetInfluencerPaymentsQueryOptions = <
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getPaymentsControllerGetInfluencerPaymentsQueryOptions = <TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getPaymentsControllerGetInfluencerPaymentsQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>
-  > = ({ signal }) => paymentsControllerGetInfluencerPayments(signal);
+  const queryKey =  queryOptions?.queryKey ?? getPaymentsControllerGetInfluencerPaymentsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type PaymentsControllerGetInfluencerPaymentsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>
->;
-export type PaymentsControllerGetInfluencerPaymentsQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>> = ({ signal }) => paymentsControllerGetInfluencerPayments(signal);
 
-export function usePaymentsControllerGetInfluencerPayments<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PaymentsControllerGetInfluencerPaymentsQueryResult = NonNullable<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>>
+export type PaymentsControllerGetInfluencerPaymentsQueryError = unknown
+
+
+export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerGetInfluencerPayments<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerGetInfluencerPayments<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current influencer payments
  */
 
-export function usePaymentsControllerGetInfluencerPayments<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getPaymentsControllerGetInfluencerPaymentsQueryOptions(options);
+export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getPaymentsControllerGetInfluencerPaymentsQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Get current influencer earnings summary
  */
 export const paymentsControllerGetInfluencerEarnings = (
-  signal?: AbortSignal
+    
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/payments/my-earnings`,
-    method: "GET",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/payments/my-earnings`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getPaymentsControllerGetInfluencerEarningsQueryKey = () => {
-  return [`/api/payments/my-earnings`] as const;
-};
+    return [
+    `/api/payments/my-earnings`
+    ] as const;
+    }
 
-export const getPaymentsControllerGetInfluencerEarningsQueryOptions = <
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getPaymentsControllerGetInfluencerEarningsQueryOptions = <TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getPaymentsControllerGetInfluencerEarningsQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>
-  > = ({ signal }) => paymentsControllerGetInfluencerEarnings(signal);
+  const queryKey =  queryOptions?.queryKey ?? getPaymentsControllerGetInfluencerEarningsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type PaymentsControllerGetInfluencerEarningsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>
->;
-export type PaymentsControllerGetInfluencerEarningsQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>> = ({ signal }) => paymentsControllerGetInfluencerEarnings(signal);
 
-export function usePaymentsControllerGetInfluencerEarnings<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PaymentsControllerGetInfluencerEarningsQueryResult = NonNullable<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>>
+export type PaymentsControllerGetInfluencerEarningsQueryError = unknown
+
+
+export function usePaymentsControllerGetInfluencerEarnings<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerGetInfluencerEarnings<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerGetInfluencerEarnings<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerGetInfluencerEarnings<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerGetInfluencerEarnings<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current influencer earnings summary
  */
 
-export function usePaymentsControllerGetInfluencerEarnings<
-  TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getPaymentsControllerGetInfluencerEarningsQueryOptions(options);
+export function usePaymentsControllerGetInfluencerEarnings<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerEarnings>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getPaymentsControllerGetInfluencerEarningsQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get payment by ID
  */
-export const paymentsControllerFindOne = (id: string, signal?: AbortSignal) => {
-  return axiosInstance<void>({
-    url: `/api/payments/${id}`,
-    method: "GET",
-    signal,
-  });
-};
-
-export const getPaymentsControllerFindOneQueryKey = (id?: string) => {
-  return [`/api/payments/${id}`] as const;
-};
-
-export const getPaymentsControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  }
+export const paymentsControllerFindOne = (
+    id: string,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/payments/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-  const queryKey =
-    queryOptions?.queryKey ?? getPaymentsControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof paymentsControllerFindOne>>
-  > = ({ signal }) => paymentsControllerFindOne(id, signal);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+export const getPaymentsControllerFindOneQueryKey = (id?: string,) => {
+    return [
+    `/api/payments/${id}`
+    ] as const;
+    }
 
-export type PaymentsControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerFindOne>>
->;
-export type PaymentsControllerFindOneQueryError = void;
+    
+export const getPaymentsControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError, TData>>, }
+) => {
 
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPaymentsControllerFindOneQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof paymentsControllerFindOne>>> = ({ signal }) => paymentsControllerFindOne(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PaymentsControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof paymentsControllerFindOne>>>
+export type PaymentsControllerFindOneQueryError = void
+
+
+export function usePaymentsControllerFindOne<TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerFindOne<TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof paymentsControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerFindOne<TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get payment by ID
  */
 
-export function usePaymentsControllerFindOne<
-  TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof paymentsControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getPaymentsControllerFindOneQueryOptions(id, options);
+export function usePaymentsControllerFindOne<TData = Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getPaymentsControllerFindOneQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Update payment status (Admin only)
  */
 export const paymentsControllerUpdateStatus = (
-  id: string,
-  updatePaymentStatusDto: UpdatePaymentStatusDto
-) => {
-  return axiosInstance<void>({
-    url: `/api/payments/${id}/status`,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    data: updatePaymentStatusDto,
-  });
-};
+    id: string,
+    updatePaymentStatusDto: UpdatePaymentStatusDto,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/payments/${id}/status`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updatePaymentStatusDto
+    },
+      );
+    }
+  
 
-export const getPaymentsControllerUpdateStatusMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>,
-    TError,
-    { id: string; data: UpdatePaymentStatusDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>,
-  TError,
-  { id: string; data: UpdatePaymentStatusDto },
-  TContext
-> => {
-  const mutationKey = ["paymentsControllerUpdateStatus"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>,
-    { id: string; data: UpdatePaymentStatusDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getPaymentsControllerUpdateStatusMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>, TError,{id: string;data: UpdatePaymentStatusDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>, TError,{id: string;data: UpdatePaymentStatusDto}, TContext> => {
 
-    return paymentsControllerUpdateStatus(id, data);
-  };
+const mutationKey = ['paymentsControllerUpdateStatus'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PaymentsControllerUpdateStatusMutationResult = NonNullable<
-  Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>
->;
-export type PaymentsControllerUpdateStatusMutationBody = UpdatePaymentStatusDto;
-export type PaymentsControllerUpdateStatusMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>, {id: string;data: UpdatePaymentStatusDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  paymentsControllerUpdateStatus(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PaymentsControllerUpdateStatusMutationResult = NonNullable<Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>>
+    export type PaymentsControllerUpdateStatusMutationBody = UpdatePaymentStatusDto
+    export type PaymentsControllerUpdateStatusMutationError = void
+
+    /**
  * @summary Update payment status (Admin only)
  */
-export const usePaymentsControllerUpdateStatus = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>,
-      TError,
-      { id: string; data: UpdatePaymentStatusDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>,
-  TError,
-  { id: string; data: UpdatePaymentStatusDto },
-  TContext
-> => {
-  const mutationOptions =
-    getPaymentsControllerUpdateStatusMutationOptions(options);
+export const usePaymentsControllerUpdateStatus = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>, TError,{id: string;data: UpdatePaymentStatusDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof paymentsControllerUpdateStatus>>,
+        TError,
+        {id: string;data: UpdatePaymentStatusDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getPaymentsControllerUpdateStatusMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Create a new survey
  */
 export const surveysControllerCreate = (
-  createSurveyDto: CreateSurveyDto,
-  signal?: AbortSignal
+    createSurveyDto: CreateSurveyDto,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/surveys`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: createSurveyDto,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createSurveyDto, signal
+    },
+      );
+    }
+  
 
-export const getSurveysControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof surveysControllerCreate>>,
-    TError,
-    { data: CreateSurveyDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof surveysControllerCreate>>,
-  TError,
-  { data: CreateSurveyDto },
-  TContext
-> => {
-  const mutationKey = ["surveysControllerCreate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof surveysControllerCreate>>,
-    { data: CreateSurveyDto }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getSurveysControllerCreateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerCreate>>, TError,{data: CreateSurveyDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerCreate>>, TError,{data: CreateSurveyDto}, TContext> => {
 
-    return surveysControllerCreate(data);
-  };
+const mutationKey = ['surveysControllerCreate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SurveysControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerCreate>>
->;
-export type SurveysControllerCreateMutationBody = CreateSurveyDto;
-export type SurveysControllerCreateMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerCreate>>, {data: CreateSurveyDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  surveysControllerCreate(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SurveysControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerCreate>>>
+    export type SurveysControllerCreateMutationBody = CreateSurveyDto
+    export type SurveysControllerCreateMutationError = unknown
+
+    /**
  * @summary Create a new survey
  */
-export const useSurveysControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof surveysControllerCreate>>,
-      TError,
-      { data: CreateSurveyDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof surveysControllerCreate>>,
-  TError,
-  { data: CreateSurveyDto },
-  TContext
-> => {
-  const mutationOptions = getSurveysControllerCreateMutationOptions(options);
+export const useSurveysControllerCreate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerCreate>>, TError,{data: CreateSurveyDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof surveysControllerCreate>>,
+        TError,
+        {data: CreateSurveyDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSurveysControllerCreateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get all surveys (paginated)
  */
 export const surveysControllerFindAll = (
-  params?: SurveysControllerFindAllParams,
-  signal?: AbortSignal
+    params?: SurveysControllerFindAllParams,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<SurveysListResponseDto>({
-    url: `/api/surveys`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<SurveysListResponseDto>(
+      {url: `/api/surveys`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getSurveysControllerFindAllQueryKey = (
-  params?: SurveysControllerFindAllParams
+
+
+export const getSurveysControllerFindAllQueryKey = (params?: SurveysControllerFindAllParams,) => {
+    return [
+    `/api/surveys`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getSurveysControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerFindAll>>, TError = unknown>(params?: SurveysControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindAll>>, TError, TData>>, }
 ) => {
-  return [`/api/surveys`, ...(params ? [params] : [])] as const;
-};
 
-export const getSurveysControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof surveysControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SurveysControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  }
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getSurveysControllerFindAllQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerFindAllQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof surveysControllerFindAll>>
-  > = ({ signal }) => surveysControllerFindAll(params, signal);
+  
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof surveysControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerFindAll>>> = ({ signal }) => surveysControllerFindAll(params, signal);
 
-export type SurveysControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerFindAll>>
->;
-export type SurveysControllerFindAllQueryError = unknown;
+      
 
-export function useSurveysControllerFindAll<
-  TData = Awaited<ReturnType<typeof surveysControllerFindAll>>,
-  TError = unknown,
->(
-  params: undefined | SurveysControllerFindAllParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerFindAll>>>
+export type SurveysControllerFindAllQueryError = unknown
+
+
+export function useSurveysControllerFindAll<TData = Awaited<ReturnType<typeof surveysControllerFindAll>>, TError = unknown>(
+ params: undefined |  SurveysControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerFindAll<
-  TData = Awaited<ReturnType<typeof surveysControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SurveysControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerFindAll<TData = Awaited<ReturnType<typeof surveysControllerFindAll>>, TError = unknown>(
+ params?: SurveysControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerFindAll<
-  TData = Awaited<ReturnType<typeof surveysControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SurveysControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerFindAll<TData = Awaited<ReturnType<typeof surveysControllerFindAll>>, TError = unknown>(
+ params?: SurveysControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all surveys (paginated)
  */
 
-export function useSurveysControllerFindAll<
-  TData = Awaited<ReturnType<typeof surveysControllerFindAll>>,
-  TError = unknown,
->(
-  params?: SurveysControllerFindAllParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getSurveysControllerFindAllQueryOptions(params, options);
+export function useSurveysControllerFindAll<TData = Awaited<ReturnType<typeof surveysControllerFindAll>>, TError = unknown>(
+ params?: SurveysControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSurveysControllerFindAllQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get current client surveys
  */
-export const surveysControllerGetClientSurveys = (signal?: AbortSignal) => {
-  return axiosInstance<void>({
-    url: `/api/surveys/my-surveys`,
-    method: "GET",
-    signal,
-  });
-};
+export const surveysControllerGetClientSurveys = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/my-surveys`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getSurveysControllerGetClientSurveysQueryKey = () => {
-  return [`/api/surveys/my-surveys`] as const;
-};
+    return [
+    `/api/surveys/my-surveys`
+    ] as const;
+    }
 
-export const getSurveysControllerGetClientSurveysQueryOptions = <
-  TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getSurveysControllerGetClientSurveysQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ?? getSurveysControllerGetClientSurveysQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>
-  > = ({ signal }) => surveysControllerGetClientSurveys(signal);
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerGetClientSurveysQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type SurveysControllerGetClientSurveysQueryResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>
->;
-export type SurveysControllerGetClientSurveysQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>> = ({ signal }) => surveysControllerGetClientSurveys(signal);
 
-export function useSurveysControllerGetClientSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerGetClientSurveysQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>>
+export type SurveysControllerGetClientSurveysQueryError = unknown
+
+
+export function useSurveysControllerGetClientSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerGetClientSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetClientSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerGetClientSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetClientSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current client surveys
  */
 
-export function useSurveysControllerGetClientSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getSurveysControllerGetClientSurveysQueryOptions(options);
+export function useSurveysControllerGetClientSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetClientSurveys>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSurveysControllerGetClientSurveysQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get surveys assigned to influencer
  */
-export const surveysControllerGetInfluencerSurveys = (signal?: AbortSignal) => {
-  return axiosInstance<void>({
-    url: `/api/surveys/assigned`,
-    method: "GET",
-    signal,
-  });
-};
+export const surveysControllerGetInfluencerSurveys = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/assigned`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getSurveysControllerGetInfluencerSurveysQueryKey = () => {
-  return [`/api/surveys/assigned`] as const;
-};
+    return [
+    `/api/surveys/assigned`
+    ] as const;
+    }
 
-export const getSurveysControllerGetInfluencerSurveysQueryOptions = <
-  TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getSurveysControllerGetInfluencerSurveysQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getSurveysControllerGetInfluencerSurveysQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>
-  > = ({ signal }) => surveysControllerGetInfluencerSurveys(signal);
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerGetInfluencerSurveysQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type SurveysControllerGetInfluencerSurveysQueryResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>
->;
-export type SurveysControllerGetInfluencerSurveysQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>> = ({ signal }) => surveysControllerGetInfluencerSurveys(signal);
 
-export function useSurveysControllerGetInfluencerSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerGetInfluencerSurveysQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>>
+export type SurveysControllerGetInfluencerSurveysQueryError = unknown
+
+
+export function useSurveysControllerGetInfluencerSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerGetInfluencerSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetInfluencerSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerGetInfluencerSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetInfluencerSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get surveys assigned to influencer
  */
 
-export function useSurveysControllerGetInfluencerSurveys<
-  TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getSurveysControllerGetInfluencerSurveysQueryOptions(options);
+export function useSurveysControllerGetInfluencerSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerSurveys>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSurveysControllerGetInfluencerSurveysQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get survey by ID
  */
-export const surveysControllerFindOne = (id: string, signal?: AbortSignal) => {
-  return axiosInstance<SurveyResponseDto>({
-    url: `/api/surveys/${id}`,
-    method: "GET",
-    signal,
-  });
-};
-
-export const getSurveysControllerFindOneQueryKey = (id?: string) => {
-  return [`/api/surveys/${id}`] as const;
-};
-
-export const getSurveysControllerFindOneQueryOptions = <
-  TData = Awaited<ReturnType<typeof surveysControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  }
+export const surveysControllerFindOne = (
+    id: string,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
+      
+      
+      return axiosInstance<SurveyResponseDto>(
+      {url: `/api/surveys/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-  const queryKey =
-    queryOptions?.queryKey ?? getSurveysControllerFindOneQueryKey(id);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof surveysControllerFindOne>>
-  > = ({ signal }) => surveysControllerFindOne(id, signal);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof surveysControllerFindOne>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+export const getSurveysControllerFindOneQueryKey = (id?: string,) => {
+    return [
+    `/api/surveys/${id}`
+    ] as const;
+    }
 
-export type SurveysControllerFindOneQueryResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerFindOne>>
->;
-export type SurveysControllerFindOneQueryError = void;
+    
+export const getSurveysControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerFindOne>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindOne>>, TError, TData>>, }
+) => {
 
-export function useSurveysControllerFindOne<
-  TData = Awaited<ReturnType<typeof surveysControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerFindOneQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerFindOne>>> = ({ signal }) => surveysControllerFindOne(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerFindOne>>>
+export type SurveysControllerFindOneQueryError = void
+
+
+export function useSurveysControllerFindOne<TData = Awaited<ReturnType<typeof surveysControllerFindOne>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerFindOne<
-  TData = Awaited<ReturnType<typeof surveysControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindOne>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerFindOne<TData = Awaited<ReturnType<typeof surveysControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerFindOne>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerFindOne>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerFindOne<
-  TData = Awaited<ReturnType<typeof surveysControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerFindOne<TData = Awaited<ReturnType<typeof surveysControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get survey by ID
  */
 
-export function useSurveysControllerFindOne<
-  TData = Awaited<ReturnType<typeof surveysControllerFindOne>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerFindOne>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getSurveysControllerFindOneQueryOptions(id, options);
+export function useSurveysControllerFindOne<TData = Awaited<ReturnType<typeof surveysControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerFindOne>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSurveysControllerFindOneQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Update survey
  */
 export const surveysControllerUpdate = (
-  id: string,
-  updateSurveyDto: UpdateSurveyDto
-) => {
-  return axiosInstance<SurveyResponseDto>({
-    url: `/api/surveys/${id}`,
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    data: updateSurveyDto,
-  });
-};
+    id: string,
+    updateSurveyDto: UpdateSurveyDto,
+ ) => {
+      
+      
+      return axiosInstance<SurveyResponseDto>(
+      {url: `/api/surveys/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateSurveyDto
+    },
+      );
+    }
+  
 
-export const getSurveysControllerUpdateMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof surveysControllerUpdate>>,
-    TError,
-    { id: string; data: UpdateSurveyDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof surveysControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateSurveyDto },
-  TContext
-> => {
-  const mutationKey = ["surveysControllerUpdate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof surveysControllerUpdate>>,
-    { id: string; data: UpdateSurveyDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getSurveysControllerUpdateMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerUpdate>>, TError,{id: string;data: UpdateSurveyDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerUpdate>>, TError,{id: string;data: UpdateSurveyDto}, TContext> => {
 
-    return surveysControllerUpdate(id, data);
-  };
+const mutationKey = ['surveysControllerUpdate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SurveysControllerUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerUpdate>>
->;
-export type SurveysControllerUpdateMutationBody = UpdateSurveyDto;
-export type SurveysControllerUpdateMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerUpdate>>, {id: string;data: UpdateSurveyDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  surveysControllerUpdate(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SurveysControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerUpdate>>>
+    export type SurveysControllerUpdateMutationBody = UpdateSurveyDto
+    export type SurveysControllerUpdateMutationError = void
+
+    /**
  * @summary Update survey
  */
-export const useSurveysControllerUpdate = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof surveysControllerUpdate>>,
-      TError,
-      { id: string; data: UpdateSurveyDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof surveysControllerUpdate>>,
-  TError,
-  { id: string; data: UpdateSurveyDto },
-  TContext
-> => {
-  const mutationOptions = getSurveysControllerUpdateMutationOptions(options);
+export const useSurveysControllerUpdate = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerUpdate>>, TError,{id: string;data: UpdateSurveyDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof surveysControllerUpdate>>,
+        TError,
+        {id: string;data: UpdateSurveyDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSurveysControllerUpdateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Delete survey
  */
-export const surveysControllerDelete = (id: string) => {
-  return axiosInstance<void>({ url: `/api/surveys/${id}`, method: "DELETE" });
-};
+export const surveysControllerDelete = (
+    id: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-export const getSurveysControllerDeleteMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof surveysControllerDelete>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof surveysControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["surveysControllerDelete"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof surveysControllerDelete>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getSurveysControllerDeleteMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerDelete>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerDelete>>, TError,{id: string}, TContext> => {
 
-    return surveysControllerDelete(id);
-  };
+const mutationKey = ['surveysControllerDelete'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SurveysControllerDeleteMutationResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerDelete>>
->;
 
-export type SurveysControllerDeleteMutationError = unknown;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerDelete>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  surveysControllerDelete(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SurveysControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerDelete>>>
+    
+    export type SurveysControllerDeleteMutationError = unknown
+
+    /**
  * @summary Delete survey
  */
-export const useSurveysControllerDelete = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof surveysControllerDelete>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof surveysControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions = getSurveysControllerDeleteMutationOptions(options);
+export const useSurveysControllerDelete = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerDelete>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof surveysControllerDelete>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSurveysControllerDeleteMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get survey responses
  */
 export const surveysControllerGetSurveyResponses = (
-  id: string,
-  signal?: AbortSignal
+    id: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/surveys/${id}/responses`,
-    method: "GET",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/${id}/responses`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-export const getSurveysControllerGetSurveyResponsesQueryKey = (id?: string) => {
-  return [`/api/surveys/${id}/responses`] as const;
-};
 
-export const getSurveysControllerGetSurveyResponsesQueryOptions = <
-  TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-        TError,
-        TData
-      >
-    >;
-  }
+
+export const getSurveysControllerGetSurveyResponsesQueryKey = (id?: string,) => {
+    return [
+    `/api/surveys/${id}/responses`
+    ] as const;
+    }
+
+    
+export const getSurveysControllerGetSurveyResponsesQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getSurveysControllerGetSurveyResponsesQueryKey(id);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>
-  > = ({ signal }) => surveysControllerGetSurveyResponses(id, signal);
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerGetSurveyResponsesQueryKey(id);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type SurveysControllerGetSurveyResponsesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>
->;
-export type SurveysControllerGetSurveyResponsesQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>> = ({ signal }) => surveysControllerGetSurveyResponses(id, signal);
 
-export function useSurveysControllerGetSurveyResponses<
-  TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-  TError = unknown,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerGetSurveyResponsesQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>>
+export type SurveysControllerGetSurveyResponsesQueryError = unknown
+
+
+export function useSurveysControllerGetSurveyResponses<TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerGetSurveyResponses<
-  TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetSurveyResponses<TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
           TError,
           Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSurveysControllerGetSurveyResponses<
-  TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetSurveyResponses<TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get survey responses
  */
 
-export function useSurveysControllerGetSurveyResponses<
-  TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-  TError = unknown,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getSurveysControllerGetSurveyResponsesQueryOptions(
-    id,
-    options
-  );
+export function useSurveysControllerGetSurveyResponses<TData = Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetSurveyResponses>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSurveysControllerGetSurveyResponsesQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
+
 
 /**
  * @summary Update survey status (Admin only)
  */
 export const surveysControllerUpdateStatus = (
-  id: string,
-  updateSurveyStatusDto: UpdateSurveyStatusDto
-) => {
-  return axiosInstance<void>({
-    url: `/api/surveys/${id}/status`,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    data: updateSurveyStatusDto,
-  });
-};
+    id: string,
+    updateSurveyStatusDto: UpdateSurveyStatusDto,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/${id}/status`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateSurveyStatusDto
+    },
+      );
+    }
+  
 
-export const getSurveysControllerUpdateStatusMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof surveysControllerUpdateStatus>>,
-    TError,
-    { id: string; data: UpdateSurveyStatusDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof surveysControllerUpdateStatus>>,
-  TError,
-  { id: string; data: UpdateSurveyStatusDto },
-  TContext
-> => {
-  const mutationKey = ["surveysControllerUpdateStatus"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof surveysControllerUpdateStatus>>,
-    { id: string; data: UpdateSurveyStatusDto }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getSurveysControllerUpdateStatusMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerUpdateStatus>>, TError,{id: string;data: UpdateSurveyStatusDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerUpdateStatus>>, TError,{id: string;data: UpdateSurveyStatusDto}, TContext> => {
 
-    return surveysControllerUpdateStatus(id, data);
-  };
+const mutationKey = ['surveysControllerUpdateStatus'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SurveysControllerUpdateStatusMutationResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerUpdateStatus>>
->;
-export type SurveysControllerUpdateStatusMutationBody = UpdateSurveyStatusDto;
-export type SurveysControllerUpdateStatusMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerUpdateStatus>>, {id: string;data: UpdateSurveyStatusDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  surveysControllerUpdateStatus(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SurveysControllerUpdateStatusMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerUpdateStatus>>>
+    export type SurveysControllerUpdateStatusMutationBody = UpdateSurveyStatusDto
+    export type SurveysControllerUpdateStatusMutationError = unknown
+
+    /**
  * @summary Update survey status (Admin only)
  */
-export const useSurveysControllerUpdateStatus = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof surveysControllerUpdateStatus>>,
-      TError,
-      { id: string; data: UpdateSurveyStatusDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof surveysControllerUpdateStatus>>,
-  TError,
-  { id: string; data: UpdateSurveyStatusDto },
-  TContext
-> => {
-  const mutationOptions =
-    getSurveysControllerUpdateStatusMutationOptions(options);
+export const useSurveysControllerUpdateStatus = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerUpdateStatus>>, TError,{id: string;data: UpdateSurveyStatusDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof surveysControllerUpdateStatus>>,
+        TError,
+        {id: string;data: UpdateSurveyStatusDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSurveysControllerUpdateStatusMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Assign influencer to survey (Admin only)
  */
 export const surveysControllerAssignInfluencer = (
-  id: string,
-  influencerId: string,
-  signal?: AbortSignal
+    id: string,
+    influencerId: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/surveys/${id}/assign/${influencerId}`,
-    method: "POST",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/${id}/assign/${influencerId}`, method: 'POST', signal
+    },
+      );
+    }
+  
 
-export const getSurveysControllerAssignInfluencerMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>,
-    TError,
-    { id: string; influencerId: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>,
-  TError,
-  { id: string; influencerId: string },
-  TContext
-> => {
-  const mutationKey = ["surveysControllerAssignInfluencer"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>,
-    { id: string; influencerId: string }
-  > = (props) => {
-    const { id, influencerId } = props ?? {};
+export const getSurveysControllerAssignInfluencerMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>, TError,{id: string;influencerId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>, TError,{id: string;influencerId: string}, TContext> => {
 
-    return surveysControllerAssignInfluencer(id, influencerId);
-  };
+const mutationKey = ['surveysControllerAssignInfluencer'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SurveysControllerAssignInfluencerMutationResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>
->;
 
-export type SurveysControllerAssignInfluencerMutationError = unknown;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>, {id: string;influencerId: string}> = (props) => {
+          const {id,influencerId} = props ?? {};
 
-/**
+          return  surveysControllerAssignInfluencer(id,influencerId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SurveysControllerAssignInfluencerMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>>
+    
+    export type SurveysControllerAssignInfluencerMutationError = unknown
+
+    /**
  * @summary Assign influencer to survey (Admin only)
  */
-export const useSurveysControllerAssignInfluencer = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>,
-      TError,
-      { id: string; influencerId: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>,
-  TError,
-  { id: string; influencerId: string },
-  TContext
-> => {
-  const mutationOptions =
-    getSurveysControllerAssignInfluencerMutationOptions(options);
+export const useSurveysControllerAssignInfluencer = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>, TError,{id: string;influencerId: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof surveysControllerAssignInfluencer>>,
+        TError,
+        {id: string;influencerId: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSurveysControllerAssignInfluencerMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Submit survey response
  */
 export const surveysControllerSubmitResponse = (
-  id: string,
-  signal?: AbortSignal
+    id: string,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/surveys/${id}/respond`,
-    method: "POST",
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/${id}/respond`, method: 'POST', signal
+    },
+      );
+    }
+  
 
-export const getSurveysControllerSubmitResponseMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof surveysControllerSubmitResponse>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof surveysControllerSubmitResponse>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["surveysControllerSubmitResponse"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof surveysControllerSubmitResponse>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getSurveysControllerSubmitResponseMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string}, TContext> => {
 
-    return surveysControllerSubmitResponse(id);
-  };
+const mutationKey = ['surveysControllerSubmitResponse'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type SurveysControllerSubmitResponseMutationResult = NonNullable<
-  Awaited<ReturnType<typeof surveysControllerSubmitResponse>>
->;
 
-export type SurveysControllerSubmitResponseMutationError = unknown;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  surveysControllerSubmitResponse(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SurveysControllerSubmitResponseMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>>
+    
+    export type SurveysControllerSubmitResponseMutationError = unknown
+
+    /**
  * @summary Submit survey response
  */
-export const useSurveysControllerSubmitResponse = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof surveysControllerSubmitResponse>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof surveysControllerSubmitResponse>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions =
-    getSurveysControllerSubmitResponseMutationOptions(options);
+export const useSurveysControllerSubmitResponse = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof surveysControllerSubmitResponse>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getSurveysControllerSubmitResponseMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Create a notification (Admin only)
  */
 export const notificationsControllerCreate = (
-  createNotificationDto: CreateNotificationDto,
-  signal?: AbortSignal
+    createNotificationDto: CreateNotificationDto,
+ signal?: AbortSignal
 ) => {
-  return axiosInstance<void>({
-    url: `/api/notifications`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: createNotificationDto,
-    signal,
-  });
-};
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/notifications`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createNotificationDto, signal
+    },
+      );
+    }
+  
 
-export const getNotificationsControllerCreateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof notificationsControllerCreate>>,
-    TError,
-    { data: CreateNotificationDto },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof notificationsControllerCreate>>,
-  TError,
-  { data: CreateNotificationDto },
-  TContext
-> => {
-  const mutationKey = ["notificationsControllerCreate"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof notificationsControllerCreate>>,
-    { data: CreateNotificationDto }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getNotificationsControllerCreateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerCreate>>, TError,{data: CreateNotificationDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerCreate>>, TError,{data: CreateNotificationDto}, TContext> => {
 
-    return notificationsControllerCreate(data);
-  };
+const mutationKey = ['notificationsControllerCreate'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type NotificationsControllerCreateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerCreate>>
->;
-export type NotificationsControllerCreateMutationBody = CreateNotificationDto;
-export type NotificationsControllerCreateMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof notificationsControllerCreate>>, {data: CreateNotificationDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  notificationsControllerCreate(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type NotificationsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof notificationsControllerCreate>>>
+    export type NotificationsControllerCreateMutationBody = CreateNotificationDto
+    export type NotificationsControllerCreateMutationError = unknown
+
+    /**
  * @summary Create a notification (Admin only)
  */
-export const useNotificationsControllerCreate = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof notificationsControllerCreate>>,
-      TError,
-      { data: CreateNotificationDto },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof notificationsControllerCreate>>,
-  TError,
-  { data: CreateNotificationDto },
-  TContext
-> => {
-  const mutationOptions =
-    getNotificationsControllerCreateMutationOptions(options);
+export const useNotificationsControllerCreate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerCreate>>, TError,{data: CreateNotificationDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof notificationsControllerCreate>>,
+        TError,
+        {data: CreateNotificationDto},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getNotificationsControllerCreateMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get current user notifications
  */
-export const notificationsControllerFindAll = (signal?: AbortSignal) => {
-  return axiosInstance<void>({
-    url: `/api/notifications`,
-    method: "GET",
-    signal,
-  });
-};
+export const notificationsControllerFindAll = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/notifications`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getNotificationsControllerFindAllQueryKey = () => {
-  return [`/api/notifications`] as const;
-};
+    return [
+    `/api/notifications`
+    ] as const;
+    }
 
-export const getNotificationsControllerFindAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getNotificationsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ?? getNotificationsControllerFindAllQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof notificationsControllerFindAll>>
-  > = ({ signal }) => notificationsControllerFindAll(signal);
+  const queryKey =  queryOptions?.queryKey ?? getNotificationsControllerFindAllQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type NotificationsControllerFindAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerFindAll>>
->;
-export type NotificationsControllerFindAllQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof notificationsControllerFindAll>>> = ({ signal }) => notificationsControllerFindAll(signal);
 
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type NotificationsControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof notificationsControllerFindAll>>>
+export type NotificationsControllerFindAllQueryError = unknown
+
+
+export function useNotificationsControllerFindAll<TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof notificationsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof notificationsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationsControllerFindAll<TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof notificationsControllerFindAll>>,
           TError,
           Awaited<ReturnType<typeof notificationsControllerFindAll>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationsControllerFindAll<TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current user notifications
  */
 
-export function useNotificationsControllerFindAll<
-  TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerFindAll>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getNotificationsControllerFindAllQueryOptions(options);
+export function useNotificationsControllerFindAll<TData = Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerFindAll>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getNotificationsControllerFindAllQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
+
+
+
+
 /**
  * @summary Get unread notifications count
  */
-export const notificationsControllerGetUnreadCount = (signal?: AbortSignal) => {
-  return axiosInstance<void>({
-    url: `/api/notifications/unread-count`,
-    method: "GET",
-    signal,
-  });
-};
+export const notificationsControllerGetUnreadCount = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/notifications/unread-count`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
 
 export const getNotificationsControllerGetUnreadCountQueryKey = () => {
-  return [`/api/notifications/unread-count`] as const;
-};
+    return [
+    `/api/notifications/unread-count`
+    ] as const;
+    }
 
-export const getNotificationsControllerGetUnreadCountQueryOptions = <
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getNotificationsControllerGetUnreadCountQueryOptions = <TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError, TData>>, }
+) => {
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getNotificationsControllerGetUnreadCountQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
-  > = ({ signal }) => notificationsControllerGetUnreadCount(signal);
+  const queryKey =  queryOptions?.queryKey ?? getNotificationsControllerGetUnreadCountQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type NotificationsControllerGetUnreadCountQueryResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
->;
-export type NotificationsControllerGetUnreadCountQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>> = ({ signal }) => notificationsControllerGetUnreadCount(signal);
 
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type NotificationsControllerGetUnreadCountQueryResult = NonNullable<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>>
+export type NotificationsControllerGetUnreadCountQueryError = unknown
+
+
+export function useNotificationsControllerGetUnreadCount<TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
           TError,
           Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationsControllerGetUnreadCount<TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
           TError,
           Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationsControllerGetUnreadCount<TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get unread notifications count
  */
 
-export function useNotificationsControllerGetUnreadCount<
-  TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions =
-    getNotificationsControllerGetUnreadCountQueryOptions(options);
+export function useNotificationsControllerGetUnreadCount<TData = Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationsControllerGetUnreadCount>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getNotificationsControllerGetUnreadCountQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-/**
- * @summary Mark notification as read
- */
-export const notificationsControllerMarkAsRead = (id: string) => {
-  return axiosInstance<void>({
-    url: `/api/notifications/${id}/read`,
-    method: "PATCH",
-  });
-};
 
-export const getNotificationsControllerMarkAsReadMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["notificationsControllerMarkAsRead"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
 
-    return notificationsControllerMarkAsRead(id);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type NotificationsControllerMarkAsReadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>
->;
-
-export type NotificationsControllerMarkAsReadMutationError = void;
 
 /**
  * @summary Mark notification as read
  */
-export const useNotificationsControllerMarkAsRead = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions =
-    getNotificationsControllerMarkAsReadMutationOptions(options);
+export const notificationsControllerMarkAsRead = (
+    id: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/notifications/${id}/read`, method: 'PATCH'
+    },
+      );
+    }
+  
 
-  return useMutation(mutationOptions, queryClient);
-};
 
+export const getNotificationsControllerMarkAsReadMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['notificationsControllerMarkAsRead'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  notificationsControllerMarkAsRead(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type NotificationsControllerMarkAsReadMutationResult = NonNullable<Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>>
+    
+    export type NotificationsControllerMarkAsReadMutationError = void
+
+    /**
+ * @summary Mark notification as read
+ */
+export const useNotificationsControllerMarkAsRead = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof notificationsControllerMarkAsRead>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getNotificationsControllerMarkAsReadMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Mark all notifications as read
  */
-export const notificationsControllerMarkAllAsRead = () => {
-  return axiosInstance<void>({
-    url: `/api/notifications/read-all`,
-    method: "PATCH",
-  });
-};
+export const notificationsControllerMarkAllAsRead = (
+    
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/notifications/read-all`, method: 'PATCH'
+    },
+      );
+    }
+  
 
-export const getNotificationsControllerMarkAllAsReadMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-    TError,
-    void,
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["notificationsControllerMarkAllAsRead"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-    void
-  > = () => {
-    return notificationsControllerMarkAllAsRead();
-  };
+export const getNotificationsControllerMarkAllAsReadMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>, TError,void, TContext> => {
 
-  return { mutationFn, ...mutationOptions };
-};
+const mutationKey = ['notificationsControllerMarkAllAsRead'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-export type NotificationsControllerMarkAllAsReadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>
->;
+      
 
-export type NotificationsControllerMarkAllAsReadMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>, void> = () => {
+          
+
+          return  notificationsControllerMarkAllAsRead()
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type NotificationsControllerMarkAllAsReadMutationResult = NonNullable<Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>>
+    
+    export type NotificationsControllerMarkAllAsReadMutationError = unknown
+
+    /**
  * @summary Mark all notifications as read
  */
-export const useNotificationsControllerMarkAllAsRead = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-      TError,
-      void,
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions =
-    getNotificationsControllerMarkAllAsReadMutationOptions(options);
+export const useNotificationsControllerMarkAllAsRead = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>, TError,void, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof notificationsControllerMarkAllAsRead>>,
+        TError,
+        void,
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getNotificationsControllerMarkAllAsReadMutationOptions(options);
 
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Delete notification
  */
-export const notificationsControllerDelete = (id: string) => {
-  return axiosInstance<void>({
-    url: `/api/notifications/${id}`,
-    method: "DELETE",
-  });
-};
+export const notificationsControllerDelete = (
+    id: string,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/notifications/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-export const getNotificationsControllerDeleteMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof notificationsControllerDelete>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof notificationsControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["notificationsControllerDelete"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof notificationsControllerDelete>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getNotificationsControllerDeleteMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerDelete>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerDelete>>, TError,{id: string}, TContext> => {
 
-    return notificationsControllerDelete(id);
-  };
+const mutationKey = ['notificationsControllerDelete'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type NotificationsControllerDeleteMutationResult = NonNullable<
-  Awaited<ReturnType<typeof notificationsControllerDelete>>
->;
 
-export type NotificationsControllerDeleteMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof notificationsControllerDelete>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  notificationsControllerDelete(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type NotificationsControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof notificationsControllerDelete>>>
+    
+    export type NotificationsControllerDeleteMutationError = void
+
+    /**
  * @summary Delete notification
  */
-export const useNotificationsControllerDelete = <
-  TError = void,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof notificationsControllerDelete>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof notificationsControllerDelete>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions =
-    getNotificationsControllerDeleteMutationOptions(options);
+export const useNotificationsControllerDelete = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsControllerDelete>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof notificationsControllerDelete>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getNotificationsControllerDeleteMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
