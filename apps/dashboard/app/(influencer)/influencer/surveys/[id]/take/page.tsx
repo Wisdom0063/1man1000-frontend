@@ -1,0 +1,344 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+  useSurveysControllerStartSurvey,
+  useSurveysControllerSubmitResponse,
+  getSubmissionsControllerGetInfluencerSubmissionsQueryKey,
+  getSurveysControllerGetInfluencerSurveysQueryKey,
+  getSurveysControllerGetInfluencerStatsQueryKey,
+} from "@workspace/client";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { Textarea } from "@workspace/ui/components/textarea";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group";
+import { Checkbox } from "@workspace/ui/components/checkbox";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
+
+type Question = {
+  id: string;
+  questionText: string;
+  questionType: string;
+  questionOrder: number;
+  isRequired: boolean;
+  options?: string[];
+  ratingScaleType?: string;
+};
+
+type Survey = {
+  id: string;
+  title: string;
+  description?: string;
+  questions: Question[];
+  paymentPerResponse?: number;
+};
+
+export default function TakeSurveyPage() {
+  const params = useParams();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const surveyId = params.id as string;
+
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [survey, setSurvey] = useState<Survey | null>(null);
+
+  const startMutation = useSurveysControllerStartSurvey({
+    mutation: {
+      onSuccess: (data: any) => {
+        setSurvey(data);
+      },
+      onError: (error: any) => {
+        console.error("Failed to start survey:", error);
+      },
+    },
+  });
+
+  const submitMutation = useSurveysControllerSubmitResponse({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getSurveysControllerGetInfluencerSurveysQueryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getSurveysControllerGetInfluencerStatsQueryKey(),
+        });
+        router.push("/influencer/surveys");
+      },
+    },
+  });
+
+  // Start survey on mount
+  useState(() => {
+    if (surveyId && !survey && !startMutation.isPending) {
+      startMutation.mutate({ id: surveyId });
+    }
+  });
+
+  const currentQuestion = survey?.questions?.[currentQuestionIndex];
+  const isLastQuestion =
+    currentQuestionIndex === (survey?.questions?.length || 0) - 1;
+  const canProceed =
+    !currentQuestion?.isRequired || answers[currentQuestion?.id];
+
+  const handleAnswerChange = useCallback((questionId: string, value: any) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
+  }, []);
+
+  const handleNext = () => {
+    if (isLastQuestion) {
+      // Submit survey
+      submitMutation.mutate({
+        id: surveyId,
+        data: { answers },
+      });
+    } else {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex((prev) => prev - 1);
+    }
+  };
+
+  if (startMutation.isError || !survey) {
+    return (
+      <ErrorState
+        title="Failed to load survey"
+        message="There was an error loading the survey."
+        onRetry={() => startMutation.mutate({ id: surveyId })}
+      />
+    );
+  }
+
+  if (!currentQuestion) {
+    return <LoadingState text="Loading questions..." />;
+  }
+
+  return (
+    <div className="space-y-6 max-w-3xl mx-auto">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/influencer/surveys">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Surveys
+          </Link>
+        </Button>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{survey.title}</CardTitle>
+              <CardDescription>{survey.description}</CardDescription>
+            </div>
+            {survey.paymentPerResponse && (
+              <div className="text-right">
+                <p className="text-2xl font-bold text-green-600">
+                  GH₵{survey.paymentPerResponse}
+                </p>
+                <p className="text-xs text-muted-foreground">Reward</p>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Progress indicator */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                Question {currentQuestionIndex + 1} of {survey.questions.length}
+              </span>
+              <span className="font-medium">
+                {Math.round(
+                  ((currentQuestionIndex + 1) / survey.questions.length) * 100
+                )}
+                %
+              </span>
+            </div>
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary transition-all duration-300"
+                style={{
+                  width: `${((currentQuestionIndex + 1) / survey.questions.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Question */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-lg font-semibold">
+                {currentQuestion.questionText}
+                {currentQuestion.isRequired && (
+                  <span className="text-destructive ml-1">*</span>
+                )}
+              </Label>
+            </div>
+
+            {/* Answer input based on question type */}
+            {currentQuestion.questionType === "multiple_choice" && (
+              <RadioGroup
+                value={answers[currentQuestion.id] || ""}
+                onValueChange={(value) =>
+                  handleAnswerChange(currentQuestion.id, value)
+                }
+              >
+                {currentQuestion.options?.map((option, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option} id={`option-${index}`} />
+                    <Label
+                      htmlFor={`option-${index}`}
+                      className="cursor-pointer"
+                    >
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            )}
+
+            {currentQuestion.questionType === "checkbox" && (
+              <div className="space-y-2">
+                {currentQuestion.options?.map((option, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`checkbox-${index}`}
+                      checked={
+                        answers[currentQuestion.id]?.includes(option) || false
+                      }
+                      onCheckedChange={(checked) => {
+                        const currentAnswers =
+                          answers[currentQuestion.id] || [];
+                        const newAnswers = checked
+                          ? [...currentAnswers, option]
+                          : currentAnswers.filter((a: string) => a !== option);
+                        handleAnswerChange(currentQuestion.id, newAnswers);
+                      }}
+                    />
+                    <Label
+                      htmlFor={`checkbox-${index}`}
+                      className="cursor-pointer"
+                    >
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {currentQuestion.questionType === "text" && (
+              <Input
+                value={answers[currentQuestion.id] || ""}
+                onChange={(e) =>
+                  handleAnswerChange(currentQuestion.id, e.target.value)
+                }
+                placeholder="Type your answer here..."
+              />
+            )}
+
+            {currentQuestion.questionType === "long_text" && (
+              <Textarea
+                value={answers[currentQuestion.id] || ""}
+                onChange={(e) =>
+                  handleAnswerChange(currentQuestion.id, e.target.value)
+                }
+                placeholder="Type your answer here..."
+                rows={5}
+              />
+            )}
+
+            {currentQuestion.questionType === "rating" && (
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <Button
+                    key={rating}
+                    type="button"
+                    variant={
+                      answers[currentQuestion.id] === rating
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() =>
+                      handleAnswerChange(currentQuestion.id, rating)
+                    }
+                    className="w-12 h-12"
+                  >
+                    {rating}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-between pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handlePrevious}
+              disabled={currentQuestionIndex === 0}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleNext}
+              disabled={!canProceed || submitMutation.isPending}
+            >
+              {submitMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : isLastQuestion ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Submit Survey
+                </>
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
+
+          {submitMutation.isError && (
+            <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-4 text-center">
+              <p className="text-sm text-destructive">
+                Failed to submit survey. Please try again.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

@@ -17,7 +17,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { ExternalLink, ImageIcon } from "lucide-react";
+import { ExternalLink, ImageIcon, Upload } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
@@ -43,7 +43,7 @@ export default function InfluencerSubmissionsPage() {
     isError,
     refetch,
   } = useSubmissionsControllerGetInfluencerSubmissions();
-  const submissions = (response?.data || []) as Submission[];
+  const submissions = (response || []) as Submission[];
 
   const filteredSubmissions = submissions.filter((s) => {
     if (activeTab === "all") return true;
@@ -162,9 +162,21 @@ export default function InfluencerSubmissionsPage() {
             </CardHeader>
             <CardContent>
               {filteredSubmissions.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No submissions found
-                </p>
+                <div className="py-12 text-center">
+                  <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-lg font-medium mb-2">
+                    No submissions found
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {activeTab === "all"
+                      ? "You haven't submitted any campaigns yet. Start by browsing available campaigns!"
+                      : activeTab === "pending"
+                        ? "You don't have any pending submissions."
+                        : activeTab === "approved"
+                          ? "You don't have any approved submissions yet."
+                          : "You don't have any rejected submissions."}
+                  </p>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {filteredSubmissions.map((submission) => (

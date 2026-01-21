@@ -9,10 +9,8 @@ import {
   FileImage,
   CreditCard,
   ClipboardList,
-  Bell,
   Settings,
   LogOut,
-  TrendingUp,
   BarChart3,
   UserCheck,
 } from "lucide-react";
@@ -57,7 +55,6 @@ const clientNavItems = [
   { title: "Dashboard", href: "/client", icon: LayoutDashboard },
   { title: "Campaigns", href: "/client/campaigns", icon: Megaphone },
   { title: "Surveys", href: "/client/surveys", icon: ClipboardList },
-  { title: "Analytics", href: "/client/analytics", icon: TrendingUp },
 ];
 
 const influencerNavItems = [
@@ -136,18 +133,6 @@ export function AppSidebar() {
           <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === "/notifications"}
-                  tooltip="Notifications"
-                >
-                  <Link href="/notifications">
-                    <Bell className="h-4 w-4" />
-                    <span>Notifications</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild

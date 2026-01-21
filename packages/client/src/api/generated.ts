@@ -78,6 +78,9 @@ export interface AuthUserDto {
 export interface LoginResponseDto {
   accessToken: string;
   user: AuthUserDto;
+  emailVerified?: boolean;
+  phoneVerified?: boolean;
+  requiresVerification?: boolean;
 }
 
 export interface LoginDto {
@@ -317,6 +320,11 @@ export interface UpdateUserStatusDto {
   status?: UpdateUserStatusDtoStatus;
 }
 
+export interface ChangePasswordDto {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface TargetViewRangeDto {
   min: number;
   max: number;
@@ -342,7 +350,6 @@ export interface CreateCampaignDto {
   targetAudience: string;
   industry: string;
   adCreatives?: string[];
-  campaignAsset?: string;
   ratePerView?: number;
   submissionDeadlineDays?: number;
   paymentType?: CreateCampaignDtoPaymentType;
@@ -418,6 +425,49 @@ export type CampaignsListResponseDtoMeta = { [key: string]: unknown };
 export interface CampaignsListResponseDto {
   data: CampaignResponseDto[];
   meta: CampaignsListResponseDtoMeta;
+}
+
+export interface DashboardStatsDto {
+  activeCampaigns: number;
+  totalViews: number;
+  submissions: number;
+  conversionRate: string;
+}
+
+export type RecentCampaignDtoTargetViewRange = { [key: string]: unknown };
+
+export interface RecentCampaignDto {
+  id: string;
+  brandName: string;
+  title?: string;
+  status: string;
+  totalViews: number;
+  targetViewRange: RecentCampaignDtoTargetViewRange;
+}
+
+export interface RecentSubmissionInfluencerDto {
+  id: string;
+  name?: string;
+  email: string;
+}
+
+export interface RecentSubmissionCampaignDto {
+  id: string;
+  brandName: string;
+  title?: string;
+}
+
+export interface RecentSubmissionDto {
+  id: string;
+  status: string;
+  influencer?: RecentSubmissionInfluencerDto;
+  campaign?: RecentSubmissionCampaignDto;
+}
+
+export interface DashboardStatsResponseDto {
+  stats: DashboardStatsDto;
+  recentCampaigns: RecentCampaignDto[];
+  recentSubmissions: RecentSubmissionDto[];
 }
 
 export interface TargetViewRangeDetailDto {
@@ -517,6 +567,7 @@ export interface CampaignDetailResponseDto {
   targetAudience: string;
   industry: string;
   adCreatives: string[];
+  campaignAsset?: string;
   status: CampaignDetailResponseDtoStatus;
   totalViews: number;
   ratePerView: number;
@@ -1752,6 +1803,99 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
 
 
 /**
+ * @summary Get current user profile
+ */
+export const usersControllerGetCurrentUser = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<UserResponseDto>(
+      {url: `/api/users/me`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getUsersControllerGetCurrentUserQueryKey = () => {
+    return [
+    `/api/users/me`
+    ] as const;
+    }
+
+    
+export const getUsersControllerGetCurrentUserQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerGetCurrentUserQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>> = ({ signal }) => usersControllerGetCurrentUser(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerGetCurrentUserQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>>
+export type UsersControllerGetCurrentUserQueryError = unknown
+
+
+export function useUsersControllerGetCurrentUser<TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetCurrentUser<TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerGetCurrentUser>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetCurrentUser<TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current user profile
+ */
+
+export function useUsersControllerGetCurrentUser<TData = Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetCurrentUser>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUsersControllerGetCurrentUserQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
  * @summary Get all influencers (Admin only)
  */
 export const usersControllerGetInfluencers = (
@@ -2224,50 +2368,82 @@ export const useUsersControllerUpdateStatus = <TError = void,
     }
     
 /**
- * @summary Create a new campaign with optional asset upload
+ * @summary Change current user password
+ */
+export const usersControllerChangePassword = (
+    changePasswordDto: ChangePasswordDto,
+ ) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/users/me/password`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: changePasswordDto
+    },
+      );
+    }
+  
+
+
+export const getUsersControllerChangePasswordMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerChangePassword>>, TError,{data: ChangePasswordDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof usersControllerChangePassword>>, TError,{data: ChangePasswordDto}, TContext> => {
+
+const mutationKey = ['usersControllerChangePassword'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof usersControllerChangePassword>>, {data: ChangePasswordDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  usersControllerChangePassword(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UsersControllerChangePasswordMutationResult = NonNullable<Awaited<ReturnType<typeof usersControllerChangePassword>>>
+    export type UsersControllerChangePasswordMutationBody = ChangePasswordDto
+    export type UsersControllerChangePasswordMutationError = void
+
+    /**
+ * @summary Change current user password
+ */
+export const useUsersControllerChangePassword = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof usersControllerChangePassword>>, TError,{data: ChangePasswordDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof usersControllerChangePassword>>,
+        TError,
+        {data: ChangePasswordDto},
+        TContext
+      > => {
+
+      const mutationOptions = getUsersControllerChangePasswordMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Create a new campaign
  */
 export const campaignsControllerCreate = (
     createCampaignDto: CreateCampaignDto,
  signal?: AbortSignal
 ) => {
       
-      const formData = new FormData();
-formData.append(`brandName`, createCampaignDto.brandName)
-if(createCampaignDto.title !== undefined) {
- formData.append(`title`, createCampaignDto.title)
- }
-if(createCampaignDto.description !== undefined) {
- formData.append(`description`, createCampaignDto.description)
- }
-formData.append(`budget`, createCampaignDto.budget.toString())
-formData.append(`startDate`, createCampaignDto.startDate)
-formData.append(`endDate`, createCampaignDto.endDate)
-formData.append(`targetViewRange`, JSON.stringify(createCampaignDto.targetViewRange));
-formData.append(`targetAudience`, createCampaignDto.targetAudience)
-formData.append(`industry`, createCampaignDto.industry)
-if(createCampaignDto.adCreatives !== undefined) {
- createCampaignDto.adCreatives.forEach(value => formData.append(`adCreatives`, value));
- }
-if(createCampaignDto.campaignAsset !== undefined) {
- formData.append(`campaignAsset`, createCampaignDto.campaignAsset)
- }
-if(createCampaignDto.ratePerView !== undefined) {
- formData.append(`ratePerView`, createCampaignDto.ratePerView.toString())
- }
-if(createCampaignDto.submissionDeadlineDays !== undefined) {
- formData.append(`submissionDeadlineDays`, createCampaignDto.submissionDeadlineDays.toString())
- }
-if(createCampaignDto.paymentType !== undefined) {
- formData.append(`paymentType`, createCampaignDto.paymentType)
- }
-if(createCampaignDto.paymentViewsThreshold !== undefined) {
- formData.append(`paymentViewsThreshold`, createCampaignDto.paymentViewsThreshold.toString())
- }
-
+      
       return axiosInstance<CampaignResponseDto>(
       {url: `/api/campaigns`, method: 'POST',
-      headers: {'Content-Type': 'multipart/form-data', },
-       data: formData, signal
+      headers: {'Content-Type': 'application/json', },
+      data: createCampaignDto, signal
     },
       );
     }
@@ -2304,7 +2480,7 @@ const {mutation: mutationOptions} = options ?
     export type CampaignsControllerCreateMutationError = unknown
 
     /**
- * @summary Create a new campaign with optional asset upload
+ * @summary Create a new campaign
  */
 export const useCampaignsControllerCreate = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerCreate>>, TError,{data: CreateCampaignDto}, TContext>, }
@@ -2415,6 +2591,69 @@ export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof 
 
 
 /**
+ * @summary Upload campaign asset
+ */
+export const campaignsControllerUploadAsset = (
+    id: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<CampaignResponseDto>(
+      {url: `/api/campaigns/${id}/upload-asset`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getCampaignsControllerUploadAssetMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUploadAsset>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUploadAsset>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['campaignsControllerUploadAsset'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerUploadAsset>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  campaignsControllerUploadAsset(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerUploadAssetMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerUploadAsset>>>
+    
+    export type CampaignsControllerUploadAssetMutationError = unknown
+
+    /**
+ * @summary Upload campaign asset
+ */
+export const useCampaignsControllerUploadAsset = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUploadAsset>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerUploadAsset>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCampaignsControllerUploadAssetMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
  * @summary Get current client campaigns
  */
 export const campaignsControllerGetClientCampaigns = (
@@ -2495,6 +2734,99 @@ export function useCampaignsControllerGetClientCampaigns<TData = Awaited<ReturnT
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getCampaignsControllerGetClientCampaignsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary Get client dashboard statistics
+ */
+export const campaignsControllerGetDashboardStats = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<DashboardStatsResponseDto>(
+      {url: `/api/campaigns/dashboard-stats`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getCampaignsControllerGetDashboardStatsQueryKey = () => {
+    return [
+    `/api/campaigns/dashboard-stats`
+    ] as const;
+    }
+
+    
+export const getCampaignsControllerGetDashboardStatsQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerGetDashboardStatsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>> = ({ signal }) => campaignsControllerGetDashboardStats(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerGetDashboardStatsQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>>
+export type CampaignsControllerGetDashboardStatsQueryError = unknown
+
+
+export function useCampaignsControllerGetDashboardStats<TData = Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>,
+          TError,
+          Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetDashboardStats<TData = Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>,
+          TError,
+          Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerGetDashboardStats<TData = Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get client dashboard statistics
+ */
+
+export function useCampaignsControllerGetDashboardStats<TData = Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerGetDashboardStats>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCampaignsControllerGetDashboardStatsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -3168,30 +3500,18 @@ export const useCampaignsControllerRemoveInfluencer = <TError = void,
     }
     
 /**
- * @summary Create a new submission with screenshot upload
+ * @summary Create a new submission
  */
 export const submissionsControllerCreate = (
     createSubmissionDto: CreateSubmissionDto,
  signal?: AbortSignal
 ) => {
       
-      const formData = new FormData();
-formData.append(`campaignId`, createSubmissionDto.campaignId)
-if(createSubmissionDto.screenshotUrl !== undefined) {
- formData.append(`screenshotUrl`, createSubmissionDto.screenshotUrl)
- }
-formData.append(`extractedViewCount`, createSubmissionDto.extractedViewCount.toString())
-if(createSubmissionDto.description !== undefined) {
- formData.append(`description`, createSubmissionDto.description)
- }
-if(createSubmissionDto.feedback !== undefined) {
- formData.append(`feedback`, createSubmissionDto.feedback)
- }
-
+      
       return axiosInstance<SubmissionResponseDto>(
       {url: `/api/submissions`, method: 'POST',
-      headers: {'Content-Type': 'multipart/form-data', },
-       data: formData, signal
+      headers: {'Content-Type': 'application/json', },
+      data: createSubmissionDto, signal
     },
       );
     }
@@ -3228,7 +3548,7 @@ const {mutation: mutationOptions} = options ?
     export type SubmissionsControllerCreateMutationError = unknown
 
     /**
- * @summary Create a new submission with screenshot upload
+ * @summary Create a new submission
  */
 export const useSubmissionsControllerCreate = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerCreate>>, TError,{data: CreateSubmissionDto}, TContext>, }
@@ -3338,6 +3658,69 @@ export function useSubmissionsControllerFindAll<TData = Awaited<ReturnType<typeo
 
 
 
+/**
+ * @summary Upload submission screenshot
+ */
+export const submissionsControllerUploadScreenshot = (
+    id: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<SubmissionResponseDto>(
+      {url: `/api/submissions/${id}/upload-screenshot`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getSubmissionsControllerUploadScreenshotMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerUploadScreenshot>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerUploadScreenshot>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['submissionsControllerUploadScreenshot'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submissionsControllerUploadScreenshot>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  submissionsControllerUploadScreenshot(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmissionsControllerUploadScreenshotMutationResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerUploadScreenshot>>>
+    
+    export type SubmissionsControllerUploadScreenshotMutationError = unknown
+
+    /**
+ * @summary Upload submission screenshot
+ */
+export const useSubmissionsControllerUploadScreenshot = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerUploadScreenshot>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof submissionsControllerUploadScreenshot>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSubmissionsControllerUploadScreenshotMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get current influencer submissions
  */
@@ -4592,6 +4975,255 @@ export function useSurveysControllerGetInfluencerSurveys<TData = Awaited<ReturnT
 
 
 
+/**
+ * @summary Get available surveys for influencer to browse
+ */
+export const surveysControllerGetAvailableSurveys = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/available`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getSurveysControllerGetAvailableSurveysQueryKey = () => {
+    return [
+    `/api/surveys/available`
+    ] as const;
+    }
+
+    
+export const getSurveysControllerGetAvailableSurveysQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerGetAvailableSurveysQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>> = ({ signal }) => surveysControllerGetAvailableSurveys(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerGetAvailableSurveysQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>>
+export type SurveysControllerGetAvailableSurveysQueryError = unknown
+
+
+export function useSurveysControllerGetAvailableSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetAvailableSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetAvailableSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get available surveys for influencer to browse
+ */
+
+export function useSurveysControllerGetAvailableSurveys<TData = Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetAvailableSurveys>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSurveysControllerGetAvailableSurveysQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary Get influencer survey statistics
+ */
+export const surveysControllerGetInfluencerStats = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/stats`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getSurveysControllerGetInfluencerStatsQueryKey = () => {
+    return [
+    `/api/surveys/stats`
+    ] as const;
+    }
+
+    
+export const getSurveysControllerGetInfluencerStatsQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerGetInfluencerStatsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>> = ({ signal }) => surveysControllerGetInfluencerStats(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerGetInfluencerStatsQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>>
+export type SurveysControllerGetInfluencerStatsQueryError = unknown
+
+
+export function useSurveysControllerGetInfluencerStats<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetInfluencerStats<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetInfluencerStats<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get influencer survey statistics
+ */
+
+export function useSurveysControllerGetInfluencerStats<TData = Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetInfluencerStats>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSurveysControllerGetInfluencerStatsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary Start a survey (self-assign)
+ */
+export const surveysControllerStartSurvey = (
+    id: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/surveys/${id}/start`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getSurveysControllerStartSurveyMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerStartSurvey>>, TError,{id: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerStartSurvey>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['surveysControllerStartSurvey'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerStartSurvey>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  surveysControllerStartSurvey(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SurveysControllerStartSurveyMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerStartSurvey>>>
+    
+    export type SurveysControllerStartSurveyMutationError = unknown
+
+    /**
+ * @summary Start a survey (self-assign)
+ */
+export const useSurveysControllerStartSurvey = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerStartSurvey>>, TError,{id: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof surveysControllerStartSurvey>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSurveysControllerStartSurveyMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 /**
  * @summary Get survey by ID
  */

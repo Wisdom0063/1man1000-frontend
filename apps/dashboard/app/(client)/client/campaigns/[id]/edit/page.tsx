@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -17,11 +17,13 @@ import { CampaignForm } from "@/components/campaign-form";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { type CampaignFormData } from "@/lib/schemas";
+import axios from "axios";
 
 export default function ClientEditCampaignPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [isUploadingAsset, setIsUploadingAsset] = useState(false);
   const campaignId = params.id as string;
 
   const {
@@ -85,11 +87,42 @@ export default function ClientEditCampaignPage() {
     );
   }
 
-  const onSubmit = (data: CampaignFormData) => {
+  const onSubmit = async (data: CampaignFormData, file?: File) => {
+    // Update campaign data first
     updateMutation.mutate({
       id: campaignId,
       data: data as unknown as UpdateCampaignDto,
     });
+
+    // If there's a file, upload it separately
+    if (file) {
+      setIsUploadingAsset(true);
+      try {
+        const formData = new FormData();
+        formData.append("asset", file);
+
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        await axios.post(
+          `${apiUrl}/api/campaigns/${campaignId}/upload-asset`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // Refresh campaign data after asset upload
+        queryClient.invalidateQueries({
+          queryKey: getCampaignsControllerFindOneQueryKey(campaignId),
+        });
+      } catch (error) {
+        console.error("Error uploading asset:", error);
+      } finally {
+        setIsUploadingAsset(false);
+      }
+    }
   };
 
   return (
@@ -110,12 +143,13 @@ export default function ClientEditCampaignPage() {
         defaultValues={defaultValues}
         submitLabel="Save Changes"
         cancelHref={`/client/campaigns/${campaignId}`}
-        isSubmitting={updateMutation.isPending}
+        isSubmitting={updateMutation.isPending || isUploadingAsset}
         onSubmit={onSubmit}
         isError={updateMutation.isError}
         errorText="Failed to update campaign. Please try again."
         showBudgetEstimate
         containerClassName="space-y-6"
+        existingAssetUrl={campaign.campaignAsset || undefined}
       />
     </div>
   );

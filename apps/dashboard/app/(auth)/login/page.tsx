@@ -21,6 +21,9 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 type LoginResponse = {
   accessToken: string;
   user: User;
+  emailVerified?: boolean;
+  phoneVerified?: boolean;
+  requiresVerification?: boolean;
 };
 
 export default function LoginPage() {
@@ -38,6 +41,23 @@ export default function LoginPage() {
         setToken(response.accessToken);
         setUser(response.user);
 
+        // Check if user needs verification (not admin)
+        if (response.requiresVerification) {
+          // Navigate to appropriate verification screen
+          const phone = response.user.phone || "";
+          if (!response.emailVerified) {
+            router.push(
+              `/verify/email?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`
+            );
+          } else if (!response.phoneVerified) {
+            router.push(
+              `/verify/phone?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`
+            );
+          }
+          return;
+        }
+
+        // User is verified or is admin, proceed to dashboard
         const redirectPath =
           response.user.role === "admin"
             ? "/admin"

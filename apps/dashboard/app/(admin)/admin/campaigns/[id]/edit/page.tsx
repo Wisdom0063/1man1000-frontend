@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -17,11 +17,13 @@ import { CampaignForm } from "@/components/campaign-form";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { type CampaignFormData } from "@/lib/schemas";
+import axios from "axios";
 
 export default function AdminEditCampaignPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [isUploadingAsset, setIsUploadingAsset] = useState(false);
   const campaignId = params.id as string;
 
   const {
@@ -33,7 +35,33 @@ export default function AdminEditCampaignPage() {
 
   const updateMutation = useCampaignsControllerUpdate({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async (response, variables) => {
+        // If there's a file, upload it after campaign update
+        const file = (variables as any).file;
+        if (file) {
+          setIsUploadingAsset(true);
+          try {
+            const formData = new FormData();
+            formData.append("asset", file);
+
+            const apiUrl =
+              process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+            await axios.post(
+              `${apiUrl}/api/campaigns/${campaignId}/upload-asset`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+          } catch (error) {
+            console.error("Error uploading asset:", error);
+          } finally {
+            setIsUploadingAsset(false);
+          }
+        }
+
         queryClient.invalidateQueries({
           queryKey: getCampaignsControllerFindOneQueryKey(campaignId),
         });
@@ -85,11 +113,12 @@ export default function AdminEditCampaignPage() {
     );
   }
 
-  const onSubmit = (data: CampaignFormData) => {
+  const onSubmit = (data: CampaignFormData, file?: File) => {
     updateMutation.mutate({
       id: campaignId,
       data: data as unknown as UpdateCampaignDto,
-    });
+      file,
+    } as any);
   };
 
   return (
@@ -110,10 +139,11 @@ export default function AdminEditCampaignPage() {
         defaultValues={defaultValues}
         submitLabel="Save Changes"
         cancelHref={`/admin/campaigns/${campaignId}`}
-        isSubmitting={updateMutation.isPending}
+        isSubmitting={updateMutation.isPending || isUploadingAsset}
         onSubmit={onSubmit}
         isError={updateMutation.isError}
         errorText="Failed to update campaign. Please try again."
+        existingAssetUrl={campaign.campaignAsset || undefined}
       />
     </div>
   );

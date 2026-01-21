@@ -42,6 +42,7 @@ export type CampaignFormProps = {
   errorText?: string;
   showBudgetEstimate?: boolean;
   containerClassName?: string;
+  existingAssetUrl?: string;
 };
 
 export function CampaignForm({
@@ -52,6 +53,7 @@ export function CampaignForm({
   onSubmit,
   isError,
   errorText,
+  existingAssetUrl,
   showBudgetEstimate,
   containerClassName,
 }: CampaignFormProps) {
@@ -341,7 +343,7 @@ export function CampaignForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!selectedFile ? (
+          {!selectedFile && !existingAssetUrl ? (
             <div
               className="border-2 border-dashed border-border/60 rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
               onClick={() => document.getElementById("campaignAsset")?.click()}
@@ -374,7 +376,7 @@ export function CampaignForm({
                 }}
               />
             </div>
-          ) : (
+          ) : selectedFile ? (
             <div className="space-y-3">
               <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
                 {selectedFile.type.startsWith("video/") ? (
@@ -411,7 +413,51 @@ export function CampaignForm({
                 </Button>
               </div>
             </div>
-          )}
+          ) : existingAssetUrl ? (
+            <div className="space-y-3">
+              <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                {existingAssetUrl.match(/\.(mp4|webm|mov)$/i) ? (
+                  <video
+                    src={existingAssetUrl}
+                    className="w-full h-full object-cover"
+                    controls
+                  />
+                ) : (
+                  <img
+                    src={existingAssetUrl}
+                    alt="Current campaign asset"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <FileImage className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Current asset</span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    document.getElementById("campaignAsset")?.click()
+                  }
+                >
+                  Replace
+                </Button>
+              </div>
+              <input
+                id="campaignAsset"
+                type="file"
+                accept="image/*,video/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileSelect(file);
+                }}
+              />
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 

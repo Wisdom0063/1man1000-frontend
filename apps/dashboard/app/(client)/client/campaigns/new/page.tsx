@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -12,14 +13,42 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { CampaignForm } from "@/components/campaign-form";
 import { type CampaignFormData } from "@/lib/schemas";
+import axios from "axios";
 
 export default function CreateClientCampaignPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [isUploadingAsset, setIsUploadingAsset] = useState(false);
 
   const createMutation = useCampaignsControllerCreate({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async (response, variables) => {
+        // If there's a file, upload it after campaign creation
+        const file = (variables as any).file;
+        if (file && response.id) {
+          setIsUploadingAsset(true);
+          try {
+            const formData = new FormData();
+            formData.append("asset", file);
+
+            const apiUrl =
+              process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+            await axios.post(
+              `${apiUrl}/api/campaigns/${response.id}/upload-asset`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+          } catch (error) {
+            console.error("Error uploading asset:", error);
+          } finally {
+            setIsUploadingAsset(false);
+          }
+        }
+
         queryClient.invalidateQueries({
           queryKey: getCampaignsControllerGetClientCampaignsQueryKey(),
         });
@@ -32,27 +61,13 @@ export default function CreateClientCampaignPage() {
   });
 
   const onSubmit = (data: CampaignFormData, file?: File) => {
-    if (file) {
-      // Create FormData to send file with campaign data
-      const formData = new FormData();
-      formData.append("campaignAsset", file);
+    // Create campaign with JSON data only
+    const campaignData: CreateCampaignDto = {
+      ...data,
+    } as CreateCampaignDto;
 
-      // Append all campaign fields
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (typeof value === "object") {
-            formData.append(key, JSON.stringify(value));
-          } else {
-            formData.append(key, value.toString());
-          }
-        }
-      });
-
-      createMutation.mutate({ data: formData as any });
-    } else {
-      // No file, send as regular JSON
-      createMutation.mutate({ data: data as CreateCampaignDto });
-    }
+    // Store file reference for upload after creation
+    createMutation.mutate({ data: campaignData, file } as any);
   };
 
   return (
@@ -76,7 +91,7 @@ export default function CreateClientCampaignPage() {
       <CampaignForm
         submitLabel="Create Campaign"
         cancelHref="/client/campaigns"
-        isSubmitting={createMutation.isPending}
+        isSubmitting={createMutation.isPending || isUploadingAsset}
         onSubmit={onSubmit}
         isError={createMutation.isError}
         errorText="Failed to create campaign. Please check your details and try again."

@@ -22,40 +22,71 @@ import {
   Target,
   BarChart3,
 } from "lucide-react";
-
-const stats = {
-  totalViews: 89456,
-  totalCampaigns: 8,
-  activeInfluencers: 35,
-  avgConversion: 2.8,
-  totalSpent: 15680,
-};
-
-const campaignPerformance = [
-  {
-    name: "Summer Product Launch",
-    views: 45000,
-    target: 100000,
-    influencers: 12,
-    conversion: 3.2,
-  },
-  {
-    name: "Brand Awareness Q4",
-    views: 32000,
-    target: 50000,
-    influencers: 8,
-    conversion: 2.5,
-  },
-  {
-    name: "Fall Collection",
-    views: 12456,
-    target: 30000,
-    influencers: 15,
-    conversion: 2.1,
-  },
-];
+import { useCampaignsControllerGetClientCampaigns } from "@workspace/client";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
 export default function ClientAnalyticsPage() {
+  const {
+    data: campaigns,
+    isLoading,
+    isError,
+    refetch,
+  } = useCampaignsControllerGetClientCampaigns();
+
+  if (isLoading) return <LoadingState text="Loading analytics..." />;
+
+  if (isError || !campaigns) {
+    return (
+      <ErrorState
+        title="Failed to load analytics"
+        message="There was an error loading your analytics data."
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  // Calculate stats from campaigns
+  const totalViews = campaigns.reduce((sum, c) => sum + (c.totalViews || 0), 0);
+  const totalCampaigns = campaigns.length;
+  const totalInfluencers = campaigns.reduce(
+    (sum, c) => sum + (c._count?.assignments || 0),
+    0
+  );
+  const totalSubmissions = campaigns.reduce(
+    (sum, c) => sum + (c._count?.submissions || 0),
+    0
+  );
+  const avgConversion =
+    totalViews > 0 ? ((totalSubmissions / totalViews) * 100).toFixed(1) : "0.0";
+  const totalSpent = campaigns.reduce((sum, c) => sum + (c.budget || 0), 0);
+
+  const stats = {
+    totalViews,
+    totalCampaigns,
+    activeInfluencers: totalInfluencers,
+    avgConversion: parseFloat(avgConversion),
+    totalSpent,
+  };
+
+  // Get campaign performance data
+  const campaignPerformance = campaigns
+    .filter((c) => c.status === "active" || c.status === "approved")
+    .map((campaign) => ({
+      id: campaign.id,
+      name: campaign.title || campaign.brandName,
+      views: campaign.totalViews || 0,
+      target: campaign.targetViewRange?.max || 0,
+      influencers: campaign._count?.assignments || 0,
+      conversion:
+        campaign.totalViews > 0
+          ? (
+              ((campaign._count?.submissions || 0) / campaign.totalViews) *
+              100
+            ).toFixed(1)
+          : "0.0",
+    }))
+    .slice(0, 5);
   return (
     <div className="space-y-6">
       <div>

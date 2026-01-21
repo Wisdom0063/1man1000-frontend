@@ -21,13 +21,19 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import {
-  Search,
-  Upload,
+  Calendar,
   Eye,
+  TrendingUp,
   Clock,
-  CheckCircle,
+  Search,
+  ExternalLink,
+  Download,
+  X,
+  Megaphone,
   Target,
   DollarSign,
+  Upload,
+  CheckCircle,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -112,7 +118,7 @@ export default function InfluencerCampaignsPage() {
         </Button>
       </div>
 
-      {response?.meta && response.meta.totalPages > 1 && (
+      {response?.meta && response.meta.totalPages! > 1 && (
         <div className="flex items-center justify-center gap-2">
           <Button
             variant="outline"
@@ -129,9 +135,9 @@ export default function InfluencerCampaignsPage() {
             variant="outline"
             size="sm"
             onClick={() =>
-              setPage((p) => Math.min(response.meta.totalPages, p + 1))
+              setPage((p) => Math.min(response.meta!.totalPages!, p + 1))
             }
-            disabled={page === response.meta.totalPages}
+            disabled={page === response.meta!.totalPages}
           >
             Next
           </Button>

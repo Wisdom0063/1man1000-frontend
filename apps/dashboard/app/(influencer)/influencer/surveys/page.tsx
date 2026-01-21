@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useSurveysControllerGetInfluencerSurveys } from "@workspace/client";
+import Link from "next/link";
+import {
+  useSurveysControllerGetInfluencerSurveys,
+  useSurveysControllerGetInfluencerStats,
+  useSurveysControllerGetAvailableSurveys,
+} from "@workspace/client";
 import {
   Card,
   CardContent,
@@ -17,28 +22,47 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { ClipboardList, Clock, CheckCircle, Star, Play } from "lucide-react";
+import {
+  ClipboardList,
+  Clock,
+  CheckCircle,
+  Star,
+  Play,
+  DollarSign,
+} from "lucide-react";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
-
-const stats = {
-  completed: 12,
-  earnings: 145,
-  avgRating: 4.8,
-};
 
 export default function InfluencerSurveysPage() {
   const [activeTab, setActiveTab] = useState("available");
 
   const {
-    data: response,
-    isLoading,
-    isError,
-    refetch,
+    data: assignedResponse,
+    isLoading: assignedLoading,
+    isError: assignedError,
+    refetch: refetchAssigned,
   } = useSurveysControllerGetInfluencerSurveys();
 
-  const surveys = useMemo(() => {
-    const assignments = (response || []) as Array<any>;
+  const {
+    data: availableResponse,
+    isLoading: availableLoading,
+    isError: availableError,
+    refetch: refetchAvailable,
+  } = useSurveysControllerGetAvailableSurveys();
+
+  const { data: statsResponse, isLoading: statsLoading } =
+    useSurveysControllerGetInfluencerStats();
+
+  const stats = statsResponse || {
+    completedSurveys: 0,
+    totalEarnings: 0,
+    averageRating: 0,
+    inProgressCount: 0,
+    availableCount: 0,
+  };
+
+  const assignedSurveys = useMemo(() => {
+    const assignments = (assignedResponse || []) as Array<any>;
 
     return assignments.map((a) => {
       const status =
@@ -46,37 +70,57 @@ export default function InfluencerSurveysPage() {
           ? "completed"
           : a.status === "in_progress"
             ? "in_progress"
-            : "available";
+            : "assigned";
 
       return {
         id: a.surveyId || a.survey?.id,
         title: a.survey?.title,
         client: a.survey?.client?.name,
         reward: a.paymentAmount || a.survey?.paymentPerResponse || 0,
-        duration: "",
+        duration: `${a.survey?._count?.questions || 0} questions`,
         status,
         category: "Survey",
       };
     });
-  }, [response]);
+  }, [assignedResponse]);
 
-  const filteredSurveys = surveys.filter((s) => {
-    if (activeTab === "available") return s.status === "available";
-    if (activeTab === "in_progress") return s.status === "in_progress";
-    if (activeTab === "completed") return s.status === "completed";
-    return true;
-  });
+  const availableSurveys = useMemo(() => {
+    const surveys = (availableResponse || []) as Array<any>;
 
-  if (isLoading) {
+    return surveys.map((s) => ({
+      id: s.id,
+      title: s.title,
+      client: s.client?.name,
+      reward: s.paymentPerResponse || 0,
+      duration: `${s._count?.questions || 0} questions`,
+      status: "available",
+      category: "Survey",
+      description: s.description,
+    }));
+  }, [availableResponse]);
+
+  const filteredSurveys = useMemo(() => {
+    if (activeTab === "available") return availableSurveys;
+    if (activeTab === "in_progress")
+      return assignedSurveys.filter((s) => s.status === "in_progress");
+    if (activeTab === "completed")
+      return assignedSurveys.filter((s) => s.status === "completed");
+    return [];
+  }, [activeTab, availableSurveys, assignedSurveys]);
+
+  if (assignedLoading || availableLoading || statsLoading) {
     return <LoadingState text="Loading surveys..." />;
   }
 
-  if (isError) {
+  if (assignedError || availableError) {
     return (
       <ErrorState
         title="Failed to load surveys"
         message="There was an error loading surveys."
-        onRetry={() => refetch()}
+        onRetry={() => {
+          refetchAssigned();
+          refetchAvailable();
+        }}
       />
     );
   }
@@ -99,7 +143,7 @@ export default function InfluencerSurveysPage() {
             <CheckCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.completed}</div>
+            <div className="text-2xl font-bold">{stats.completedSurveys}</div>
           </CardContent>
         </Card>
 
@@ -111,7 +155,7 @@ export default function InfluencerSurveysPage() {
             <ClipboardList className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">GH₵{stats.earnings}</div>
+            <div className="text-2xl font-bold">GH₵{stats.totalEarnings}</div>
           </CardContent>
         </Card>
 
@@ -123,7 +167,7 @@ export default function InfluencerSurveysPage() {
             <Star className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.avgRating}/5</div>
+            <div className="text-2xl font-bold">{stats.averageRating}/5</div>
           </CardContent>
         </Card>
       </div>
@@ -133,54 +177,88 @@ export default function InfluencerSurveysPage() {
           <TabsTrigger value="available">
             Available
             <Badge variant="secondary" className="ml-2">
-              {surveys.filter((s) => s.status === "available").length}
+              {availableSurveys.length}
             </Badge>
           </TabsTrigger>
-          <TabsTrigger value="in_progress">In Progress</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="in_progress">
+            In Progress
+            {stats.inProgressCount > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {stats.inProgressCount}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="completed">
+            Completed ({stats.completedSurveys})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSurveys.map((survey) => (
-              <Card key={survey.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline">{survey.category}</Badge>
-                    <span className="text-lg font-bold text-green-600">
-                      GH₵{survey.reward}
-                    </span>
-                  </div>
-                  <CardTitle className="text-lg">{survey.title}</CardTitle>
-                  <CardDescription>{survey.client}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{survey.duration}</span>
-                  </div>
+          {filteredSurveys.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <ClipboardList className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-lg font-medium mb-2">No surveys found</p>
+                <p className="text-sm text-muted-foreground">
+                  {activeTab === "available"
+                    ? "There are no available surveys at the moment. Check back later!"
+                    : activeTab === "in_progress"
+                      ? "You don't have any surveys in progress."
+                      : "You haven't completed any surveys yet."}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredSurveys.map((survey) => (
+                <Card key={survey.id}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline">{survey.category}</Badge>
+                      <span className="text-lg font-bold text-green-600">
+                        GH₵{survey.reward}
+                      </span>
+                    </div>
+                    <CardTitle className="text-lg">{survey.title}</CardTitle>
+                    <CardDescription>
+                      {survey.client}
+                      {survey.description && activeTab === "available" && (
+                        <span className="block mt-2 text-xs">
+                          {survey.description}
+                        </span>
+                      )}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>{survey.duration}</span>
+                    </div>
 
-                  {survey.status === "available" && (
-                    <Button className="w-full">
-                      <Play className="mr-2 h-4 w-4" />
-                      Start Survey
-                    </Button>
-                  )}
-                  {survey.status === "in_progress" && (
-                    <Button className="w-full" variant="secondary">
-                      Continue Survey
-                    </Button>
-                  )}
-                  {survey.status === "completed" && (
-                    <Button className="w-full" variant="outline" disabled>
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Completed
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    {survey.status === "available" && (
+                      <Button className="w-full" asChild>
+                        <Link href={`/influencer/surveys/${survey.id}/take`}>
+                          <Play className="mr-2 h-4 w-4" />
+                          Start Survey
+                        </Link>
+                      </Button>
+                    )}
+                    {survey.status === "in_progress" && (
+                      <Button className="w-full" variant="secondary">
+                        Continue Survey
+                      </Button>
+                    )}
+                    {survey.status === "completed" && (
+                      <Button className="w-full" variant="outline" disabled>
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Completed
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

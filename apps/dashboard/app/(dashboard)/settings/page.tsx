@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,10 +19,104 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { useAuthStore } from "@/lib/auth-store";
+import {
+  useUsersControllerGetCurrentUser,
+  useUsersControllerUpdate,
+  useUsersControllerChangePassword,
+} from "@workspace/client";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
 export default function SettingsPage() {
-  const { user } = useAuthStore();
+  const [profileData, setProfileData] = useState({
+    name: "",
+    phone: "",
+    company: "",
+    mobileMoneyNumber: "",
+    mobileMoneyNetwork: "",
+  });
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const {
+    data: user,
+    isLoading,
+    isError,
+    refetch,
+  } = useUsersControllerGetCurrentUser();
+
+  const updateMutation = useUsersControllerUpdate({
+    mutation: {
+      onSuccess: () => {
+        alert("Profile updated successfully");
+        refetch();
+      },
+      onError: () => {
+        alert("Failed to update profile");
+      },
+    },
+  });
+
+  const changePasswordMutation = useUsersControllerChangePassword({
+    mutation: {
+      onSuccess: () => {
+        alert("Password changed successfully");
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      },
+      onError: () => {
+        alert("Failed to change password. Check your current password.");
+      },
+    },
+  });
+
+  if (isLoading) return <LoadingState text="Loading settings..." />;
+
+  if (isError || !user) {
+    return (
+      <ErrorState
+        title="Failed to load settings"
+        message="There was an error loading your settings."
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  const handleProfileUpdate = () => {
+    if (!user.id) return;
+
+    updateMutation.mutate({
+      id: user.id,
+      data: {
+        name: profileData.name || user.name,
+        phone: profileData.phone || user.phone,
+        company: profileData.company || user.company,
+        mobileMoneyNumber: profileData.mobileMoneyNumber || undefined,
+        mobileMoneyNetwork:
+          (profileData.mobileMoneyNetwork as any) || undefined,
+      },
+    });
+  };
+
+  const handlePasswordChange = () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert("New passwords do not match");
+      return;
+    }
+
+    changePasswordMutation.mutate({
+      data: {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      },
+    });
+  };
 
   return (
     <DashboardLayout>
@@ -50,23 +145,61 @@ export default function SettingsPage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" defaultValue={user?.name} />
+                    <Input
+                      id="name"
+                      defaultValue={user.name || ""}
+                      onChange={(e) =>
+                        setProfileData({ ...profileData, name: e.target.value })
+                      }
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
-                      defaultValue={user?.email}
+                      defaultValue={user.email}
                       disabled
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" type="tel" placeholder="+233 XX XXX XXXX" />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      defaultValue={user.phone || ""}
+                      onChange={(e) =>
+                        setProfileData({
+                          ...profileData,
+                          phone: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  {user.role === "client" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Company</Label>
+                      <Input
+                        id="company"
+                        defaultValue={user.company || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            company: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
-                <Button>Save Changes</Button>
+                <Button
+                  onClick={handleProfileUpdate}
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
               </CardContent>
             </Card>
 

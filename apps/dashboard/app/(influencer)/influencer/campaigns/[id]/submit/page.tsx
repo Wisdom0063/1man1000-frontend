@@ -10,7 +10,6 @@ import {
   useSubmissionsControllerCreate,
   getSubmissionsControllerGetInfluencerSubmissionsQueryKey,
   getCampaignsControllerGetInfluencerCampaignsQueryKey,
-  CreateSubmissionDto,
 } from "@workspace/client";
 import {
   Card,
@@ -52,7 +51,6 @@ export default function SubmitCampaignPage() {
   const campaignId = params.id as string;
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
 
   const {
     data: response,
@@ -76,14 +74,56 @@ export default function SubmitCampaignPage() {
 
   const submitMutation = useSubmissionsControllerCreate({
     mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getSubmissionsControllerGetInfluencerSubmissionsQueryKey(),
-        });
-        queryClient.invalidateQueries({
-          queryKey: getCampaignsControllerGetInfluencerCampaignsQueryKey(),
-        });
-        router.push("/influencer/submissions");
+      onSuccess: async (data: any) => {
+        // After creating submission, upload screenshot if file is selected
+        if (selectedFile && data.id) {
+          try {
+            const formData = new FormData();
+            formData.append("screenshot", selectedFile);
+
+            // Upload screenshot using fetch
+            const token = localStorage.getItem("auth-storage");
+            const authData = token ? JSON.parse(token) : null;
+            const accessToken = authData?.state?.token;
+
+            const response = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/submissions/${data.id}/upload-screenshot`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+                body: formData,
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to upload screenshot");
+            }
+
+            queryClient.invalidateQueries({
+              queryKey:
+                getSubmissionsControllerGetInfluencerSubmissionsQueryKey(),
+            });
+            queryClient.invalidateQueries({
+              queryKey: getCampaignsControllerGetInfluencerCampaignsQueryKey(),
+            });
+            router.push("/influencer/submissions");
+          } catch (error) {
+            console.error("Screenshot upload error:", error);
+            alert("Failed to upload screenshot. Please try again.");
+          }
+        } else {
+          // No file to upload, redirect directly
+          queryClient.invalidateQueries({
+            queryKey:
+              getSubmissionsControllerGetInfluencerSubmissionsQueryKey(),
+          });
+          queryClient.invalidateQueries({
+            queryKey: getCampaignsControllerGetInfluencerCampaignsQueryKey(),
+          });
+          router.push("/influencer/submissions");
+        }
       },
     },
   });
@@ -93,17 +133,12 @@ export default function SubmitCampaignPage() {
       return;
     }
 
-    // Create FormData to send file with submission data
-    const formData = new FormData();
-    formData.append("screenshot", selectedFile);
-    formData.append("campaignId", data.campaignId);
-    formData.append("extractedViewCount", data.extractedViewCount.toString());
-    if (data.description) {
-      formData.append("description", data.description);
-    }
-
+    // Create submission with JSON data (file will be uploaded separately)
     submitMutation.mutate({
-      data: formData as any,
+      data: {
+        campaignId: data.campaignId,
+        extractedViewCount: data.extractedViewCount,
+      },
     });
   };
 
@@ -126,39 +161,6 @@ export default function SubmitCampaignPage() {
       setValue("screenshotUrl", url);
     },
     [setValue]
-  );
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        handleFileSelect(file);
-      }
-    },
-    [handleFileSelect]
-  );
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
-
-  const handleFileInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        handleFileSelect(file);
-      }
-    },
-    [handleFileSelect]
   );
 
   const removeFile = useCallback(() => {
@@ -235,80 +237,70 @@ export default function SubmitCampaignPage() {
               Provide a screenshot showing your view count for this campaign
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {!previewUrl ? (
+          <CardContent>
+            {!selectedFile ? (
               <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
-                  isDragging
-                    ? "border-primary bg-primary/5"
-                    : "border-border/60 hover:border-border"
-                }`}
+                className="border-2 border-dashed border-border/60 rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                onClick={() =>
+                  document.getElementById("screenshot-upload")?.click()
+                }
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const file = e.dataTransfer.files[0];
+                  if (file) handleFileSelect(file);
+                }}
               >
-                <input
-                  type="file"
-                  id="screenshot-upload"
-                  accept="image/*"
-                  onChange={handleFileInputChange}
-                  className="hidden"
-                  {...register("screenshotUrl")}
-                />
-                <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-sm font-medium mb-1">
-                  Drag and drop your screenshot here
+                  Click to upload or drag and drop
                 </p>
-                <p className="text-xs text-muted-foreground mb-4">
-                  or click to browse
+                <p className="text-xs text-muted-foreground">
+                  Images (PNG, JPG, GIF) up to 10MB
                 </p>
-                <label htmlFor="screenshot-upload">
-                  <Button type="button" variant="outline" size="sm" asChild>
-                    <span>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Choose File
-                    </span>
-                  </Button>
-                </label>
-                <p className="text-xs text-muted-foreground mt-4">
-                  Supported formats: JPG, PNG, GIF (Max 10MB)
-                </p>
-                {errors.screenshotUrl && (
-                  <p className="text-xs text-destructive mt-2">
-                    {errors.screenshotUrl.message}
-                  </p>
-                )}
+                <input
+                  id="screenshot-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileSelect(file);
+                  }}
+                />
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Screenshot Preview</Label>
+                <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                  <img
+                    src={previewUrl || ""}
+                    alt="Screenshot preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium truncate">
+                      {selectedFile.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                  </div>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={removeFile}
                   >
-                    <X className="h-4 w-4 mr-1" />
-                    Remove
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="rounded-xl border border-border/60 overflow-hidden bg-muted/30 relative">
-                  <img
-                    src={previewUrl}
-                    alt="Screenshot preview"
-                    className="w-full max-h-[400px] object-contain"
-                  />
-                </div>
-                {selectedFile && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <ImageIcon className="h-4 w-4" />
-                    <span>{selectedFile.name}</span>
-                    <span>
-                      ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                    </span>
-                  </div>
-                )}
               </div>
             )}
           </CardContent>
@@ -368,7 +360,7 @@ export default function SubmitCampaignPage() {
             ) : (
               <Upload className="h-4 w-4 mr-2" />
             )}
-            Submit for Review
+            {submitMutation.isPending ? "Submitting..." : "Submit for Review"}
           </Button>
         </div>
 

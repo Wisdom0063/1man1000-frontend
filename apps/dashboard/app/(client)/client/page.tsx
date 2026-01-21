@@ -18,41 +18,52 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
-
-const stats = [
-  {
-    title: "Active Campaigns",
-    value: "4",
-    icon: Megaphone,
-    color: "text-blue-600",
-  },
-  { title: "Total Views", value: "12,456", icon: Eye, color: "text-green-600" },
-  {
-    title: "Submissions",
-    value: "89",
-    icon: FileImage,
-    color: "text-orange-600",
-  },
-  {
-    title: "Conversion Rate",
-    value: "3.2%",
-    icon: TrendingUp,
-    color: "text-purple-600",
-  },
-];
-
-const campaigns = [
-  {
-    name: "Summer Product Launch",
-    status: "active",
-    views: 4500,
-    target: 10000,
-  },
-  { name: "Brand Awareness Q4", status: "active", views: 3200, target: 5000 },
-  { name: "Holiday Promotion", status: "pending", views: 0, target: 8000 },
-];
+import { useCampaignsControllerGetDashboardStats } from "@workspace/client";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
 export default function ClientDashboard() {
+  const { data, isLoading, isError, refetch } =
+    useCampaignsControllerGetDashboardStats();
+
+  if (isLoading) return <LoadingState text="Loading dashboard..." />;
+
+  if (isError || !data) {
+    return (
+      <ErrorState
+        title="Failed to load dashboard"
+        message="There was an error loading your dashboard data."
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  const stats = [
+    {
+      title: "Active Campaigns",
+      value: data.stats.activeCampaigns.toString(),
+      icon: Megaphone,
+      color: "text-blue-600",
+    },
+    {
+      title: "Total Views",
+      value: data.stats.totalViews.toLocaleString(),
+      icon: Eye,
+      color: "text-green-600",
+    },
+    {
+      title: "Submissions",
+      value: data.stats.submissions.toString(),
+      icon: FileImage,
+      color: "text-orange-600",
+    },
+    {
+      title: "Conversion Rate",
+      value: data.stats.conversionRate,
+      icon: TrendingUp,
+      color: "text-purple-600",
+    },
+  ];
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -104,32 +115,48 @@ export default function ClientDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {campaigns.map((campaign) => (
-                <div key={campaign.name} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{campaign.name}</span>
-                    <Badge
-                      variant={
-                        campaign.status === "active" ? "default" : "secondary"
-                      }
-                    >
-                      {campaign.status}
-                    </Badge>
-                  </div>
-                  <div className="h-2 rounded-full bg-secondary">
-                    <div
-                      className="h-2 rounded-full bg-primary transition-all"
-                      style={{
-                        width: `${(campaign.views / campaign.target) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {campaign.views.toLocaleString()} /{" "}
-                    {campaign.target.toLocaleString()} views
-                  </p>
-                </div>
-              ))}
+              {data.recentCampaigns.length > 0 ? (
+                data.recentCampaigns.map((campaign) => {
+                  const targetMax = (campaign.targetViewRange?.max ||
+                    1) as number;
+                  const progress = (campaign.totalViews / targetMax) * 100;
+
+                  return (
+                    <div key={campaign.id} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">
+                          {campaign.title || campaign.brandName}
+                        </span>
+                        <Badge
+                          variant={
+                            campaign.status === "active"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {campaign.status}
+                        </Badge>
+                      </div>
+                      <div className="h-2 rounded-full bg-secondary">
+                        <div
+                          className="h-2 rounded-full bg-primary transition-all"
+                          style={{
+                            width: `${Math.min(progress, 100)}%`,
+                          }}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {campaign.totalViews.toLocaleString()} /{" "}
+                        {targetMax.toLocaleString()} views
+                      </p>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No campaigns yet. Create your first campaign to get started!
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -141,18 +168,29 @@ export default function ClientDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-muted" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Influencer {i}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Summer Product Launch
-                    </p>
+              {data.recentSubmissions.length > 0 ? (
+                data.recentSubmissions.map((submission) => (
+                  <div key={submission.id} className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-sm font-medium">
+                      {submission.influencer?.name?.charAt(0) || "I"}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">
+                        {submission.influencer?.name || "Unknown Influencer"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {submission.campaign?.title ||
+                          submission.campaign?.brandName}
+                      </p>
+                    </div>
+                    <Badge variant="outline">{submission.status}</Badge>
                   </div>
-                  <Badge variant="outline">Pending</Badge>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No submissions yet
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
