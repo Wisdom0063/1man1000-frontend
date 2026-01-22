@@ -16,6 +16,7 @@ import { Label } from "@workspace/ui/components/label";
 import { Loader2, Info, Upload, X, FileImage } from "lucide-react";
 import Link from "next/link";
 import { campaignSchema, type CampaignFormData } from "@/lib/schemas";
+import VideoPlayerComponent from "@/components/video-player";
 
 const industries = [
   "Technology",
@@ -66,7 +67,7 @@ export function CampaignForm({
       targetViewRange: { min: 1000, max: 10000 },
       ...defaultValues,
     }),
-    [defaultValues]
+    [defaultValues],
   );
 
   const {
@@ -380,11 +381,7 @@ export function CampaignForm({
             <div className="space-y-3">
               <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
                 {selectedFile.type.startsWith("video/") ? (
-                  <video
-                    src={previewUrl || ""}
-                    className="w-full h-full object-cover"
-                    controls
-                  />
+                  <VideoPlayerComponent src={previewUrl || ""} />
                 ) : (
                   <img
                     src={previewUrl || ""}
@@ -417,11 +414,7 @@ export function CampaignForm({
             <div className="space-y-3">
               <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
                 {existingAssetUrl.match(/\.(mp4|webm|mov)$/i) ? (
-                  <video
-                    src={existingAssetUrl}
-                    className="w-full h-full object-cover"
-                    controls
-                  />
+                  <VideoPlayerComponent src={existingAssetUrl} />
                 ) : (
                   <img
                     src={existingAssetUrl}

@@ -51,11 +51,11 @@ export default function ClientAnalyticsPage() {
   const totalCampaigns = campaigns.length;
   const totalInfluencers = campaigns.reduce(
     (sum, c) => sum + (c._count?.assignments || 0),
-    0
+    0,
   );
   const totalSubmissions = campaigns.reduce(
     (sum, c) => sum + (c._count?.submissions || 0),
-    0
+    0,
   );
   const avgConversion =
     totalViews > 0 ? ((totalSubmissions / totalViews) * 100).toFixed(1) : "0.0";

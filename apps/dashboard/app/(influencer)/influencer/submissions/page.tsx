@@ -21,6 +21,7 @@ import { ExternalLink, ImageIcon, Upload } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import Image from "next/image";
 
 type Submission = {
   id: string;
@@ -51,13 +52,13 @@ export default function InfluencerSubmissionsPage() {
   });
 
   const pendingCount = submissions.filter(
-    (s) => s.approvalStatus === "pending"
+    (s) => s.approvalStatus === "pending",
   ).length;
   const approvedCount = submissions.filter(
-    (s) => s.approvalStatus === "approved"
+    (s) => s.approvalStatus === "approved",
   ).length;
   const rejectedCount = submissions.filter(
-    (s) => s.approvalStatus === "rejected"
+    (s) => s.approvalStatus === "rejected",
   ).length;
 
   if (isLoading) {
@@ -187,10 +188,12 @@ export default function InfluencerSubmissionsPage() {
                       <div className="flex items-center gap-4">
                         <div className="h-16 w-24 rounded-lg bg-muted overflow-hidden border border-border/60">
                           {submission.screenshotUrl ? (
-                            <img
+                            <Image
                               src={submission.screenshotUrl}
                               alt="Screenshot"
                               className="h-full w-full object-cover"
+                              width={100}
+                              height={100}
                             />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center">
@@ -207,7 +210,7 @@ export default function InfluencerSubmissionsPage() {
                           <p className="text-sm text-muted-foreground">
                             Submitted{" "}
                             {new Date(
-                              submission.createdAt
+                              submission.createdAt,
                             ).toLocaleDateString()}
                           </p>
                           {submission.approvalStatus === "rejected" &&

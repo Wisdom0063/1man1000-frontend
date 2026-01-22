@@ -28,8 +28,15 @@ import {
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
-import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  Loader2,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
+import { cn } from "@workspace/ui/lib/utils";
 
 type Question = {
   id: string;
@@ -105,6 +112,7 @@ export default function TakeSurveyPage() {
   }, []);
 
   const handleNext = () => {
+    console.log(answers);
     if (isLastQuestion) {
       // Submit survey
       submitMutation.mutate({
@@ -173,7 +181,7 @@ export default function TakeSurveyPage() {
               </span>
               <span className="font-medium">
                 {Math.round(
-                  ((currentQuestionIndex + 1) / survey.questions.length) * 100
+                  ((currentQuestionIndex + 1) / survey.questions.length) * 100,
                 )}
                 %
               </span>
@@ -200,7 +208,7 @@ export default function TakeSurveyPage() {
             </div>
 
             {/* Answer input based on question type */}
-            {currentQuestion.questionType === "multiple_choice" && (
+            {currentQuestion.questionType === "multiple_choice_single" && (
               <RadioGroup
                 value={answers[currentQuestion.id] || ""}
                 onValueChange={(value) =>
@@ -221,7 +229,7 @@ export default function TakeSurveyPage() {
               </RadioGroup>
             )}
 
-            {currentQuestion.questionType === "checkbox" && (
+            {currentQuestion.questionType === "multiple_choice_multiple" && (
               <div className="space-y-2">
                 {currentQuestion.options?.map((option, index) => (
                   <div key={index} className="flex items-center space-x-2">
@@ -250,7 +258,29 @@ export default function TakeSurveyPage() {
               </div>
             )}
 
-            {currentQuestion.questionType === "text" && (
+            {currentQuestion.questionType === "yes_no" && (
+              <RadioGroup
+                value={answers[currentQuestion.id] || ""}
+                onValueChange={(value) =>
+                  handleAnswerChange(currentQuestion.id, value)
+                }
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Yes" id="yes-option" />
+                  <Label htmlFor="yes-option" className="cursor-pointer">
+                    Yes
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="No" id="no-option" />
+                  <Label htmlFor="no-option" className="cursor-pointer">
+                    No
+                  </Label>
+                </div>
+              </RadioGroup>
+            )}
+
+            {currentQuestion.questionType === "short_text" && (
               <Input
                 value={answers[currentQuestion.id] || ""}
                 onChange={(e) =>
@@ -271,9 +301,33 @@ export default function TakeSurveyPage() {
               />
             )}
 
-            {currentQuestion.questionType === "rating" && (
+            {currentQuestion.questionType === "rating_stars" && (
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((rating) => (
+                  <button
+                    key={rating}
+                    type="button"
+                    onClick={() =>
+                      handleAnswerChange(currentQuestion.id, rating)
+                    }
+                    className="transition-colors"
+                  >
+                    <Star
+                      className={cn(
+                        "h-10 w-10",
+                        answers[currentQuestion.id] >= rating
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300",
+                      )}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {currentQuestion.questionType === "rating_scale" && (
+              <div className="flex gap-2 flex-wrap">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
                   <Button
                     key={rating}
                     type="button"
@@ -290,6 +344,41 @@ export default function TakeSurveyPage() {
                     {rating}
                   </Button>
                 ))}
+              </div>
+            )}
+
+            {currentQuestion.questionType === "likert" && (
+              <RadioGroup
+                value={answers[currentQuestion.id] || ""}
+                onValueChange={(value) =>
+                  handleAnswerChange(currentQuestion.id, value)
+                }
+                className="space-y-2"
+              >
+                {[
+                  "Strongly Disagree",
+                  "Disagree",
+                  "Neutral",
+                  "Agree",
+                  "Strongly Agree",
+                ].map((option, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option} id={`likert-${index}`} />
+                    <Label
+                      htmlFor={`likert-${index}`}
+                      className="cursor-pointer"
+                    >
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            )}
+
+            {currentQuestion.questionType === "image_selection" && (
+              <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                Image selection questions are not yet supported in this
+                interface.
               </div>
             )}
           </div>

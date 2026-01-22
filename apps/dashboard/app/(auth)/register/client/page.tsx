@@ -17,7 +17,6 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import {
   useAuthControllerRegister,
   useAuthControllerVerifyEmail,
-  useAuthControllerVerifyPhone,
   useAuthControllerLogin,
   useAuthControllerResendVerificationCode,
 } from "@workspace/client";
@@ -28,7 +27,6 @@ import {
   Eye,
   EyeOff,
   Mail,
-  Smartphone,
   CheckCircle2,
 } from "lucide-react";
 import { VerificationCodeInput } from "@/components/verification-code-input";
@@ -38,7 +36,7 @@ type RegisterResponse = {
   user: User;
 };
 
-type RegistrationStep = "form" | "verify-email" | "verify-phone" | "complete";
+type RegistrationStep = "form" | "verify-email" | "complete";
 
 export default function RegisterClientPage() {
   const router = useRouter();
@@ -53,7 +51,6 @@ export default function RegisterClientPage() {
     confirmPassword: "",
   });
   const [emailCode, setEmailCode] = useState("");
-  const [phoneCode, setPhoneCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
@@ -67,7 +64,7 @@ export default function RegisterClientPage() {
       onError: (error: any) => {
         setError(
           error?.response?.data?.message ||
-            "Registration failed. Please try again."
+            "Registration failed. Please try again.",
         );
       },
     },
@@ -76,20 +73,6 @@ export default function RegisterClientPage() {
   const verifyEmailMutation = useAuthControllerVerifyEmail({
     mutation: {
       onSuccess: () => {
-        setStep("verify-phone");
-        setIsLoading(false);
-      },
-      onError: (error: any) => {
-        setError(error?.response?.data?.message || "Invalid verification code");
-        setIsLoading(false);
-      },
-    },
-  });
-
-  const verifyPhoneMutation = useAuthControllerVerifyPhone({
-    mutation: {
-      onSuccess: () => {
-        // Phone verified, now login
         loginMutation.mutate({
           data: {
             email: formData.email,
@@ -173,23 +156,6 @@ export default function RegisterClientPage() {
       data: {
         email: formData.email,
         code: emailCode,
-      },
-    });
-  };
-
-  const handleVerifyPhone = () => {
-    if (phoneCode.length !== 6) {
-      setError("Please enter the 6-digit code");
-      return;
-    }
-
-    setIsLoading(true);
-    setError("");
-
-    verifyPhoneMutation.mutate({
-      data: {
-        phone: formData.phone,
-        code: phoneCode,
       },
     });
   };
@@ -284,72 +250,6 @@ export default function RegisterClientPage() {
               <button
                 type="button"
                 onClick={() => handleResendCode("email")}
-                disabled={isLoading}
-                className="text-primary hover:underline disabled:opacity-50"
-              >
-                Resend code
-              </button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Phone verification screen
-  if (step === "verify-phone") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 py-8">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center space-y-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Smartphone className="h-8 w-8" />
-            </div>
-            <CardTitle className="text-2xl">Verify Your Phone</CardTitle>
-            <CardDescription>
-              We've sent a 6-digit verification code to
-              <br />
-              <strong>{formData.phone}</strong>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-4">
-              <Label className="text-center block">
-                Enter verification code
-              </Label>
-              <VerificationCodeInput
-                value={phoneCode}
-                onChange={setPhoneCode}
-                disabled={isLoading}
-                error={!!error}
-              />
-            </div>
-
-            <Button
-              onClick={handleVerifyPhone}
-              className="w-full"
-              disabled={isLoading || phoneCode.length !== 6}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Completing registration...
-                </>
-              ) : (
-                "Verify Phone & Complete"
-              )}
-            </Button>
-
-            <div className="text-center text-sm">
-              <button
-                type="button"
-                onClick={() => handleResendCode("phone")}
                 disabled={isLoading}
                 className="text-primary hover:underline disabled:opacity-50"
               >

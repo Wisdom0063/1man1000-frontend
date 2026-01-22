@@ -22,14 +22,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import {
-  ClipboardList,
-  Clock,
-  CheckCircle,
-  Star,
-  Play,
-  DollarSign,
-} from "lucide-react";
+import { ClipboardList, Clock, CheckCircle, Star, Play } from "lucide-react";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 
@@ -244,8 +237,10 @@ export default function InfluencerSurveysPage() {
                       </Button>
                     )}
                     {survey.status === "in_progress" && (
-                      <Button className="w-full" variant="secondary">
-                        Continue Survey
+                      <Button className="w-full" variant="secondary" asChild>
+                        <Link href={`/influencer/surveys/${survey.id}/take`}>
+                          Continue Survey
+                        </Link>
                       </Button>
                     )}
                     {survey.status === "completed" && (

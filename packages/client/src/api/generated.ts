@@ -888,6 +888,16 @@ export interface UpdateSurveyStatusDto {
   status: UpdateSurveyStatusDtoStatus;
 }
 
+/**
+ * Survey answers mapped by question ID
+ */
+export type SubmitResponseDtoAnswers = { [key: string]: unknown };
+
+export interface SubmitResponseDto {
+  /** Survey answers mapped by question ID */
+  answers: SubmitResponseDtoAnswers;
+}
+
 export type CreateNotificationDtoMetadata = { [key: string]: unknown };
 
 export interface CreateNotificationDto {
@@ -5671,12 +5681,15 @@ export const useSurveysControllerAssignInfluencer = <TError = unknown,
  */
 export const surveysControllerSubmitResponse = (
     id: string,
+    submitResponseDto: SubmitResponseDto,
  signal?: AbortSignal
 ) => {
       
       
       return axiosInstance<void>(
-      {url: `/api/surveys/${id}/respond`, method: 'POST', signal
+      {url: `/api/surveys/${id}/respond`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: submitResponseDto, signal
     },
       );
     }
@@ -5684,8 +5697,8 @@ export const surveysControllerSubmitResponse = (
 
 
 export const getSurveysControllerSubmitResponseMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string;data: SubmitResponseDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string;data: SubmitResponseDto}, TContext> => {
 
 const mutationKey = ['surveysControllerSubmitResponse'];
 const {mutation: mutationOptions} = options ?
@@ -5697,10 +5710,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, {id: string;data: SubmitResponseDto}> = (props) => {
+          const {id,data} = props ?? {};
 
-          return  surveysControllerSubmitResponse(id,)
+          return  surveysControllerSubmitResponse(id,data,)
         }
 
         
@@ -5709,18 +5722,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type SurveysControllerSubmitResponseMutationResult = NonNullable<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>>
-    
+    export type SurveysControllerSubmitResponseMutationBody = SubmitResponseDto
     export type SurveysControllerSubmitResponseMutationError = unknown
 
     /**
  * @summary Submit survey response
  */
 export const useSurveysControllerSubmitResponse = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof surveysControllerSubmitResponse>>, TError,{id: string;data: SubmitResponseDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof surveysControllerSubmitResponse>>,
         TError,
-        {id: string},
+        {id: string;data: SubmitResponseDto},
         TContext
       > => {
 

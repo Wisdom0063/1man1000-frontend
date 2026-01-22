@@ -22,17 +22,32 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import {
   ArrowLeft,
   Loader2,
   Upload,
   ImageIcon,
   AlertCircle,
   X,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import { submissionSchema, type SubmissionFormData } from "@/lib/schemas";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { extractViewCount } from "@/lib/services/ocrService";
+import {
+  validateImage,
+  type Platform,
+  type ImageValidationResult,
+} from "@/lib/services/imageValidationService";
+import Image from "next/image";
 
 type Campaign = {
   id: string;
@@ -51,6 +66,10 @@ export default function SubmitCampaignPage() {
   const campaignId = params.id as string;
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [platform, setPlatform] = useState<Platform>("instagram");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [validationResult, setValidationResult] =
+    useState<ImageValidationResult | null>(null);
 
   const {
     data: response,
@@ -94,7 +113,7 @@ export default function SubmitCampaignPage() {
                   Authorization: `Bearer ${accessToken}`,
                 },
                 body: formData,
-              }
+              },
             );
 
             if (!response.ok) {
@@ -143,14 +162,13 @@ export default function SubmitCampaignPage() {
   };
 
   const handleFileSelect = useCallback(
-    (file: File) => {
+    async (file: File) => {
       if (!file.type.startsWith("image/")) {
         alert("Please select an image file");
         return;
       }
 
       if (file.size > 10 * 1024 * 1024) {
-        // 10MB limit
         alert("File size must be less than 10MB");
         return;
       }
@@ -159,14 +177,39 @@ export default function SubmitCampaignPage() {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       setValue("screenshotUrl", url);
+      setIsProcessing(true);
+
+      try {
+        // Run OCR and validation in parallel
+        const [viewCount, validation] = await Promise.all([
+          extractViewCount(file, platform),
+          validateImage(file, platform),
+        ]);
+
+        // Set extracted view count
+        setValue("extractedViewCount", viewCount);
+        setValidationResult(validation);
+
+        console.log("✅ OCR extracted:", viewCount, "views");
+        if (validation.isFlagged) {
+          console.warn("⚠️ Image flagged:", validation.flags);
+        }
+      } catch (error) {
+        console.error("❌ Processing failed:", error);
+        setValue("extractedViewCount", 0);
+      } finally {
+        setIsProcessing(false);
+      }
     },
-    [setValue]
+    [setValue, platform],
   );
 
   const removeFile = useCallback(() => {
     setSelectedFile(null);
     setPreviewUrl(null);
+    setValidationResult(null);
     setValue("screenshotUrl", "");
+    setValue("extractedViewCount", 0);
   }, [setValue]);
 
   if (campaignLoading) {
@@ -232,9 +275,38 @@ export default function SubmitCampaignPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Card>
           <CardHeader>
+            <CardTitle>Platform Selection</CardTitle>
+            <CardDescription>
+              Select the platform where you posted this campaign
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="platform">Platform</Label>
+              <Select
+                value={platform}
+                onValueChange={(value) => setPlatform(value as Platform)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select platform" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="instagram">Instagram</SelectItem>
+                  <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  <SelectItem value="facebook">Facebook</SelectItem>
+                  <SelectItem value="tiktok">TikTok</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Screenshot Upload</CardTitle>
             <CardDescription>
-              Provide a screenshot showing your view count for this campaign
+              Upload a screenshot showing your view count. We'll automatically
+              extract the view count using OCR.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -275,11 +347,21 @@ export default function SubmitCampaignPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
-                  <img
+                <div className="relative  rounded-lg overflow-hidden bg-muted">
+                  {isProcessing && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                      <div className="text-center text-white">
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+                        <p className="text-sm">Processing image...</p>
+                      </div>
+                    </div>
+                  )}
+                  <Image
                     src={previewUrl || ""}
                     alt="Screenshot preview"
                     className="w-full h-full object-cover"
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
@@ -301,6 +383,21 @@ export default function SubmitCampaignPage() {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
+                {validationResult?.isFlagged && (
+                  <div className="rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-3 flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600 shrink-0 mt-0.5" />
+                    <div className="text-sm">
+                      <p className="font-medium text-yellow-700">
+                        Image Flagged
+                      </p>
+                      <ul className="text-yellow-600 text-xs mt-1 space-y-1">
+                        {validationResult.flags.map((flag, i) => (
+                          <li key={i}>• {flag}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
@@ -310,7 +407,9 @@ export default function SubmitCampaignPage() {
           <CardHeader>
             <CardTitle>View Count</CardTitle>
             <CardDescription>
-              Enter the view count shown in your screenshot
+              {isProcessing
+                ? "Extracting view count from screenshot..."
+                : "Auto-extracted from your screenshot. You can edit if needed."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -321,7 +420,8 @@ export default function SubmitCampaignPage() {
               <Input
                 id="extractedViewCount"
                 type="number"
-                placeholder="Enter view count"
+                placeholder="View count will be auto-extracted"
+                disabled={isProcessing}
                 {...register("extractedViewCount", { valueAsNumber: true })}
                 className={
                   errors.extractedViewCount ? "border-destructive" : ""
@@ -330,6 +430,12 @@ export default function SubmitCampaignPage() {
               {errors.extractedViewCount && (
                 <p className="text-xs text-destructive">
                   {errors.extractedViewCount.message}
+                </p>
+              )}
+              {!isProcessing && selectedFile && (
+                <p className="text-xs text-muted-foreground">
+                  💡 Tip: The view count was automatically extracted using OCR.
+                  Please verify it matches your screenshot.
                 </p>
               )}
             </div>
@@ -354,13 +460,20 @@ export default function SubmitCampaignPage() {
           <Button type="button" variant="outline" asChild>
             <Link href={`/influencer/campaigns/${campaignId}`}>Cancel</Link>
           </Button>
-          <Button type="submit" disabled={submitMutation.isPending}>
-            {submitMutation.isPending ? (
+          <Button
+            type="submit"
+            disabled={submitMutation.isPending || isProcessing}
+          >
+            {submitMutation.isPending || isProcessing ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <Upload className="h-4 w-4 mr-2" />
             )}
-            {submitMutation.isPending ? "Submitting..." : "Submit for Review"}
+            {isProcessing
+              ? "Processing..."
+              : submitMutation.isPending
+                ? "Submitting..."
+                : "Submit for Review"}
           </Button>
         </div>
 

@@ -17,25 +17,30 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import {
   useAuthControllerRegister,
   useAuthControllerVerifyEmail,
-  useAuthControllerVerifyPhone,
+  useAuthControllerLogin,
   useAuthControllerResendVerificationCode,
 } from "@workspace/client";
+import { useAuthStore, User } from "@/lib/auth-store";
 import {
   Loader2,
   ArrowLeft,
   Eye,
   EyeOff,
-  Info,
   Mail,
-  Smartphone,
   CheckCircle2,
 } from "lucide-react";
 import { VerificationCodeInput } from "@/components/verification-code-input";
 
-type RegistrationStep = "form" | "verify-email" | "verify-phone" | "complete";
+type RegisterResponse = {
+  accessToken: string;
+  user: User;
+};
+
+type RegistrationStep = "form" | "verify-email" | "complete";
 
 export default function RegisterInfluencerPage() {
   const router = useRouter();
+  const { setUser, setToken } = useAuthStore();
   const [step, setStep] = useState<RegistrationStep>("form");
   const [formData, setFormData] = useState({
     name: "",
@@ -45,7 +50,6 @@ export default function RegisterInfluencerPage() {
     confirmPassword: "",
   });
   const [emailCode, setEmailCode] = useState("");
-  const [phoneCode, setPhoneCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
@@ -59,7 +63,7 @@ export default function RegisterInfluencerPage() {
       onError: (error: any) => {
         setError(
           error?.response?.data?.message ||
-            "Registration failed. Please try again."
+            "Registration failed. Please try again.",
         );
       },
     },
@@ -68,8 +72,12 @@ export default function RegisterInfluencerPage() {
   const verifyEmailMutation = useAuthControllerVerifyEmail({
     mutation: {
       onSuccess: () => {
-        setStep("verify-phone");
-        setIsLoading(false);
+        loginMutation.mutate({
+          data: {
+            email: formData.email,
+            password: formData.password,
+          },
+        });
       },
       onError: (error: any) => {
         setError(error?.response?.data?.message || "Invalid verification code");
@@ -78,14 +86,17 @@ export default function RegisterInfluencerPage() {
     },
   });
 
-  const verifyPhoneMutation = useAuthControllerVerifyPhone({
+  const loginMutation = useAuthControllerLogin({
     mutation: {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        const response = data as unknown as RegisterResponse;
+        setToken(response.accessToken);
+        setUser(response.user);
         setStep("complete");
-        setIsLoading(false);
+        setTimeout(() => router.push("/influencer"), 2000);
       },
       onError: (error: any) => {
-        setError(error?.response?.data?.message || "Invalid verification code");
+        setError(error?.response?.data?.message || "Login failed");
         setIsLoading(false);
       },
     },
@@ -147,23 +158,6 @@ export default function RegisterInfluencerPage() {
     });
   };
 
-  const handleVerifyPhone = () => {
-    if (phoneCode.length !== 6) {
-      setError("Please enter the 6-digit code");
-      return;
-    }
-
-    setIsLoading(true);
-    setError("");
-
-    verifyPhoneMutation.mutate({
-      data: {
-        phone: formData.phone,
-        code: phoneCode,
-      },
-    });
-  };
-
   const handleResendCode = (type: "email" | "phone") => {
     setIsLoading(true);
     setError("");
@@ -189,20 +183,13 @@ export default function RegisterInfluencerPage() {
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
               <CheckCircle2 className="h-8 w-8" />
             </div>
-            <CardTitle className="text-2xl">Registration Successful!</CardTitle>
+            <CardTitle className="text-2xl">Registration Complete!</CardTitle>
             <CardDescription>
-              Your influencer account has been created successfully. Please wait
-              for admin approval before logging in.
+              Your account has been created successfully. Redirecting to
+              dashboard...
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-muted-foreground mb-4">
-              An admin will review your account shortly.
-            </p>
-            <Button asChild className="w-full">
-              <Link href="/login">Go to Login</Link>
-            </Button>
-          </CardContent>
+          <CardContent className="text-center"></CardContent>
         </Card>
       </div>
     );
@@ -262,72 +249,6 @@ export default function RegisterInfluencerPage() {
               <button
                 type="button"
                 onClick={() => handleResendCode("email")}
-                disabled={isLoading}
-                className="text-primary hover:underline disabled:opacity-50"
-              >
-                Resend code
-              </button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Phone verification screen
-  if (step === "verify-phone") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 py-8">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center space-y-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Smartphone className="h-8 w-8" />
-            </div>
-            <CardTitle className="text-2xl">Verify Your Phone</CardTitle>
-            <CardDescription>
-              We&apos;ve sent a 6-digit verification code to
-              <br />
-              <strong>{formData.phone}</strong>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-4">
-              <Label className="text-center block">
-                Enter verification code
-              </Label>
-              <VerificationCodeInput
-                value={phoneCode}
-                onChange={setPhoneCode}
-                disabled={isLoading}
-                error={!!error}
-              />
-            </div>
-
-            <Button
-              onClick={handleVerifyPhone}
-              className="w-full"
-              disabled={isLoading || phoneCode.length !== 6}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Completing registration...
-                </>
-              ) : (
-                "Verify Phone & Complete"
-              )}
-            </Button>
-
-            <div className="text-center text-sm">
-              <button
-                type="button"
-                onClick={() => handleResendCode("phone")}
                 disabled={isLoading}
                 className="text-primary hover:underline disabled:opacity-50"
               >
@@ -486,14 +407,6 @@ export default function RegisterInfluencerPage() {
                 </div>
               </div>
             </div>
-
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription className="text-xs">
-                Note: Your account will require admin approval before you can
-                log in and participate in campaigns.
-              </AlertDescription>
-            </Alert>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (

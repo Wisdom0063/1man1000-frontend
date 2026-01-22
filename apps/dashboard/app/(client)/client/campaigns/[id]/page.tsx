@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { CampaignAssetModal } from "@/components/campaign-asset-modal";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useCampaignsControllerFindOne,
@@ -26,12 +24,13 @@ import {
   Edit,
   Trash2,
   Download,
-  FileImage,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import Link from "next/link";
+import Image from "next/image";
+import VideoPlayerComponent from "@/components/video-player";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,7 +42,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
-import Image from "next/image";
 
 type Campaign = {
   id: string;
@@ -77,7 +75,6 @@ export default function CampaignDetailPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const campaignId = params.id as string;
-  const [showAssetModal, setShowAssetModal] = useState(false);
 
   const {
     data: response,
@@ -302,62 +299,34 @@ export default function CampaignDetailPage() {
                   Campaign Asset
                 </h4>
                 <div className="space-y-3">
-                  <div
-                    className="relative aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity max-w-2xl"
-                    onClick={() => setShowAssetModal(true)}
-                  >
+                  <div className="relative rounded-lg bg-muted max-w-2xl">
                     {c.campaignAsset.match(/\.(mp4|webm|ogg)$/i) ? (
-                      <div className="relative w-full h-full flex items-center justify-center bg-black/80">
-                        <video
-                          src={c.campaignAsset}
-                          className="w-full h-full object-cover"
-                          muted
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="bg-white/90 rounded-full p-4">
-                            <svg
-                              className="w-12 h-12 text-black"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8 5v14l11-7z" />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
+                      <VideoPlayerComponent src={c.campaignAsset} />
                     ) : (
-                      <img
+                      <Image
                         src={c.campaignAsset}
                         alt="Campaign asset"
                         className="w-full h-full object-cover"
+                        width={1000}
+                        height={1000}
                       />
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAssetModal(true)}
-                    >
-                      <FileImage className="h-4 w-4 mr-2" />
-                      View Full Size
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = c.campaignAsset!;
-                        link.download = `${c.title || c.brandName}-asset`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download Asset
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      link.href = c.campaignAsset!;
+                      link.download = `${c.title || c.brandName}-asset`;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Asset
+                  </Button>
                 </div>
               </div>
             )}
@@ -391,15 +360,6 @@ export default function CampaignDetailPage() {
           </CardContent>
         </Card>
       </div>
-
-      {c.campaignAsset && showAssetModal && (
-        <CampaignAssetModal
-          assetUrl={c.campaignAsset}
-          campaignTitle={c.title || c.brandName}
-          isOpen={showAssetModal}
-          onClose={() => setShowAssetModal(false)}
-        />
-      )}
     </div>
   );
 }

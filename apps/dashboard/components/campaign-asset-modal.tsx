@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +8,8 @@ import {
 } from "@workspace/ui/components/dialog";
 import { Button } from "@workspace/ui/components/button";
 import { Download, X } from "lucide-react";
+import VideoPlayerComponent from "./video-player";
+import Image from "next/image";
 
 interface CampaignAssetModalProps {
   assetUrl: string;
@@ -25,6 +26,8 @@ export function CampaignAssetModal({
 }: CampaignAssetModalProps) {
   const isVideo = assetUrl.match(/\.(mp4|webm|ogg)$/i);
 
+  console.log(isVideo, assetUrl);
+
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = assetUrl;
@@ -36,7 +39,7 @@ export function CampaignAssetModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>{campaignTitle} - Campaign Asset</DialogTitle>
@@ -53,18 +56,16 @@ export function CampaignAssetModal({
         <div className="space-y-4">
           <div className="relative rounded-lg overflow-hidden bg-muted">
             {isVideo ? (
-              <video
-                src={assetUrl}
-                controls
-                className="w-full max-h-[60vh] object-contain"
-              >
-                Your browser does not support the video tag.
-              </video>
+              <div className="w-full max-h-[60vh]">
+                <VideoPlayerComponent src={assetUrl} />
+              </div>
             ) : (
-              <img
+              <Image
                 src={assetUrl}
+                width={1000}
+                height={1000}
                 alt={campaignTitle}
-                className="w-full max-h-[60vh] object-contain"
+                className="w-full  object-contain"
               />
             )}
           </div>
