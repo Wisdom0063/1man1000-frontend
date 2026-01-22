@@ -872,6 +872,38 @@ export interface UpdateSurveyDto {
   questions?: CreateQuestionDto[];
 }
 
+export interface RespondentDto {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export type SurveyInfoDtoQuestionsItem = { [key: string]: unknown };
+
+export interface SurveyInfoDto {
+  title: string;
+  isAnonymous: boolean;
+  questions: SurveyInfoDtoQuestionsItem[];
+}
+
+export type GetSurveyResponseDtoAnswers = { [key: string]: unknown };
+
+export type GetSurveyResponseDtoDemographics = { [key: string]: unknown };
+
+export interface GetSurveyResponseDto {
+  id: string;
+  surveyId: string;
+  respondentId: string;
+  answers: GetSurveyResponseDtoAnswers;
+  demographics?: GetSurveyResponseDtoDemographics;
+  responseDate: string;
+  completionTime: number;
+  createdAt: string;
+  updatedAt: string;
+  respondent?: RespondentDto;
+  survey?: SurveyInfoDto;
+}
+
 export type UpdateSurveyStatusDtoStatus = typeof UpdateSurveyStatusDtoStatus[keyof typeof UpdateSurveyStatusDtoStatus];
 
 
@@ -5463,7 +5495,7 @@ export const surveysControllerGetSurveyResponses = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<GetSurveyResponseDto[]>(
       {url: `/api/surveys/${id}/responses`, method: 'GET', signal
     },
       );

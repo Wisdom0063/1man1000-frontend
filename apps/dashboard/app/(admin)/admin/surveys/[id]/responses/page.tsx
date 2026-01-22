@@ -37,11 +37,8 @@ export default function AdminSurveyResponsesPage() {
     refetch,
   } = useSurveysControllerFindOne(surveyId);
 
-  const {
-    data: responses,
-    isLoading: responsesLoading,
-    isError: responsesError,
-  } = useSurveysControllerGetSurveyResponses(surveyId);
+  const { data: responses, isLoading: responsesLoading } =
+    useSurveysControllerGetSurveyResponses(surveyId);
 
   if (isLoading) {
     return <LoadingState text="Loading responses..." />;

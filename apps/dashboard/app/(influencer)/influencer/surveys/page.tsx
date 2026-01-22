@@ -215,11 +215,11 @@ export default function InfluencerSurveysPage() {
                     <CardTitle className="text-lg">{survey.title}</CardTitle>
                     <CardDescription>
                       {survey.client}
-                      {survey.description && activeTab === "available" && (
+                      {/* {survey.description && activeTab === "available" && (
                         <span className="block mt-2 text-xs">
                           {survey.description}
                         </span>
-                      )}
+                      )} */}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
