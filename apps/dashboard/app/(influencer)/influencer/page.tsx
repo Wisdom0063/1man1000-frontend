@@ -16,54 +16,109 @@ import {
   Star,
   ArrowRight,
   Upload,
+  Clock,
+  ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
-
-const stats = [
-  {
-    title: "Active Campaigns",
-    value: "3",
-    icon: Megaphone,
-    color: "text-blue-600",
-  },
-  { title: "Total Views", value: "8,234", icon: Eye, color: "text-green-600" },
-  {
-    title: "Earnings",
-    value: "₵1,256",
-    icon: CreditCard,
-    color: "text-purple-600",
-  },
-  { title: "Rating", value: "4.8", icon: Star, color: "text-yellow-600" },
-];
-
-const activeCampaigns = [
-  {
-    name: "Summer Product Launch",
-    brand: "ABC Company",
-    deadline: "5 days left",
-    status: "in_progress",
-  },
-  {
-    name: "Brand Awareness Q4",
-    brand: "XYZ Corp",
-    deadline: "12 days left",
-    status: "pending_submission",
-  },
-  {
-    name: "Holiday Promotion",
-    brand: "123 Brand",
-    deadline: "20 days left",
-    status: "assigned",
-  },
-];
-
-const earnings = [
-  { campaign: "Spring Collection", amount: 250, date: "Dec 28, 2025" },
-  { campaign: "Tech Launch", amount: 180, date: "Dec 20, 2025" },
-  { campaign: "Food Festival", amount: 320, date: "Dec 15, 2025" },
-];
+import {
+  useSurveysControllerGetAvailableSurveys,
+  useSurveysControllerGetInfluencerStats,
+  useCampaignsControllerGetInfluencerCampaigns,
+  usePaymentsControllerGetInfluencerPayments,
+} from "@workspace/client";
 
 export default function InfluencerDashboard() {
+  const { data: availableSurveysResponse } =
+    useSurveysControllerGetAvailableSurveys();
+  const { data: surveyStatsResponse } =
+    useSurveysControllerGetInfluencerStats();
+  const { data: campaignsResponse } =
+    useCampaignsControllerGetInfluencerCampaigns();
+  const { data: paymentsResponse } =
+    usePaymentsControllerGetInfluencerPayments();
+
+  const availableSurveys = (availableSurveysResponse || []) as Array<any>;
+  const surveyStats = surveyStatsResponse || {
+    completedSurveys: 0,
+    totalEarnings: 0,
+    averageRating: 0,
+    inProgressCount: 0,
+    availableCount: 0,
+  };
+
+  const campaigns = (campaignsResponse?.data || []) as Array<any>;
+  const activeCampaignsCount = campaigns.filter(
+    (c: any) => c.status === "active" || c.status === "approved",
+  ).length;
+
+  const activeCampaigns = campaigns
+    .filter((c: any) => c.status === "active" || c.status === "approved")
+    .slice(0, 3)
+    .map((c: any) => {
+      const endDate = new Date(c.endDate);
+      const now = new Date();
+      const daysLeft = Math.ceil(
+        (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      return {
+        id: c.id,
+        name: c.title || c.brandName,
+        brand: c.brandName,
+        deadline: daysLeft > 0 ? `${daysLeft} days left` : "Expired",
+        status: c.assignmentStatus || "assigned",
+      };
+    });
+
+  const payments = (paymentsResponse || []) as Array<any>;
+  const earnings = payments
+    .filter((p: any) => p.status === "paid")
+    .slice(0, 3)
+    .map((p: any) => ({
+      campaign: p.campaign?.title || p.campaign?.brandName || "Campaign",
+      amount: p.totalAmount,
+      date: new Date(p.paymentDate || p.createdAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+    }));
+
+  const totalEarnings = payments
+    .filter((p: any) => p.status === "paid")
+    .reduce((sum: number, p: any) => sum + (p.totalAmount || 0), 0);
+
+  const totalViews = campaigns.reduce(
+    (sum: number, c: any) => sum + (c.totalViews || 0),
+    0,
+  );
+
+  const stats = [
+    {
+      title: "Active Campaigns",
+      value: activeCampaignsCount.toString(),
+      icon: Megaphone,
+      color: "text-blue-600",
+    },
+    {
+      title: "Total Views",
+      value: totalViews.toLocaleString(),
+      icon: Eye,
+      color: "text-green-600",
+    },
+    {
+      title: "Earnings",
+      value: `GH₵${totalEarnings.toFixed(2)}`,
+      icon: CreditCard,
+      color: "text-purple-600",
+    },
+    {
+      title: "Rating",
+      value: surveyStats.averageRating.toFixed(1),
+      icon: Star,
+      color: "text-yellow-600",
+    },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
@@ -75,7 +130,7 @@ export default function InfluencerDashboard() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -89,6 +144,22 @@ export default function InfluencerDashboard() {
             </CardContent>
           </Card>
         ))}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Surveys
+            </CardTitle>
+            <ClipboardList className="h-4 w-4 text-indigo-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {surveyStats.completedSurveys}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              GH₵{surveyStats.totalEarnings} earned
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -106,42 +177,52 @@ export default function InfluencerDashboard() {
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {activeCampaigns.map((campaign) => (
-                <div
-                  key={campaign.name}
-                  className="flex items-center justify-between p-3 rounded-lg border"
-                >
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{campaign.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {campaign.brand}
-                    </p>
+            {activeCampaigns.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No active campaigns</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {activeCampaigns.map((campaign) => (
+                  <div
+                    key={campaign.id}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">{campaign.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {campaign.brand}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-muted-foreground">
+                        {campaign.deadline}
+                      </span>
+                      {campaign.status === "pending_submission" ? (
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={`/influencer/campaigns/${campaign.id}`}>
+                            <Upload className="mr-1 h-3 w-3" />
+                            Submit
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Badge
+                          variant={
+                            campaign.status === "in_progress" ||
+                            campaign.status === "accepted"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {campaign.status.replace("_", " ")}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground">
-                      {campaign.deadline}
-                    </span>
-                    {campaign.status === "pending_submission" ? (
-                      <Button size="sm" variant="outline">
-                        <Upload className="mr-1 h-3 w-3" />
-                        Submit
-                      </Button>
-                    ) : (
-                      <Badge
-                        variant={
-                          campaign.status === "in_progress"
-                            ? "default"
-                            : "secondary"
-                        }
-                      >
-                        {campaign.status.replace("_", " ")}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -159,63 +240,104 @@ export default function InfluencerDashboard() {
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {earnings.map((earning) => (
-                <div
-                  key={earning.campaign}
-                  className="flex items-center justify-between"
-                >
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{earning.campaign}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {earning.date}
-                    </p>
-                  </div>
-                  <span className="text-sm font-semibold text-green-600">
-                    +₵{earning.amount}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 pt-4 border-t">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Total Earnings</span>
-                <span className="text-lg font-bold">₵1,256</span>
+            {earnings.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <CreditCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No earnings yet</p>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {earnings.map((earning, index) => (
+                    <div
+                      key={`${earning.campaign}-${index}`}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          {earning.campaign}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {earning.date}
+                        </p>
+                      </div>
+                      <span className="text-sm font-semibold text-green-600">
+                        +GH₵{earning.amount.toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Total Earnings</span>
+                    <span className="text-lg font-bold">
+                      GH₵{totalEarnings.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Available Surveys</CardTitle>
-          <CardDescription>
-            Complete surveys to earn extra income
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Available Surveys</CardTitle>
+            <CardDescription>
+              Complete surveys to earn extra income
+            </CardDescription>
+          </div>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/influencer/surveys">
+              View All
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="p-4 rounded-lg border space-y-3">
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline">₵{5 + i * 2}</Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {10 - i * 2} min
-                  </span>
+          {availableSurveys.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <ClipboardList className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-sm">No surveys available at the moment</p>
+              <p className="text-xs mt-1">
+                Check back later for new opportunities!
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {availableSurveys.slice(0, 3).map((survey: any) => (
+                <div
+                  key={survey.id}
+                  className="p-4 rounded-lg border space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-green-600">
+                      GH₵{survey.paymentPerResponse || 0}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {survey._count?.questions || 0} questions
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium line-clamp-1">
+                      {survey.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-1">
+                      {survey.client?.name || "Anonymous Client"}
+                    </p>
+                  </div>
+                  <Button size="sm" className="w-full" asChild>
+                    <Link href={`/influencer/surveys/${survey.id}/take`}>
+                      Start Survey
+                    </Link>
+                  </Button>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">Consumer Survey {i}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Brand Research Study
-                  </p>
-                </div>
-                <Button size="sm" className="w-full" variant="outline">
-                  Start Survey
-                </Button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
