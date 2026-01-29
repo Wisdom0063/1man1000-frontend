@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -8,6 +9,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
+import { useQuery } from "@tanstack/react-query";
 import {
   Users,
   Megaphone,
@@ -16,55 +18,97 @@ import {
   TrendingUp,
   Clock,
 } from "lucide-react";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
-const stats = [
-  {
-    title: "Total Users",
-    value: "1,234",
-    change: "+12%",
-    icon: Users,
-    color: "text-blue-600",
-    bgColor: "bg-blue-500/10",
-  },
-  {
-    title: "Active Campaigns",
-    value: "56",
-    change: "+8%",
-    icon: Megaphone,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-500/10",
-  },
-  {
-    title: "Pending Submissions",
-    value: "23",
-    change: "-5%",
-    icon: FileImage,
-    color: "text-orange-600",
-    bgColor: "bg-orange-500/10",
-  },
-  {
-    title: "Total Payments",
-    value: "GH₵45,678",
-    change: "+15%",
-    icon: CreditCard,
-    color: "text-violet-600",
-    bgColor: "bg-violet-500/10",
-  },
-];
-
-const recentActivity = [
-  {
-    action: "New influencer registered",
-    user: "John Doe",
-    time: "2 minutes ago",
-  },
-  { action: "Campaign approved", user: "ABC Company", time: "15 minutes ago" },
-  { action: "Submission reviewed", user: "Jane Smith", time: "1 hour ago" },
-  { action: "Payment processed", user: "Mike Johnson", time: "2 hours ago" },
-  { action: "Survey completed", user: "Sarah Wilson", time: "3 hours ago" },
-];
+type AdminDashboardResponse = {
+  stats: {
+    totalUsers: number;
+    activeCampaigns: number;
+    pendingSubmissions: number;
+    totalPaidPayments: number;
+    pendingInfluencerApplications: number;
+    pendingCampaignReviews: number;
+  };
+  pendingApprovals: {
+    influencerApplications: number;
+    campaignReviews: number;
+    submissionReviews: number;
+  };
+  topInfluencers: Array<{ name: string; views: number }>;
+  surveyStats: {
+    running: number;
+    pendingApproval: number;
+    completedToday: number;
+  };
+  recentActivity: Array<{ action: string; user: string; createdAt: string }>;
+};
 
 export default function AdminDashboard() {
+  const { data, isLoading, isError, refetch } =
+    useQuery<AdminDashboardResponse>({
+      queryKey: ["adminDashboard"],
+      queryFn: async () => {
+        const res = await axios.get<AdminDashboardResponse>(
+          "/api/admin/dashboard",
+        );
+        return res.data;
+      },
+    });
+
+  if (isLoading) return <LoadingState text="Loading admin dashboard..." />;
+
+  if (isError || !data) {
+    return (
+      <ErrorState
+        title="Failed to load dashboard"
+        message="There was an error loading admin dashboard data."
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  const stats = [
+    {
+      title: "Total Users",
+      value: data.stats.totalUsers.toLocaleString(),
+      change: "—",
+      icon: Users,
+      color: "text-blue-600",
+      bgColor: "bg-blue-500/10",
+    },
+    {
+      title: "Active Campaigns",
+      value: data.stats.activeCampaigns.toLocaleString(),
+      change: "—",
+      icon: Megaphone,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-500/10",
+    },
+    {
+      title: "Pending Submissions",
+      value: data.stats.pendingSubmissions.toLocaleString(),
+      change: "—",
+      icon: FileImage,
+      color: "text-orange-600",
+      bgColor: "bg-orange-500/10",
+    },
+    {
+      title: "Total Payments",
+      value: `GH₵${data.stats.totalPaidPayments.toLocaleString()}`,
+      change: "—",
+      icon: CreditCard,
+      color: "text-violet-600",
+      bgColor: "bg-violet-500/10",
+    },
+  ];
+
+  const recentActivity = data.recentActivity.map((a) => ({
+    action: a.action,
+    user: a.user,
+    time: new Date(a.createdAt).toLocaleString(),
+  }));
+
   return (
     <div className="space-y-8">
       <div>
@@ -94,7 +138,9 @@ export default function AdminDashboard() {
                   className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${
                     stat.change.startsWith("+")
                       ? "bg-emerald-500/10 text-emerald-600"
-                      : "bg-red-500/10 text-red-600"
+                      : stat.change.startsWith("-")
+                        ? "bg-red-500/10 text-red-600"
+                        : "bg-muted text-muted-foreground"
                   }`}
                 >
                   {stat.change}
@@ -174,19 +220,19 @@ export default function AdminDashboard() {
                   Influencer Applications
                 </span>
                 <Badge className="bg-orange-500/15 text-orange-600 border-0">
-                  12
+                  {data.pendingApprovals.influencerApplications}
                 </Badge>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
                 <span className="text-sm font-medium">Campaign Reviews</span>
                 <Badge className="bg-blue-500/15 text-blue-600 border-0">
-                  8
+                  {data.pendingApprovals.campaignReviews}
                 </Badge>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
                 <span className="text-sm font-medium">Submission Reviews</span>
                 <Badge className="bg-violet-500/15 text-violet-600 border-0">
-                  23
+                  {data.pendingApprovals.submissionReviews}
                 </Badge>
               </div>
             </div>
@@ -199,18 +245,18 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {["Jane Smith", "Mike Johnson", "Sarah Wilson"].map((name, i) => (
+              {data.topInfluencers.map((inf, i) => (
                 <div
-                  key={name}
+                  key={`${inf.name}-${i}`}
                   className="flex items-center gap-3 p-3 rounded-xl bg-muted/30"
                 >
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white text-sm font-bold shadow-sm">
                     {i + 1}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold">{name}</p>
+                    <p className="text-sm font-semibold">{inf.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {(1000 - i * 200).toLocaleString()} views
+                      {inf.views.toLocaleString()} views
                     </p>
                   </div>
                 </div>
@@ -228,19 +274,19 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
                 <span className="text-sm font-medium">Running</span>
                 <Badge className="bg-emerald-500/15 text-emerald-600 border-0">
-                  15
+                  {data.surveyStats.running}
                 </Badge>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
                 <span className="text-sm font-medium">Pending Approval</span>
                 <Badge className="bg-yellow-500/15 text-yellow-600 border-0">
-                  5
+                  {data.surveyStats.pendingApproval}
                 </Badge>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
                 <span className="text-sm font-medium">Completed Today</span>
                 <Badge className="bg-blue-500/15 text-blue-600 border-0">
-                  8
+                  {data.surveyStats.completedToday}
                 </Badge>
               </div>
             </div>

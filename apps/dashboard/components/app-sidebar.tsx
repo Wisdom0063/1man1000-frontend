@@ -11,8 +11,8 @@ import {
   ClipboardList,
   Settings,
   LogOut,
-  BarChart3,
-  UserCheck,
+  // BarChart3,
+  // UserCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -48,7 +48,7 @@ const adminNavItems = [
   { title: "Submissions", href: "/admin/submissions", icon: FileImage },
   { title: "Payments", href: "/admin/payments", icon: CreditCard },
   { title: "Surveys", href: "/admin/surveys", icon: ClipboardList },
-  { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  // { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
 ];
 
 const clientNavItems = [

@@ -808,6 +808,90 @@ export interface CreatePaymentDto {
   totalAmount: number;
 }
 
+/**
+ * @nullable
+ */
+export type PaymentInfluencerDtoName = { [key: string]: unknown } | null;
+
+/**
+ * @nullable
+ */
+export type PaymentInfluencerDtoMobileMoneyNumber = { [key: string]: unknown } | null;
+
+/**
+ * @nullable
+ */
+export type PaymentInfluencerDtoMobileMoneyNetwork = { [key: string]: unknown } | null;
+
+export interface PaymentInfluencerDto {
+  id: string;
+  /** @nullable */
+  name?: PaymentInfluencerDtoName;
+  email: string;
+  /** @nullable */
+  mobileMoneyNumber?: PaymentInfluencerDtoMobileMoneyNumber;
+  /** @nullable */
+  mobileMoneyNetwork?: PaymentInfluencerDtoMobileMoneyNetwork;
+}
+
+export interface PaymentCampaignDto {
+  id: string;
+  brandName: string;
+}
+
+export type PaymentResponseDtoStatus = typeof PaymentResponseDtoStatus[keyof typeof PaymentResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentResponseDtoStatus = {
+  pending: 'pending',
+  paid: 'paid',
+} as const;
+
+/**
+ * @nullable
+ */
+export type PaymentResponseDtoPaymentType = typeof PaymentResponseDtoPaymentType[keyof typeof PaymentResponseDtoPaymentType] | null;
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentResponseDtoPaymentType = {
+  per_view: 'per_view',
+  per_views: 'per_views',
+} as const;
+
+/**
+ * @nullable
+ */
+export type PaymentResponseDtoPaymentViewsThreshold = { [key: string]: unknown } | null;
+
+export interface PaymentResponseDto {
+  id: string;
+  influencerId: string;
+  campaignId: string;
+  viewsDelivered: number;
+  ratePerView: number;
+  totalAmount: number;
+  status: PaymentResponseDtoStatus;
+  /** @nullable */
+  paymentDate?: string | null;
+  /** @nullable */
+  paymentType?: PaymentResponseDtoPaymentType;
+  /** @nullable */
+  paymentViewsThreshold?: PaymentResponseDtoPaymentViewsThreshold;
+  createdAt: string;
+  updatedAt: string;
+  influencer?: PaymentInfluencerDto;
+  campaign?: PaymentCampaignDto;
+}
+
+export interface InfluencerEarningsResponseDto {
+  totalEarnings: number;
+  paidEarnings: number;
+  pendingEarnings: number;
+  totalPayments: number;
+}
+
 export type UpdatePaymentStatusDtoStatus = typeof UpdatePaymentStatusDtoStatus[keyof typeof UpdatePaymentStatusDtoStatus];
 
 
@@ -1027,6 +1111,46 @@ export type SubmitResponseDtoAnswers = { [key: string]: unknown };
 export interface SubmitResponseDto {
   /** Survey answers mapped by question ID */
   answers: SubmitResponseDtoAnswers;
+}
+
+export interface AdminDashboardStatsDto {
+  totalUsers: number;
+  activeCampaigns: number;
+  pendingSubmissions: number;
+  totalPaidPayments: number;
+  pendingInfluencerApplications: number;
+  pendingCampaignReviews: number;
+}
+
+export interface AdminPendingApprovalsDto {
+  influencerApplications: number;
+  campaignReviews: number;
+  submissionReviews: number;
+}
+
+export interface AdminTopInfluencerDto {
+  name: string;
+  views: number;
+}
+
+export interface AdminSurveyStatsDto {
+  running: number;
+  pendingApproval: number;
+  completedToday: number;
+}
+
+export interface AdminRecentActivityDto {
+  action: string;
+  user: string;
+  createdAt: string;
+}
+
+export interface AdminDashboardResponseDto {
+  stats: AdminDashboardStatsDto;
+  pendingApprovals: AdminPendingApprovalsDto;
+  topInfluencers: AdminTopInfluencerDto[];
+  surveyStats: AdminSurveyStatsDto;
+  recentActivity: AdminRecentActivityDto[];
 }
 
 export type AuthControllerGetVerificationStatusParams = {
@@ -4703,7 +4827,7 @@ export const paymentsControllerCreate = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<PaymentResponseDto>(
       {url: `/api/payments`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createPaymentDto, signal
@@ -4768,7 +4892,7 @@ export const paymentsControllerFindAll = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<PaymentResponseDto[]>(
       {url: `/api/payments`, method: 'GET',
         params, signal
     },
@@ -4862,7 +4986,7 @@ export const paymentsControllerGetInfluencerPayments = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<PaymentResponseDto[]>(
       {url: `/api/payments/my-payments`, method: 'GET', signal
     },
       );
@@ -4955,7 +5079,7 @@ export const paymentsControllerGetInfluencerEarnings = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<InfluencerEarningsResponseDto>(
       {url: `/api/payments/my-earnings`, method: 'GET', signal
     },
       );
@@ -5048,7 +5172,7 @@ export const paymentsControllerFindOne = (
 ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<PaymentResponseDto>(
       {url: `/api/payments/${id}`, method: 'GET', signal
     },
       );
@@ -5141,7 +5265,7 @@ export const paymentsControllerUpdateStatus = (
  ) => {
       
       
-      return axiosInstance<void>(
+      return axiosInstance<PaymentResponseDto>(
       {url: `/api/payments/${id}/status`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updatePaymentStatusDto
@@ -6298,3 +6422,92 @@ export const useSurveysControllerSubmitResponse = <TError = unknown,
 
       return useMutation(mutationOptions, queryClient);
     }
+    
+/**
+ * @summary Get admin dashboard stats and recent activity
+ */
+export const adminControllerGetDashboard = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<AdminDashboardResponseDto>(
+      {url: `/api/admin/dashboard`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetDashboardQueryKey = () => {
+    return [
+    `/api/admin/dashboard`
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetDashboardQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetDashboardQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetDashboard>>> = ({ signal }) => adminControllerGetDashboard(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetDashboard>>>
+export type AdminControllerGetDashboardQueryError = unknown
+
+
+export function useAdminControllerGetDashboard<TData = Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetDashboard<TData = Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetDashboard<TData = Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get admin dashboard stats and recent activity
+ */
+
+export function useAdminControllerGetDashboard<TData = Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetDashboardQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
