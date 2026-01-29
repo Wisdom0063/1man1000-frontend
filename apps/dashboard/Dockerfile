@@ -13,7 +13,9 @@ FROM base AS builder
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk update
 RUN apk add --no-cache libc6-compat
+ENV COREPACK_NPM_REGISTRY=https://registry.npmmirror.com
 RUN corepack enable
+RUN sh -c 'for i in 1 2 3; do corepack prepare pnpm@10.4.1 --activate && exit 0; echo "corepack prepare pnpm failed (attempt $i)"; sleep 3; done; exit 1'
 
 # Set working directory
 WORKDIR /app
@@ -24,7 +26,9 @@ RUN pnpm dlx turbo prune dashboard --docker
 FROM base AS installer
 RUN apk update
 RUN apk add --no-cache libc6-compat
+ENV COREPACK_NPM_REGISTRY=https://registry.npmmirror.com
 RUN corepack enable
+RUN sh -c 'for i in 1 2 3; do corepack prepare pnpm@10.4.1 --activate && exit 0; echo "corepack prepare pnpm failed (attempt $i)"; sleep 3; done; exit 1'
 WORKDIR /app
 
 # First install the dependencies (as they change less often)
