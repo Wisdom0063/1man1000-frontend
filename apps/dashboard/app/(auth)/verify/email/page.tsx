@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -20,7 +20,7 @@ import {
 import { Loader2, Mail } from "lucide-react";
 import { VerificationCodeInput } from "@/components/verification-code-input";
 
-export default function VerifyEmailPage() {
+function VerifyEmailPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
@@ -34,7 +34,7 @@ export default function VerifyEmailPage() {
       onSuccess: () => {
         setIsLoading(false);
         router.push(
-          `/verify/phone?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`
+          `/verify/phone?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`,
         );
       },
       onError: () => {
@@ -140,5 +140,13 @@ export default function VerifyEmailPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense>
+      <VerifyEmailPageInner />
+    </Suspense>
   );
 }

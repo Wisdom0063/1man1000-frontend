@@ -179,10 +179,10 @@ export default function ClientAnalyticsPage() {
             <CardContent>
               <div className="space-y-6">
                 {campaignPerformance.map((campaign) => (
-                  <div key={campaign.name} className="space-y-3">
+                  <div key={campaign.id} className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">{campaign.name}</p>
+                        <p className="font-medium">{campaign.name as string}</p>
                         <p className="text-sm text-muted-foreground">
                           {campaign.influencers} influencers
                         </p>

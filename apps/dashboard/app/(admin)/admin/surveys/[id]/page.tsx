@@ -115,7 +115,7 @@ export default function AdminSurveyDetailPage() {
     return <LoadingState text="Loading survey details..." />;
   }
 
-  if (isError || !survey) {
+  if (isError) {
     return (
       <ErrorState
         title="Failed to load survey"

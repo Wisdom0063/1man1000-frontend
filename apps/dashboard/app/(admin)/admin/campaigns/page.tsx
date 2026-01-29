@@ -38,7 +38,7 @@ export default function AdminCampaignsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [campaigns, setCampaigns] = useState<CampaignsListResponseDto["data"]>(
-    []
+    [],
   );
 
   const queryParams: Record<string, string | number> = {};
@@ -84,7 +84,7 @@ export default function AdminCampaignsPage() {
         }
       }
     },
-    [updateStatusMutation]
+    [updateStatusMutation],
   );
 
   const handleReject = useCallback(
@@ -100,7 +100,7 @@ export default function AdminCampaignsPage() {
         }
       }
     },
-    [updateStatusMutation]
+    [updateStatusMutation],
   );
 
   const columns: ColumnDef<CampaignsListResponseDto["data"][number]>[] =
@@ -126,9 +126,7 @@ export default function AdminCampaignsPage() {
             const campaign = row.original;
             return (
               <div className="flex flex-col">
-                <span className="font-medium">
-                  {campaign.title || campaign.brandName}
-                </span>
+                <span className="font-medium">{campaign.title as any}</span>
                 <span className="text-sm text-muted-foreground">
                   {campaign.brandName}
                 </span>
@@ -264,7 +262,7 @@ export default function AdminCampaignsPage() {
           },
         },
       ],
-      [router, updateStatusMutation.isPending, handleApprove, handleReject]
+      [router, updateStatusMutation.isPending, handleApprove, handleReject],
     );
 
   const CampaignFilter = useCallback(() => {

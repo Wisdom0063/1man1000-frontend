@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -20,7 +20,7 @@ import {
 import { Loader2, Smartphone } from "lucide-react";
 import { VerificationCodeInput } from "@/components/verification-code-input";
 
-export default function VerifyPhonePage() {
+function VerifyPhonePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
@@ -138,5 +138,13 @@ export default function VerifyPhonePage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyPhonePage() {
+  return (
+    <Suspense>
+      <VerifyPhonePageInner />
+    </Suspense>
   );
 }

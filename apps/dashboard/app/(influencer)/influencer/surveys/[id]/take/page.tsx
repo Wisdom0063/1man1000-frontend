@@ -130,7 +130,7 @@ export default function TakeSurveyPage() {
     }
   };
 
-  if (startMutation.isError || !survey) {
+  if (startMutation.isError) {
     return (
       <ErrorState
         title="Failed to load survey"

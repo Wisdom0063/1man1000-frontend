@@ -84,7 +84,7 @@ export function VerificationCodeInput({
       {digits.map((digit, index) => (
         <Input
           key={index}
-          ref={(el) => (inputRefs.current[index] = el)}
+          ref={(el) => (inputRefs.current[index] = el) as any}
           type="text"
           inputMode="numeric"
           maxLength={1}
@@ -98,7 +98,7 @@ export function VerificationCodeInput({
           className={cn(
             "w-12 h-14 text-center text-2xl font-semibold",
             error && "border-destructive",
-            focusedIndex === index && "ring-2 ring-primary"
+            focusedIndex === index && "ring-2 ring-primary",
           )}
         />
       ))}

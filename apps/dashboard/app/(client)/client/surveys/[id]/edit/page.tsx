@@ -73,7 +73,7 @@ export default function ClientEditSurveyPage() {
 
   if (isLoading) return <LoadingState text="Loading survey..." />;
 
-  if (isError || !survey) {
+  if (isError) {
     return (
       <ErrorState
         title="Failed to load survey"
