@@ -172,11 +172,13 @@ export default function ClientDashboard() {
                 data.recentSubmissions.map((submission) => (
                   <div key={submission.id} className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-sm font-medium">
-                      {submission.influencer?.name?.charAt(0) || "I"}
+                      {(submission.influencer?.id || "INF")
+                        .slice(0, 2)
+                        .toUpperCase()}
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium">
-                        {submission.influencer?.name || "Unknown Influencer"}
+                        {submission.influencer?.id || "Unknown Influencer"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {submission.campaign?.title ||
