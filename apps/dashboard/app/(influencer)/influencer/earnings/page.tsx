@@ -9,6 +9,7 @@ import {
 } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import Link from "next/link";
 import {
   CreditCard,
   TrendingUp,
@@ -16,53 +17,83 @@ import {
   CheckCircle,
   Wallet,
 } from "lucide-react";
-
-const earnings = [
-  {
-    id: "1",
-    campaign: "Fall Collection",
-    amount: 400,
-    status: "paid",
-    date: "Dec 20, 2025",
-  },
-  {
-    id: "2",
-    campaign: "Summer Product Launch",
-    amount: 250,
-    status: "paid",
-    date: "Dec 15, 2025",
-  },
-  {
-    id: "3",
-    campaign: "Brand Awareness Q4",
-    amount: 180,
-    status: "pending",
-    date: "Dec 30, 2025",
-  },
-  {
-    id: "4",
-    campaign: "Holiday Promotion",
-    amount: 320,
-    status: "pending",
-    date: "Jan 5, 2026",
-  },
-  {
-    id: "5",
-    campaign: "Tech Launch",
-    amount: 280,
-    status: "paid",
-    date: "Nov 28, 2025",
-  },
-];
-
-const stats = {
-  totalEarnings: 1430,
-  pendingPayments: 500,
-  paidThisMonth: 650,
-  campaignsCompleted: 5,
-};
+import {
+  usePaymentsControllerGetInfluencerEarnings,
+  usePaymentsControllerGetInfluencerPayments,
+  useAuthControllerGetProfile,
+  type PaymentResponseDto,
+  type InfluencerEarningsResponseDto,
+  type ProfileResponseDto,
+} from "@workspace/client";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ErrorState } from "@/components/ui/error-state";
 
 export default function InfluencerEarningsPage() {
+  const {
+    data: earningsSummary,
+    isLoading: isLoadingEarnings,
+    isError: isErrorEarnings,
+    refetch: refetchEarnings,
+  } = usePaymentsControllerGetInfluencerEarnings();
+
+  const {
+    data: payments,
+    isLoading: isLoadingPayments,
+    isError: isErrorPayments,
+    refetch: refetchPayments,
+  } = usePaymentsControllerGetInfluencerPayments();
+
+  const {
+    data: profile,
+    isLoading: isLoadingProfile,
+    isError: isErrorProfile,
+    refetch: refetchProfile,
+  } = useAuthControllerGetProfile({
+    query: { staleTime: 15_000 },
+  });
+
+  if (isLoadingEarnings || isLoadingPayments || isLoadingProfile) {
+    return <LoadingState text="Loading earnings..." />;
+  }
+
+  if (isErrorEarnings || isErrorPayments || isErrorProfile) {
+    return (
+      <ErrorState
+        title="Failed to load earnings"
+        message="There was an error loading your earnings and payment history."
+        onRetry={() => {
+          refetchEarnings();
+          refetchPayments();
+          refetchProfile();
+        }}
+      />
+    );
+  }
+
+  const typedEarningsSummary = earningsSummary as
+    | InfluencerEarningsResponseDto
+    | undefined;
+  const typedPayments = (payments || []) as PaymentResponseDto[];
+  const typedProfile = profile as ProfileResponseDto | undefined;
+
+  const totalEarnings = typedEarningsSummary?.totalEarnings ?? 0;
+  const pendingPaymentsAmount = typedEarningsSummary?.pendingEarnings ?? 0;
+  const paidEarnings = typedEarningsSummary?.paidEarnings ?? 0;
+  const totalPayments = typedEarningsSummary?.totalPayments ?? 0;
+
+  const paymentsWithCampaign = typedPayments.map((p) => {
+    const campaignName = p.campaign?.brandName || "Campaign";
+    const dateSource = p.paymentDate || p.createdAt;
+    const date = dateSource ? new Date(dateSource).toLocaleDateString() : "";
+    return {
+      id: p.id,
+      campaign: campaignName,
+      amount: p.totalAmount,
+      status: p.status,
+      date,
+    };
+  });
+
   return (
     <div className="space-y-6">
       <div>
@@ -82,7 +113,7 @@ export default function InfluencerEarningsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              GH₵{stats.totalEarnings.toLocaleString()}
+              GH₵{totalEarnings.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
@@ -97,7 +128,7 @@ export default function InfluencerEarningsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              GH₵{stats.pendingPayments.toLocaleString()}
+              GH₵{pendingPaymentsAmount.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">Processing</p>
           </CardContent>
@@ -106,27 +137,27 @@ export default function InfluencerEarningsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Paid This Month
+              Paid Earnings
             </CardTitle>
             <CreditCard className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              GH₵{stats.paidThisMonth.toLocaleString()}
+              GH₵{paidEarnings.toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground">December 2025</p>
+            <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Campaigns Completed
+              Total Payments
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.campaignsCompleted}</div>
+            <div className="text-2xl font-bold">{totalPayments}</div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
@@ -139,43 +170,52 @@ export default function InfluencerEarningsPage() {
             <CardDescription>Your recent payments</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {earnings.map((earning) => (
-                <div
-                  key={earning.id}
-                  className="flex items-center justify-between p-3 rounded-lg border"
-                >
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{earning.campaign}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {earning.date}
-                    </p>
+            {paymentsWithCampaign.length === 0 ? (
+              <div className="text-center py-10 text-muted-foreground">
+                <p className="text-sm">No payments yet</p>
+                <p className="text-xs mt-1">
+                  When you receive payments, they will show up here.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {paymentsWithCampaign.map((earning) => (
+                  <div
+                    key={earning.id}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">{earning.campaign}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {earning.date}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-sm font-semibold ${earning.status === "paid" ? "text-green-600" : "text-yellow-600"}`}
+                      >
+                        GH₵{earning.amount.toFixed(2)}
+                      </span>
+                      <Badge
+                        variant={
+                          earning.status === "paid" ? "default" : "secondary"
+                        }
+                      >
+                        {earning.status === "paid" ? (
+                          <>
+                            <CheckCircle className="mr-1 h-3 w-3" /> Paid
+                          </>
+                        ) : (
+                          <>
+                            <Clock className="mr-1 h-3 w-3" /> Pending
+                          </>
+                        )}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-sm font-semibold ${earning.status === "paid" ? "text-green-600" : "text-yellow-600"}`}
-                    >
-                      GH₵{earning.amount}
-                    </span>
-                    <Badge
-                      variant={
-                        earning.status === "paid" ? "default" : "secondary"
-                      }
-                    >
-                      {earning.status === "paid" ? (
-                        <>
-                          <CheckCircle className="mr-1 h-3 w-3" /> Paid
-                        </>
-                      ) : (
-                        <>
-                          <Clock className="mr-1 h-3 w-3" /> Pending
-                        </>
-                      )}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -188,23 +228,21 @@ export default function InfluencerEarningsPage() {
             <div className="p-4 rounded-lg bg-muted/50 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Network</span>
-                <span className="text-sm font-medium">MTN Mobile Money</span>
+                <span className="text-sm font-medium">
+                  {typedProfile?.mobileMoneyNetwork || "Not set"}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
                   Phone Number
                 </span>
-                <span className="text-sm font-medium">024 XXX XXXX</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Account Name
+                <span className="text-sm font-medium">
+                  {typedProfile?.mobileMoneyNumber || "Not set"}
                 </span>
-                <span className="text-sm font-medium">John Doe</span>
               </div>
             </div>
-            <Button variant="outline" className="w-full">
-              Update Payment Details
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/settings">Update Payment Details</Link>
             </Button>
           </CardContent>
         </Card>
