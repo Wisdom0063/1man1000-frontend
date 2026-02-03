@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type UserRole = "admin" | "client" | "influencer";
-export type UserStatus = "pending" | "approved" | "suspended";
+export type UserStatus = "pending" | "approved" | "rejected";
 
 export interface User {
   id: string;
@@ -10,6 +10,7 @@ export interface User {
   name: string;
   role: UserRole;
   status: UserStatus;
+  profileCompleted?: boolean;
   phone?: string;
   company?: string;
   avatarUrl?: string;
@@ -39,6 +40,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       partialize: (state) => ({ user: state.user, token: state.token }),
-    }
-  )
+    },
+  ),
 );

@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { InfluencerProfileGate } from "@/components/influencer-profile-gate";
 
 export default function InfluencerLayout({
   children,
@@ -6,6 +7,8 @@ export default function InfluencerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DashboardLayout allowedRoles={["influencer"]}>{children}</DashboardLayout>
+    <DashboardLayout allowedRoles={["influencer"]}>
+      <InfluencerProfileGate>{children}</InfluencerProfileGate>
+    </DashboardLayout>
   );
 }

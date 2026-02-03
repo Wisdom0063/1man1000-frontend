@@ -26,6 +26,13 @@ import {
 } from "@workspace/client";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@workspace/ui/components/select";
 
 export default function SettingsPage() {
   const [profileData, setProfileData] = useState({
@@ -215,17 +222,50 @@ export default function SettingsPage() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="momo-network">Mobile Money Network</Label>
-                      <Input
-                        id="momo-network"
-                        placeholder="MTN, Vodafone, or AirtelTigo"
-                      />
+                      <Select
+                        defaultValue={user.mobileMoneyNetwork || ""}
+                        onValueChange={(value) =>
+                          setProfileData((p) => ({
+                            ...p,
+                            mobileMoneyNetwork: value,
+                          }))
+                        }
+                      >
+                        <SelectTrigger id="momo-network">
+                          <SelectValue placeholder="Select network" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MTN">MTN Mobile Money</SelectItem>
+                          <SelectItem value="Vodafone">
+                            Vodafone Cash
+                          </SelectItem>
+                          <SelectItem value="AirtelTigo">
+                            AirtelTigo Money
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="momo-number">Mobile Money Number</Label>
-                      <Input id="momo-number" placeholder="0XX XXX XXXX" />
+                      <Input
+                        defaultValue={user.mobileMoneyNumber || ""}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            mobileMoneyNumber: e.target.value,
+                          })
+                        }
+                        id="momo-number"
+                        placeholder="0XX XXX XXXX"
+                      />
                     </div>
                   </div>
-                  <Button>Update Payment Info</Button>
+                  <Button
+                    onClick={handleProfileUpdate}
+                    disabled={updateMutation.isPending}
+                  >
+                    Update Payment Info
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -242,17 +282,49 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="current-password">Current Password</Label>
-                  <Input id="current-password" type="password" />
+                  <Input
+                    onChange={(e) => {
+                      setPasswordData({
+                        ...passwordData,
+                        currentPassword: e.target.value,
+                      });
+                    }}
+                    id="current-password"
+                    type="password"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="new-password">New Password</Label>
-                  <Input id="new-password" type="password" />
+                  <Input
+                    onChange={(e) => {
+                      setPasswordData({
+                        ...passwordData,
+                        newPassword: e.target.value,
+                      });
+                    }}
+                    id="new-password"
+                    type="password"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password">Confirm New Password</Label>
-                  <Input id="confirm-password" type="password" />
+                  <Input
+                    onChange={(e) => {
+                      setPasswordData({
+                        ...passwordData,
+                        confirmPassword: e.target.value,
+                      });
+                    }}
+                    id="confirm-password"
+                    type="password"
+                  />
                 </div>
-                <Button>Update Password</Button>
+                <Button
+                  onClick={handlePasswordChange}
+                  disabled={changePasswordMutation.isPending}
+                >
+                  Update Password
+                </Button>
               </CardContent>
             </Card>
 
