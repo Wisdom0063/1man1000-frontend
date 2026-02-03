@@ -73,7 +73,7 @@ export default function InfluencerCampaignsPage() {
   const campaigns = (response?.data || []) as Campaign[];
 
   const activeCampaigns = campaigns.filter(
-    (c) => c.status === "active" || c.status === "approved"
+    (c) => c.status === "active" || c.status === "approved",
   );
   const completedCampaigns = campaigns.filter((c) => c.status === "completed");
 
@@ -82,7 +82,7 @@ export default function InfluencerCampaignsPage() {
   ).filter(
     (campaign) =>
       campaign.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      campaign.title?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (isLoading) {
@@ -101,7 +101,7 @@ export default function InfluencerCampaignsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between md:flex-row flex-col gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             My Campaigns
@@ -110,7 +110,7 @@ export default function InfluencerCampaignsPage() {
             View and manage your assigned campaigns
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="md:w-auto w-full">
           <Link href="/influencer/campaigns/available">
             <Target className="h-4 w-4 mr-2" />
             Browse Available Campaigns
