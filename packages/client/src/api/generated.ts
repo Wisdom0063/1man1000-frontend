@@ -517,9 +517,11 @@ export interface ClientCampaignResponseDto {
 
 export interface DashboardStatsDto {
   activeCampaigns: number;
+  totalCampaigns: number;
   totalViews: number;
   submissions: number;
   conversionRate: string;
+  campaignInvestment: number;
 }
 
 export type RecentCampaignDtoTargetViewRange = { [key: string]: unknown };
@@ -535,8 +537,6 @@ export interface RecentCampaignDto {
 
 export interface RecentSubmissionInfluencerDto {
   id: string;
-  name?: string;
-  email: string;
 }
 
 export interface RecentSubmissionCampaignDto {
