@@ -46,6 +46,37 @@ type FormState = {
     | "";
 };
 
+const allSchoolOptions = [
+  "University of Ghana",
+  "Kwame Nkrumah University of Science and Technology",
+  "University of Cape Coast",
+  "Ashesi University",
+  "Ghana Institute of Management and Public Administration",
+  "University of Professional Studies, Accra",
+  "Central University",
+  "Methodist University College Ghana",
+  "Accra Institute of Technology",
+  "Regent University College",
+  "Valley View University",
+  "University of Education, Winneba",
+  "Takoradi Technical University",
+  "Kumasi Technical University",
+  "Ghana Technology University College",
+  "Cape Coast Technical University",
+  "Accra Technical University",
+  "Koforidua Technical University",
+  "Sunyani Technical University",
+  "Ho Technical University",
+  "Faso College of Accra",
+  "Islamic University College",
+  "Wisconsin International University College",
+  "Ghana-India Education Centre",
+  "Pan African University",
+  "Pearlfield University College",
+  "EMS College of Education",
+  "Akenten Appiah-Menka University of Skills Training and Entrepreneurial Development",
+];
+
 export default function InfluencerCompleteProfilePage() {
   const router = useRouter();
   const { user } = useAuthStore();
@@ -285,16 +316,27 @@ export default function InfluencerCompleteProfilePage() {
               {formData.isStudent && (
                 <div className="space-y-2">
                   <Label htmlFor="schoolName">School/University Name *</Label>
-                  <Input
-                    id="schoolName"
-                    type="text"
-                    placeholder="Enter your school/university"
+
+                  <Select
                     value={formData.schoolName}
-                    onChange={(e) =>
-                      setFormData((p) => ({ ...p, schoolName: e.target.value }))
+                    onValueChange={(value) =>
+                      setFormData((p) => ({
+                        ...p,
+                        schoolName: value as FormState["schoolName"],
+                      }))
                     }
-                    required
-                  />
+                  >
+                    <SelectTrigger id="schoolName">
+                      <SelectValue placeholder="Select school" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allSchoolOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 

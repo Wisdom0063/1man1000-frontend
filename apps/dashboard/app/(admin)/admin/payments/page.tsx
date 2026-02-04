@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import {
   usePaymentsControllerFindAll,
   usePaymentsControllerUpdateStatus,
@@ -49,6 +51,15 @@ const statusColors = {
   paid: "bg-green-100 text-green-800",
 };
 
+type PaymentsStats = {
+  totalPaid: number;
+  pendingPayouts: number;
+  pendingCount: number;
+  paidThisMonth: number;
+  paidCount: number;
+  totalCount: number;
+};
+
 export default function AdminPaymentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("pending");
@@ -73,19 +84,32 @@ export default function AdminPaymentsPage() {
     },
   );
 
+  const {
+    data: stats,
+    isLoading: isLoadingStats,
+    isError: isErrorStats,
+    refetch: refetchStats,
+  } = useQuery({
+    queryKey: ["adminPaymentsStats"],
+    queryFn: async () => {
+      const { data } = await axios.get<PaymentsStats>("/api/payments/stats");
+      return data;
+    },
+    staleTime: 10_000,
+  });
+
   const { mutateAsync: updatePaymentStatus, isPending: isUpdatingStatus } =
     usePaymentsControllerUpdateStatus();
 
-  if (isLoading) {
-    return <LoadingState text="Loading payments..." />;
-  }
-
-  if (isError) {
+  if (isError || isErrorStats) {
     return (
       <ErrorState
         title="Failed to load payments"
         message="There was an error loading the payments queue."
-        onRetry={() => refetch()}
+        onRetry={() => {
+          refetch();
+          refetchStats();
+        }}
       />
     );
   }
@@ -103,30 +127,11 @@ export default function AdminPaymentsPage() {
     );
   });
 
-  const totalPaid = typedPayments
-    .filter((p) => p.status === "paid")
-    .reduce((sum, p) => sum + (p.totalAmount || 0), 0);
-
-  const pendingPayouts = typedPayments
-    .filter((p) => p.status === "pending")
-    .reduce((sum, p) => sum + (p.totalAmount || 0), 0);
-
+  const totalPaid = stats?.totalPaid ?? 0;
+  const pendingPayouts = stats?.pendingPayouts ?? 0;
+  const pendingCount = stats?.pendingCount ?? 0;
+  const paidThisMonth = stats?.paidThisMonth ?? 0;
   const now = new Date();
-  const paidThisMonth = typedPayments
-    .filter((p) => {
-      if (p.status !== "paid") return false;
-      const dt = p.paymentDate || p.updatedAt || p.createdAt;
-      if (!dt) return false;
-      const d = new Date(dt);
-      return (
-        d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
-      );
-    })
-    .reduce((sum, p) => sum + (p.totalAmount || 0), 0);
-
-  const pendingCount = typedPayments.filter(
-    (p) => p.status === "pending",
-  ).length;
 
   const selectedInfluencerName =
     selectedPayment?.influencer?.name || "Influencer";
@@ -243,7 +248,9 @@ export default function AdminPaymentsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {filteredPayments.length === 0 ? (
+              {isLoading ? (
+                <LoadingState text="Loading payments..." />
+              ) : filteredPayments.length === 0 ? (
                 <div className="text-center py-10 text-muted-foreground">
                   <p className="text-sm">No payments found</p>
                   <p className="text-xs mt-1">
@@ -281,7 +288,7 @@ export default function AdminPaymentsPage() {
                               {influencerName as string}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {campaignName}
+                              {campaignName as string}
                             </p>
                           </div>
                         </div>
@@ -359,6 +366,7 @@ export default function AdminPaymentsPage() {
                   data: payload,
                 });
                 await refetch();
+                await refetchStats();
                 setConfirmOpen(false);
                 setSelectedPayment(null);
               }}
