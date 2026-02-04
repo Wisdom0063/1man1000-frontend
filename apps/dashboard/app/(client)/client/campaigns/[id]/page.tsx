@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useCampaignsControllerFindOne,
   useCampaignsControllerDelete,
+  useSubmissionsControllerGetCampaignSubmissions,
   getCampaignsControllerFindAllQueryKey,
 } from "@workspace/client";
 import {
@@ -24,6 +26,11 @@ import {
   Edit,
   Trash2,
   Download,
+  Eye,
+  FileCheck,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -60,6 +67,8 @@ type Campaign = {
   submissionDeadlineDays?: number;
   adCreatives?: string[];
   campaignAsset?: string;
+  totalViews?: number;
+  _count?: { assignments: number; submissions: number };
   assignments?: Array<{
     id: string;
     influencer?: { id: string; name: string; email: string };
@@ -75,6 +84,8 @@ export default function CampaignDetailPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const campaignId = params.id as string;
+  const [submissionsPage, setSubmissionsPage] = useState(1);
+  const submissionsLimit = 10;
 
   const {
     data: response,
@@ -83,6 +94,15 @@ export default function CampaignDetailPage() {
     refetch,
   } = useCampaignsControllerFindOne(campaignId);
   const campaign = response;
+
+  const { data: submissionsResponse, isLoading: isSubmissionsLoading } =
+    useSubmissionsControllerGetCampaignSubmissions(campaignId, {
+      page: submissionsPage,
+      limit: submissionsLimit,
+    });
+
+  const submissions = submissionsResponse?.data || [];
+  const submissionsMeta = submissionsResponse?.meta;
 
   const deleteMutation = useCampaignsControllerDelete({
     mutation: {
@@ -234,6 +254,38 @@ export default function CampaignDetailPage() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Views
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-cyan-600" />
+              <span className="text-2xl font-bold">
+                {(c.totalViews || 0).toLocaleString()}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Submissions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <FileCheck className="h-5 w-5 text-emerald-600" />
+              <span className="text-2xl font-bold">
+                {c._count?.submissions || 0}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -360,6 +412,106 @@ export default function CampaignDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Submissions Table */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Submissions ({c._count?.submissions || 0})</CardTitle>
+          {submissionsMeta &&
+            (submissionsMeta as { totalPages?: number }).totalPages! > 1 && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSubmissionsPage((p) => Math.max(1, p - 1))}
+                  disabled={submissionsPage === 1 || isSubmissionsLoading}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Page {submissionsPage} of{" "}
+                  {(submissionsMeta as { totalPages?: number }).totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setSubmissionsPage((p) =>
+                      Math.min(
+                        (submissionsMeta as { totalPages?: number })
+                          .totalPages || 1,
+                        p + 1,
+                      ),
+                    )
+                  }
+                  disabled={
+                    !(submissionsMeta as { hasNextPage?: boolean })
+                      .hasNextPage || isSubmissionsLoading
+                  }
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+        </CardHeader>
+        <CardContent>
+          {isSubmissionsLoading ? (
+            <div className="py-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+            </div>
+          ) : submissions.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              No submissions yet
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                      Influencer ID
+                    </th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                      Views
+                    </th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                      Status
+                    </th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                      Date
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {submissions.map((submission) => (
+                    <tr key={submission.id} className="border-b last:border-0">
+                      <td className="py-3 px-2">
+                        <span className="font-mono text-sm text-muted-foreground">
+                          {submission.influencer?.publicInfluencerId ||
+                            "Unknown"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-2">
+                        {submission.extractedViewCount?.toLocaleString() || 0}
+                      </td>
+                      <td className="py-3 px-2">
+                        <StatusBadge status={submission.approvalStatus} />
+                      </td>
+                      <td className="py-3 px-2 text-muted-foreground">
+                        {submission.submissionDate
+                          ? new Date(
+                              submission.submissionDate,
+                            ).toLocaleDateString()
+                          : "-"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

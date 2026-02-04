@@ -180,6 +180,15 @@ export interface VerificationStatusDto {
   phoneVerified: boolean;
 }
 
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  newPassword: string;
+}
+
 export type UserResponseDtoRole = typeof UserResponseDtoRole[keyof typeof UserResponseDtoRole];
 
 
@@ -1419,6 +1428,18 @@ export const SubmissionsControllerFindAllApprovalStatus = {
   rejected: 'rejected',
 } as const;
 
+export type SubmissionsControllerGetCampaignSubmissionsParams = {
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
+
 export type PaymentsControllerFindAllParams = {
 influencerId?: string;
 campaignId?: string;
@@ -2020,6 +2041,136 @@ export const useAuthControllerResendVerificationCode = <TError = unknown,
       > => {
 
       const mutationOptions = getAuthControllerResendVerificationCodeMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Request password reset
+ */
+export const authControllerForgotPassword = (
+    forgotPasswordDto: ForgotPasswordDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/auth/forgot-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: forgotPasswordDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAuthControllerForgotPasswordMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext> => {
+
+const mutationKey = ['authControllerForgotPassword'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerForgotPassword>>, {data: ForgotPasswordDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerForgotPassword(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerForgotPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerForgotPassword>>>
+    export type AuthControllerForgotPasswordMutationBody = ForgotPasswordDto
+    export type AuthControllerForgotPasswordMutationError = unknown
+
+    /**
+ * @summary Request password reset
+ */
+export const useAuthControllerForgotPassword = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerForgotPassword>>,
+        TError,
+        {data: ForgotPasswordDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthControllerForgotPasswordMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Reset password with token
+ */
+export const authControllerResetPassword = (
+    resetPasswordDto: ResetPasswordDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/auth/reset-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAuthControllerResetPasswordMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext> => {
+
+const mutationKey = ['authControllerResetPassword'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerResetPassword>>, {data: ResetPasswordDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authControllerResetPassword(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerResetPassword>>>
+    export type AuthControllerResetPasswordMutationBody = ResetPasswordDto
+    export type AuthControllerResetPasswordMutationError = void
+
+    /**
+ * @summary Reset password with token
+ */
+export const useAuthControllerResetPassword = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerResetPassword>>,
+        TError,
+        {data: ResetPasswordDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthControllerResetPasswordMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -4634,16 +4785,18 @@ export function useSubmissionsControllerGetInfluencerSubmissions<TData = Awaited
 
 
 /**
- * @summary Get submissions for a campaign
+ * @summary Get submissions for a campaign (paginated)
  */
 export const submissionsControllerGetCampaignSubmissions = (
     campaignId: string,
+    params?: SubmissionsControllerGetCampaignSubmissionsParams,
  signal?: AbortSignal
 ) => {
       
       
-      return axiosInstance<void>(
-      {url: `/api/submissions/campaign/${campaignId}`, method: 'GET', signal
+      return axiosInstance<SubmissionsListResponseDto>(
+      {url: `/api/submissions/campaign/${campaignId}`, method: 'GET',
+        params, signal
     },
       );
     }
@@ -4651,23 +4804,25 @@ export const submissionsControllerGetCampaignSubmissions = (
 
 
 
-export const getSubmissionsControllerGetCampaignSubmissionsQueryKey = (campaignId?: string,) => {
+export const getSubmissionsControllerGetCampaignSubmissionsQueryKey = (campaignId?: string,
+    params?: SubmissionsControllerGetCampaignSubmissionsParams,) => {
     return [
-    `/api/submissions/campaign/${campaignId}`
+    `/api/submissions/campaign/${campaignId}`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getSubmissionsControllerGetCampaignSubmissionsQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
+export const getSubmissionsControllerGetCampaignSubmissionsQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(campaignId: string,
+    params?: SubmissionsControllerGetCampaignSubmissionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerGetCampaignSubmissionsQueryKey(campaignId);
+  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerGetCampaignSubmissionsQueryKey(campaignId,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>> = ({ signal }) => submissionsControllerGetCampaignSubmissions(campaignId, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>> = ({ signal }) => submissionsControllerGetCampaignSubmissions(campaignId,params, signal);
 
       
 
@@ -4681,7 +4836,8 @@ export type SubmissionsControllerGetCampaignSubmissionsQueryError = unknown
 
 
 export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
- campaignId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>> & Pick<
+ campaignId: string,
+    params: undefined |  SubmissionsControllerGetCampaignSubmissionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
           TError,
@@ -4691,7 +4847,8 @@ export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<R
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
- campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>> & Pick<
+ campaignId: string,
+    params?: SubmissionsControllerGetCampaignSubmissionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>,
           TError,
@@ -4701,19 +4858,21 @@ export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<R
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
- campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
+ campaignId: string,
+    params?: SubmissionsControllerGetCampaignSubmissionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get submissions for a campaign
+ * @summary Get submissions for a campaign (paginated)
  */
 
 export function useSubmissionsControllerGetCampaignSubmissions<TData = Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError = unknown>(
- campaignId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
+ campaignId: string,
+    params?: SubmissionsControllerGetCampaignSubmissionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetCampaignSubmissions>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getSubmissionsControllerGetCampaignSubmissionsQueryOptions(campaignId,options)
+  const queryOptions = getSubmissionsControllerGetCampaignSubmissionsQueryOptions(campaignId,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
