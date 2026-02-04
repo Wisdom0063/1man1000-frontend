@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useUsersControllerFindAll,
   useUsersControllerUpdateStatus,
-  useUsersControllerDelete,
   getUsersControllerFindAllQueryKey,
   UpdateUserStatusDtoStatus,
 } from "@workspace/client";
@@ -43,7 +42,7 @@ import {
   UserCheck,
   UserX,
   Eye,
-  Trash2,
+  Ban,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -81,16 +80,6 @@ export default function AdminUsersPage() {
     },
   });
 
-  const deleteMutation = useUsersControllerDelete({
-    mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getUsersControllerFindAllQueryKey(),
-        });
-      },
-    },
-  });
-
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -113,6 +102,20 @@ export default function AdminUsersPage() {
     updateStatusMutation.mutate({
       id,
       data: { status: UpdateUserStatusDtoStatus.rejected },
+    });
+  };
+
+  const handleSuspend = (id: string) => {
+    updateStatusMutation.mutate({
+      id,
+      data: { status: "suspended" as unknown as UpdateUserStatusDtoStatus },
+    });
+  };
+
+  const handleUnsuspend = (id: string) => {
+    updateStatusMutation.mutate({
+      id,
+      data: { status: UpdateUserStatusDtoStatus.approved },
     });
   };
 
@@ -288,17 +291,32 @@ export default function AdminUsersPage() {
                                 </DropdownMenuItem>
                               </>
                             )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() =>
-                                deleteMutation.mutate({ id: user.id })
-                              }
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
+
+                            {user.status !== "suspended" ? (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="text-destructive"
+                                  onClick={() => handleSuspend(user.id)}
+                                  disabled={updateStatusMutation.isPending}
+                                >
+                                  <Ban className="mr-2 h-4 w-4" />
+                                  Suspend
+                                </DropdownMenuItem>
+                              </>
+                            ) : (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="text-emerald-600"
+                                  onClick={() => handleUnsuspend(user.id)}
+                                  disabled={updateStatusMutation.isPending}
+                                >
+                                  <Ban className="mr-2 h-4 w-4" />
+                                  Unsuspend
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

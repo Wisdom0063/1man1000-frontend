@@ -58,6 +58,7 @@ type Submission = {
   influencer?: { id: string; name: string; email: string; avatarUrl?: string };
   screenshotUrl: string;
   extractedViewCount: number;
+  verifiedViewCount?: number;
   approvalStatus: string;
   reviewNote?: string;
   createdAt: string;
@@ -68,7 +69,10 @@ export default function AdminSubmissionsPage() {
   const [activeTab, setActiveTab] = useState("pending");
   const [reviewingSubmission, setReviewingSubmission] =
     useState<Submission | null>(null);
+  const [approvingSubmission, setApprovingSubmission] =
+    useState<Submission | null>(null);
   const [reviewNote, setReviewNote] = useState("");
+  const [verifiedViews, setVerifiedViews] = useState<string>("");
   const queryClient = useQueryClient();
 
   const {
@@ -86,7 +90,9 @@ export default function AdminSubmissionsPage() {
           queryKey: getSubmissionsControllerFindAllQueryKey(),
         });
         setReviewingSubmission(null);
+        setApprovingSubmission(null);
         setReviewNote("");
+        setVerifiedViews("");
       },
     },
   });
@@ -108,21 +114,39 @@ export default function AdminSubmissionsPage() {
   });
 
   const pendingCount = submissions.filter(
-    (s) => s.approvalStatus === "pending"
+    (s) => s.approvalStatus === "pending",
   ).length;
   const approvedCount = submissions.filter(
-    (s) => s.approvalStatus === "approved"
+    (s) => s.approvalStatus === "approved",
   ).length;
   const rejectedCount = submissions.filter(
-    (s) => s.approvalStatus === "rejected"
+    (s) => s.approvalStatus === "rejected",
   ).length;
 
   const handleApprove = (submission: Submission) => {
+    setApprovingSubmission(submission);
+    setVerifiedViews(
+      String(
+        typeof submission.verifiedViewCount === "number"
+          ? submission.verifiedViewCount
+          : submission.extractedViewCount || 0,
+      ),
+    );
+  };
+
+  const confirmApprove = () => {
+    if (!approvingSubmission) return;
+
+    const parsed = Number(verifiedViews);
+    const verifiedViewCount =
+      Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+
     reviewMutation.mutate({
-      id: submission.id,
+      id: approvingSubmission.id,
       data: {
         approvalStatus: ReviewSubmissionDtoApprovalStatus.approved,
         reviewNotes: reviewNote,
+        ...(typeof verifiedViewCount === "number" ? { verifiedViewCount } : {}),
       },
     });
   };
@@ -307,8 +331,10 @@ export default function AdminSubmissionsPage() {
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <p className="text-lg font-bold">
-                            {submission.extractedViewCount?.toLocaleString() ||
-                              0}
+                            {(typeof submission.verifiedViewCount === "number"
+                              ? submission.verifiedViewCount
+                              : submission.extractedViewCount || 0
+                            ).toLocaleString()}
                           </p>
                           <p className="text-xs text-muted-foreground">views</p>
                         </div>
@@ -407,6 +433,69 @@ export default function AdminSubmissionsPage() {
                 <XCircle className="h-4 w-4 mr-2" />
               )}
               Reject Submission
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!approvingSubmission}
+        onOpenChange={(open) => {
+          if (!open) setApprovingSubmission(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve Submission</DialogTitle>
+            <DialogDescription>
+              Enter the verified view count to use for campaign totals and
+              influencer payment.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="verifiedViews">Verified Views</Label>
+              <Input
+                id="verifiedViews"
+                value={verifiedViews}
+                onChange={(e) => setVerifiedViews(e.target.value)}
+                inputMode="numeric"
+                placeholder="e.g. 1250"
+              />
+              <p className="text-xs text-muted-foreground">
+                Screenshot extracted views:{" "}
+                {approvingSubmission?.extractedViewCount?.toLocaleString() || 0}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="approveNote">Approval Note (optional)</Label>
+              <textarea
+                id="approveNote"
+                value={reviewNote}
+                onChange={(e) => setReviewNote(e.target.value)}
+                placeholder="Add a note for the influencer/client..."
+                className="flex min-h-[100px] w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm shadow-sm transition-all placeholder:text-muted-foreground/70 hover:border-border focus-visible:border-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setApprovingSubmission(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmApprove}
+              disabled={reviewMutation.isPending}
+              // className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              {reviewMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCircle className="h-4 w-4 mr-2" />
+              )}
+              Approve Submission
             </Button>
           </DialogFooter>
         </DialogContent>

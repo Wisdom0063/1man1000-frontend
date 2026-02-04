@@ -405,20 +405,6 @@ export default function ClientDashboard() {
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Performance Overview</CardTitle>
-          <CardDescription>
-            Views and engagement over the last 30 days
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-            Chart placeholder - Performance analytics will be displayed here
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
