@@ -126,7 +126,7 @@ export default function AdminCampaignsPage() {
             const campaign = row.original;
             return (
               <div className="flex flex-col">
-                <span className="font-medium">{campaign.title as any}</span>
+                <span className="font-medium">{campaign.title || "—"}</span>
                 <span className="text-sm text-muted-foreground">
                   {campaign.brandName}
                 </span>
@@ -157,7 +157,14 @@ export default function AdminCampaignsPage() {
           size: 100,
           header: "Influencers",
           cell: ({ row }) => {
-            const count = row.original.assignedInfluencers?.length || 0;
+            const anyRow = row.original as unknown as {
+              assignments?: unknown[];
+              _count?: { assignments?: number };
+            };
+            const count =
+              typeof anyRow._count?.assignments === "number"
+                ? anyRow._count.assignments
+                : anyRow.assignments?.length || 0;
             return (
               <div className="flex items-center gap-1.5">
                 <Users className="h-4 w-4 text-muted-foreground" />

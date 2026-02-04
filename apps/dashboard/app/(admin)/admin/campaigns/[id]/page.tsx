@@ -69,7 +69,7 @@ type Campaign = {
   submissionDeadlineDays?: number;
   adCreatives?: string[];
   campaignAsset?: string;
-  assignedInfluencers?: Array<{
+  assignments?: Array<{
     id: string;
     influencer?: { id: string; name: string; email: string };
   }>;
@@ -271,7 +271,7 @@ export default function CampaignDetailPage() {
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-violet-600" />
               <span className="text-2xl font-bold">
-                {c.assignedInfluencers?.length || 0}
+                {c.assignments?.length || 0}
               </span>
             </div>
           </CardContent>
@@ -428,13 +428,13 @@ export default function CampaignDetailPage() {
             </Button>
           </CardHeader>
           <CardContent>
-            {!c.assignedInfluencers || c.assignedInfluencers.length === 0 ? (
+            {!c.assignments || c.assignments.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No influencers assigned yet
               </p>
             ) : (
               <div className="space-y-3">
-                {c.assignedInfluencers.map((assignment) => (
+                {c.assignments.map((assignment) => (
                   <div
                     key={assignment.id}
                     className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"

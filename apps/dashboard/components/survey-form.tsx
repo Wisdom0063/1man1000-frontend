@@ -72,8 +72,8 @@ const QUESTION_TYPES = [
   { value: "image_selection", label: "Image Selection", icon: ImageIcon },
 ] as const;
 
-const AGE_RANGES = ["13-17", "18-24", "25-34", "35-44", "45-54", "55+"];
-const GENDER_OPTIONS = ["Male", "Female", "All"];
+const AGE_RANGES = ["All", "13-17", "18-24", "25-34", "35-44", "45-54", "55+"];
+const GENDER_OPTIONS = ["All", "Male", "Female"];
 
 export function SurveyForm({
   defaultValues,
@@ -143,7 +143,7 @@ export function SurveyForm({
     if (currentOptions.length > 2) {
       form.setValue(
         `questions.${questionIndex}.options`,
-        currentOptions.filter((_, i) => i !== optionIndex)
+        currentOptions.filter((_, i) => i !== optionIndex),
       );
     }
   };
@@ -317,7 +317,7 @@ export function SurveyForm({
                   Add questions to your survey ({fields.length})
                 </CardDescription>
               </div>
-              <Select onValueChange={addQuestion}>
+              <Select value="" onValueChange={addQuestion}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Add Question" />
                 </SelectTrigger>
@@ -341,7 +341,7 @@ export function SurveyForm({
 
             {fields.map((field, index) => {
               const questionType = form.watch(
-                `questions.${index}.questionType`
+                `questions.${index}.questionType`,
               );
               const requiresOptions =
                 questionType === "multiple_choice_single" ||
@@ -465,13 +465,13 @@ export function SurveyForm({
                                 <Input
                                   value={
                                     form.watch(
-                                      `questions.${index}.options.${optionIndex}`
+                                      `questions.${index}.options.${optionIndex}`,
                                     ) || ""
                                   }
                                   onChange={(e) =>
                                     form.setValue(
                                       `questions.${index}.options.${optionIndex}`,
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   placeholder={`Option ${optionIndex + 1}`}
