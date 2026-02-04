@@ -846,6 +846,15 @@ export interface ReviewSubmissionDto {
   reviewNotes?: string;
 }
 
+export interface PaymentsStatsResponseDto {
+  totalPaid: number;
+  pendingPayouts: number;
+  pendingCount: number;
+  paidThisMonth: number;
+  paidCount: number;
+  totalCount: number;
+}
+
 export interface CreatePaymentDto {
   influencerId: string;
   campaignId: string;
@@ -4937,6 +4946,99 @@ export const useSubmissionsControllerReview = <TError = void,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * @summary Get payments stats (Admin only)
+ */
+export const paymentsControllerGetAdminStats = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<PaymentsStatsResponseDto>(
+      {url: `/api/payments/stats`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getPaymentsControllerGetAdminStatsQueryKey = () => {
+    return [
+    `/api/payments/stats`
+    ] as const;
+    }
+
+    
+export const getPaymentsControllerGetAdminStatsQueryOptions = <TData = Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPaymentsControllerGetAdminStatsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>> = ({ signal }) => paymentsControllerGetAdminStats(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PaymentsControllerGetAdminStatsQueryResult = NonNullable<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>>
+export type PaymentsControllerGetAdminStatsQueryError = unknown
+
+
+export function usePaymentsControllerGetAdminStats<TData = Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>,
+          TError,
+          Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerGetAdminStats<TData = Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>,
+          TError,
+          Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePaymentsControllerGetAdminStats<TData = Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get payments stats (Admin only)
+ */
+
+export function usePaymentsControllerGetAdminStats<TData = Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetAdminStats>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPaymentsControllerGetAdminStatsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
 /**
  * @summary Create a new payment (Admin only)
  */
