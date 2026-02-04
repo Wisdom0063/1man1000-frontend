@@ -198,6 +198,7 @@ export const UserResponseDtoStatus = {
   pending: 'pending',
   approved: 'approved',
   rejected: 'rejected',
+  suspended: 'suspended',
 } as const;
 
 export type UserResponseDtoMobileMoneyNetwork = typeof UserResponseDtoMobileMoneyNetwork[keyof typeof UserResponseDtoMobileMoneyNetwork];
@@ -241,6 +242,7 @@ export interface UserResponseDto {
   name?: string;
   company?: string;
   phone?: string;
+  publicInfluencerId?: string;
   mobileMoneyNumber?: string;
   mobileMoneyNetwork?: UserResponseDtoMobileMoneyNetwork;
   occupation?: string;
@@ -314,6 +316,7 @@ export const UpdateUserStatusDtoStatus = {
   pending: 'pending',
   approved: 'approved',
   rejected: 'rejected',
+  suspended: 'suspended',
 } as const;
 
 export interface UpdateUserStatusDto {
@@ -710,6 +713,46 @@ export interface UpdateCampaignDto {
   paymentViewsThreshold?: number;
 }
 
+/**
+ * Assign only influencers of this gender
+ */
+export type BulkAssignInfluencersDtoGender = typeof BulkAssignInfluencersDtoGender[keyof typeof BulkAssignInfluencersDtoGender];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BulkAssignInfluencersDtoGender = {
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other',
+  PreferNotToSay: 'PreferNotToSay',
+} as const;
+
+/**
+ * Assign only influencers in this age bracket
+ */
+export type BulkAssignInfluencersDtoAgeBracket = typeof BulkAssignInfluencersDtoAgeBracket[keyof typeof BulkAssignInfluencersDtoAgeBracket];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BulkAssignInfluencersDtoAgeBracket = {
+  age_18_24: 'age_18_24',
+  age_25_34: 'age_25_34',
+  age_35_44: 'age_35_44',
+  age_45_54: 'age_45_54',
+  age_55_plus: 'age_55_plus',
+} as const;
+
+export interface BulkAssignInfluencersDto {
+  /** Assign only influencers of this gender */
+  gender?: BulkAssignInfluencersDtoGender;
+  /** Assign only influencers in this age bracket */
+  ageBracket?: BulkAssignInfluencersDtoAgeBracket;
+  /** Assign only influencers who are (or are not) students */
+  isStudent?: boolean;
+  /** If provided, assign only student influencers from these schools */
+  schools?: string[];
+}
+
 export type CreateNotificationDtoMetadata = { [key: string]: unknown };
 
 export interface CreateNotificationDto {
@@ -762,6 +805,7 @@ export interface SubmissionResponseDto {
   influencerId: string;
   screenshotUrl?: string;
   extractedViewCount: number;
+  verifiedViewCount?: number;
   description?: string;
   submissionDate: string;
   verified: boolean;
@@ -797,6 +841,8 @@ export const ReviewSubmissionDtoApprovalStatus = {
 
 export interface ReviewSubmissionDto {
   approvalStatus: ReviewSubmissionDtoApprovalStatus;
+  /** Admin-verified views to use for totals and payments */
+  verifiedViewCount?: number;
   reviewNotes?: string;
 }
 
@@ -834,9 +880,16 @@ export interface PaymentInfluencerDto {
   mobileMoneyNetwork?: PaymentInfluencerDtoMobileMoneyNetwork;
 }
 
+/**
+ * @nullable
+ */
+export type PaymentCampaignDtoTitle = { [key: string]: unknown } | null;
+
 export interface PaymentCampaignDto {
   id: string;
   brandName: string;
+  /** @nullable */
+  title?: PaymentCampaignDtoTitle;
 }
 
 export type PaymentResponseDtoStatus = typeof PaymentResponseDtoStatus[keyof typeof PaymentResponseDtoStatus];
@@ -3749,6 +3802,72 @@ export const useCampaignsControllerRemoveInfluencer = <TError = void,
       > => {
 
       const mutationOptions = getCampaignsControllerRemoveInfluencerMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Bulk assign influencers to campaign by filters (Admin only)
+ */
+export const campaignsControllerBulkAssignInfluencers = (
+    id: string,
+    bulkAssignInfluencersDto: BulkAssignInfluencersDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/${id}/assign-bulk`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: bulkAssignInfluencersDto, signal
+    },
+      );
+    }
+  
+
+
+export const getCampaignsControllerBulkAssignInfluencersMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerBulkAssignInfluencers>>, TError,{id: string;data: BulkAssignInfluencersDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerBulkAssignInfluencers>>, TError,{id: string;data: BulkAssignInfluencersDto}, TContext> => {
+
+const mutationKey = ['campaignsControllerBulkAssignInfluencers'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerBulkAssignInfluencers>>, {id: string;data: BulkAssignInfluencersDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  campaignsControllerBulkAssignInfluencers(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CampaignsControllerBulkAssignInfluencersMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerBulkAssignInfluencers>>>
+    export type CampaignsControllerBulkAssignInfluencersMutationBody = BulkAssignInfluencersDto
+    export type CampaignsControllerBulkAssignInfluencersMutationError = void
+
+    /**
+ * @summary Bulk assign influencers to campaign by filters (Admin only)
+ */
+export const useCampaignsControllerBulkAssignInfluencers = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerBulkAssignInfluencers>>, TError,{id: string;data: BulkAssignInfluencersDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof campaignsControllerBulkAssignInfluencers>>,
+        TError,
+        {id: string;data: BulkAssignInfluencersDto},
+        TContext
+      > => {
+
+      const mutationOptions = getCampaignsControllerBulkAssignInfluencersMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

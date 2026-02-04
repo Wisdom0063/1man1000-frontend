@@ -126,7 +126,9 @@ export default function AdminCampaignsPage() {
             const campaign = row.original;
             return (
               <div className="flex flex-col">
-                <span className="font-medium">{campaign.title || "—"}</span>
+                <span className="font-medium">
+                  {(campaign.title || "—") as string}
+                </span>
                 <span className="text-sm text-muted-foreground">
                   {campaign.brandName}
                 </span>

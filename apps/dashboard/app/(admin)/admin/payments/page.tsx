@@ -257,8 +257,7 @@ export default function AdminPaymentsPage() {
                       (payment.influencer?.name as never as string) ||
                       "Influencer";
                     const avatarText = influencerName.slice(0, 2).toUpperCase();
-                    const campaignName =
-                      payment.campaign?.brandName || "Campaign";
+                    const campaignName = payment.campaign?.title || "Campaign";
 
                     const dateSource =
                       payment.status === "paid"
