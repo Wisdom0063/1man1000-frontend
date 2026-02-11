@@ -12,16 +12,23 @@ import {
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
+import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { ExternalLink, ImageIcon, Upload } from "lucide-react";
+import { Download, ImageIcon, Upload } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import Image from "next/image";
+import { downloadCampaignAsset } from "@/lib/services/downloadService";
 
 type Submission = {
   id: string;
@@ -35,8 +42,15 @@ type Submission = {
   createdAt: string;
 };
 
+type SelectedScreenshot = {
+  url: string;
+  campaignName: string;
+} | null;
+
 export default function InfluencerSubmissionsPage() {
   const [activeTab, setActiveTab] = useState("all");
+  const [selectedScreenshot, setSelectedScreenshot] =
+    useState<SelectedScreenshot>(null);
 
   const {
     data: response,
@@ -232,14 +246,20 @@ export default function InfluencerSubmissionsPage() {
                         <StatusBadge status={submission.approvalStatus} />
                         <div className="flex items-center gap-2">
                           {submission.screenshotUrl && (
-                            <Button variant="outline" size="icon-sm" asChild>
-                              <a
-                                href={submission.screenshotUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
+                            <Button
+                              variant="outline"
+                              size="icon-sm"
+                              onClick={() =>
+                                setSelectedScreenshot({
+                                  url: submission.screenshotUrl,
+                                  campaignName:
+                                    submission.campaign?.title ||
+                                    submission.campaign?.brandName ||
+                                    "Unknown Campaign",
+                                })
+                              }
+                            >
+                              <ImageIcon className="h-4 w-4" />
                             </Button>
                           )}
                         </div>
@@ -252,6 +272,45 @@ export default function InfluencerSubmissionsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <Dialog
+        open={!!selectedScreenshot}
+        onOpenChange={() => setSelectedScreenshot(null)}
+      >
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Screenshot</DialogTitle>
+          </DialogHeader>
+          {selectedScreenshot && (
+            <div className="space-y-4">
+              <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                <Image
+                  src={selectedScreenshot.url}
+                  alt="Screenshot"
+                  className="h-full w-full object-contain"
+                  fill
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  onClick={() =>
+                    downloadCampaignAsset(
+                      selectedScreenshot.url,
+                      selectedScreenshot.campaignName,
+                      {
+                        filename: `${selectedScreenshot.campaignName}-screenshot`,
+                      },
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

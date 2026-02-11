@@ -21,10 +21,16 @@ export const campaignSchema = z.object({
   targetAudience: z.string().min(1, "Target audience is required"),
   industry: z.string().min(1, "Industry is required"),
   adCreatives: z.array(z.string()).optional(),
-  ratePerView: z.number().min(0).optional(),
-  submissionDeadlineDays: z.number().min(1).optional(),
   paymentType: z.enum(["per_view", "per_views"]).optional(),
-  paymentViewsThreshold: z.number().min(1).optional(),
+  paymentTiers: z
+    .array(
+      z.object({
+        lowerLimit: z.number().min(1, "Lower limit must be 1 or greater"),
+        upperLimit: z.number().min(1, "Upper limit must be 1 or greater"),
+        amount: z.number().min(0, "Amount must be 0 or greater"),
+      }),
+    )
+    .optional(),
 });
 
 export type CampaignFormData = z.infer<typeof campaignSchema>;

@@ -95,18 +95,20 @@ function UserListItem({
 }) {
   return (
     <div className="flex items-center justify-between p-4">
-      <div className="flex items-center gap-4">
-        <Avatar className="h-11 w-11">
-          <AvatarImage src={user.avatarUrl} />
-          <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white font-semibold">
-            {user.name?.slice(0, 2).toUpperCase() || "??"}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="font-semibold">{user.name}</p>
-          <p className="text-sm text-muted-foreground">{user.email}</p>
+      <Link href={`/admin/users/${user.id}`}>
+        <div className="flex items-center gap-4">
+          <Avatar className="h-11 w-11">
+            <AvatarImage src={user.avatarUrl} />
+            <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white font-semibold">
+              {user.name?.slice(0, 2).toUpperCase() || "??"}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-semibold">{user.name}</p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+          </div>
         </div>
-      </div>
+      </Link>
       <div className="flex items-center gap-3">
         <Badge variant="outline" className="capitalize border-border/60">
           {user.role}

@@ -152,6 +152,9 @@ export interface ProfileResponseDto {
   profileCompleted: boolean;
   mobileMoneyNumber?: string;
   mobileMoneyNetwork?: ProfileResponseDtoMobileMoneyNetwork;
+  country?: string;
+  bankName?: string;
+  bankAccountNumber?: string;
   occupation?: string;
   isStudent: boolean;
   schoolName?: string;
@@ -254,6 +257,9 @@ export interface UserResponseDto {
   publicInfluencerId?: string;
   mobileMoneyNumber?: string;
   mobileMoneyNetwork?: UserResponseDtoMobileMoneyNetwork;
+  country?: string;
+  bankName?: string;
+  bankAccountNumber?: string;
   occupation?: string;
   isStudent: boolean;
   schoolName?: string;
@@ -317,8 +323,11 @@ export interface UpdateUserDto {
   name?: string;
   company?: string;
   phone?: string;
+  country?: string;
   mobileMoneyNumber?: string;
   mobileMoneyNetwork?: UpdateUserDtoMobileMoneyNetwork;
+  bankName?: string;
+  bankAccountNumber?: string;
   occupation?: string;
   isStudent?: boolean;
   schoolName?: string;
@@ -384,6 +393,12 @@ export interface CreateCampaignDto {
 export interface TargetViewRangeResponseDto {
   min: number;
   max: number;
+}
+
+export interface PaymentTierResponseDto {
+  lowerLimit: number;
+  upperLimit?: number;
+  amount: number;
 }
 
 export interface ClientInfoDto {
@@ -455,6 +470,7 @@ export interface CampaignResponseDto {
   totalViews: number;
   submissionDeadlineDays: number;
   paymentType: CampaignResponseDtoPaymentType;
+  paymentTiers?: PaymentTierResponseDto[];
   client?: ClientInfoDto;
   assignedInfluencers?: InfluencerAssignmentDto[];
   createdAt: string;
@@ -529,6 +545,7 @@ export interface ClientCampaignResponseDto {
   totalViews: number;
   submissionDeadlineDays: number;
   paymentType: ClientCampaignResponseDtoPaymentType;
+  paymentTiers?: PaymentTierResponseDto[];
   client?: ClientInfoDto;
   assignedInfluencers?: InfluencerAssignmentDto[];
   createdAt: string;
@@ -679,10 +696,8 @@ export interface CampaignDetailResponseDto {
   campaignAsset?: string;
   status: CampaignDetailResponseDtoStatus;
   totalViews: number;
-  ratePerView: number;
-  submissionDeadlineDays: number;
   paymentType: CampaignDetailResponseDtoPaymentType;
-  paymentViewsThreshold: number;
+  paymentTiers?: PaymentTierResponseDto[];
   client?: CampaignDetailClientDto;
   assignments?: CampaignDetailAssignmentDto[];
   submissions?: CampaignDetailSubmissionDto[];
@@ -799,6 +814,7 @@ export interface SubmissionInfluencerDto {
   id: string;
   name: string;
   email: string;
+  publicInfluencerId: string;
 }
 
 export interface SubmissionReviewerDto {
@@ -1325,6 +1341,10 @@ export const CampaignsControllerFindAllStatus = {
   rejected: 'rejected',
 } as const;
 
+export type CampaignsControllerDownloadAssetParams = {
+url: string;
+};
+
 export type CampaignsControllerGetAvailableCampaignsParams = {
 /**
  * @minimum 1
@@ -1347,6 +1367,8 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
+sortOrder?: unknown;
+sortBy?: unknown;
 };
 
 export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus = typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus[keyof typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus];
@@ -1357,6 +1379,7 @@ export const CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignment
   pending: 'pending',
   accepted: 'accepted',
   rejected: 'rejected',
+  completed: 'completed',
 } as const;
 
 export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOf = {
@@ -1412,10 +1435,6 @@ export type CampaignsControllerRequestParticipation201 = {
   influencer?: CampaignsControllerRequestParticipation201Influencer;
 };
 
-export type CampaignsControllerDownloadAssetParams = {
-url: string;
-};
-
 export type SubmissionsControllerFindAllParams = {
 campaignId?: string;
 influencerId?: string;
@@ -1451,7 +1470,33 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
+/**
+ * Sort by field
+ */
+sortBy?: SubmissionsControllerGetCampaignSubmissionsSortBy;
+/**
+ * Sort order
+ */
+sortOrder?: SubmissionsControllerGetCampaignSubmissionsSortOrder;
 };
+
+export type SubmissionsControllerGetCampaignSubmissionsSortBy = typeof SubmissionsControllerGetCampaignSubmissionsSortBy[keyof typeof SubmissionsControllerGetCampaignSubmissionsSortBy];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SubmissionsControllerGetCampaignSubmissionsSortBy = {
+  submissionDate: 'submissionDate',
+  views: 'views',
+} as const;
+
+export type SubmissionsControllerGetCampaignSubmissionsSortOrder = typeof SubmissionsControllerGetCampaignSubmissionsSortOrder[keyof typeof SubmissionsControllerGetCampaignSubmissionsSortOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SubmissionsControllerGetCampaignSubmissionsSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
 
 export type PaymentsControllerFindAllParams = {
 influencerId?: string;
@@ -3171,6 +3216,100 @@ export function useCampaignsControllerFindAll<TData = Awaited<ReturnType<typeof 
 
 
 /**
+ * @summary Download campaign asset from storage
+ */
+export const campaignsControllerDownloadAsset = (
+    params: CampaignsControllerDownloadAssetParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/download/asset`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getCampaignsControllerDownloadAssetQueryKey = (params?: CampaignsControllerDownloadAssetParams,) => {
+    return [
+    `/api/campaigns/download/asset`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getCampaignsControllerDownloadAssetQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerDownloadAssetQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>> = ({ signal }) => campaignsControllerDownloadAsset(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerDownloadAssetQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>>
+export type CampaignsControllerDownloadAssetQueryError = void
+
+
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>,
+          TError,
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>,
+          TError,
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Download campaign asset from storage
+ */
+
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCampaignsControllerDownloadAssetQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
  * @summary Upload campaign asset
  */
 export const campaignsControllerUploadAsset = (
@@ -4148,100 +4287,6 @@ export const useCampaignsControllerBulkAssignInfluencers = <TError = void,
       return useMutation(mutationOptions, queryClient);
     }
     
-/**
- * @summary Download campaign asset from storage
- */
-export const campaignsControllerDownloadAsset = (
-    params: CampaignsControllerDownloadAssetParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return axiosInstance<void>(
-      {url: `/api/campaigns/download/asset`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-
-
-export const getCampaignsControllerDownloadAssetQueryKey = (params?: CampaignsControllerDownloadAssetParams,) => {
-    return [
-    `/api/campaigns/download/asset`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getCampaignsControllerDownloadAssetQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerDownloadAssetQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>> = ({ signal }) => campaignsControllerDownloadAsset(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type CampaignsControllerDownloadAssetQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>>
-export type CampaignsControllerDownloadAssetQueryError = void
-
-
-export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
- params: CampaignsControllerDownloadAssetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>,
-          TError,
-          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
- params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>,
-          TError,
-          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
- params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Download campaign asset from storage
- */
-
-export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
- params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getCampaignsControllerDownloadAssetQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-
 /**
  * @summary Create a notification (Admin only)
  */

@@ -38,7 +38,9 @@ export default function ClientCampaignsPage() {
   const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesSearch =
       campaign.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.title?.toLowerCase().includes(searchQuery.toLowerCase());
+      (campaign.title as any)
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
     const matchesTab =
       activeTab === "all" ||
       campaign.status === activeTab ||

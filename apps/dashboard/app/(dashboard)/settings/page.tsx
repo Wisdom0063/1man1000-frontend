@@ -37,10 +37,14 @@ import {
   SelectItem,
 } from "@workspace/ui/components/select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
+import { CountryDropdown } from "@workspace/ui/components/country-dropdown";
 
 type InfluencerFormState = {
+  country: string;
   mobileMoneyNumber: string;
   mobileMoneyNetwork: "MTN" | "Vodafone" | "AirtelTigo" | "";
+  bankName: string;
+  bankAccountNumber: string;
   occupation: string;
   isStudent: boolean;
   schoolName: string;
@@ -102,8 +106,11 @@ export default function SettingsPage() {
   const [influencerFormError, setInfluencerFormError] = useState<string>("");
   const [influencerFormData, setInfluencerFormData] =
     useState<InfluencerFormState>({
+      country: "",
       mobileMoneyNumber: "",
       mobileMoneyNetwork: "",
+      bankName: "",
+      bankAccountNumber: "",
       occupation: "",
       isStudent: false,
       schoolName: "",
@@ -134,14 +141,22 @@ export default function SettingsPage() {
   useEffect(() => {
     if (user?.role !== "influencer") return;
     if (!typedProfile) return;
+    const profile = typedProfile as ProfileResponseDto & {
+      country?: string;
+      bankName?: string;
+      bankAccountNumber?: string;
+    };
     setInfluencerFormData({
-      mobileMoneyNumber: typedProfile.mobileMoneyNumber || "",
-      mobileMoneyNetwork: typedProfile.mobileMoneyNetwork || "",
-      occupation: typedProfile.occupation || "",
-      isStudent: typedProfile.isStudent || false,
-      schoolName: typedProfile.schoolName || "",
-      gender: typedProfile.gender || "",
-      ageBracket: typedProfile.ageBracket || "",
+      country: profile.country || "",
+      mobileMoneyNumber: profile.mobileMoneyNumber || "",
+      mobileMoneyNetwork: profile.mobileMoneyNetwork || "",
+      bankName: profile.bankName || "",
+      bankAccountNumber: profile.bankAccountNumber || "",
+      occupation: profile.occupation || "",
+      isStudent: profile.isStudent || false,
+      schoolName: profile.schoolName || "",
+      gender: profile.gender || "",
+      ageBracket: profile.ageBracket || "",
     });
   }, [typedProfile, user?.role]);
 
@@ -201,19 +216,37 @@ export default function SettingsPage() {
         company: profileData.company || user.company,
         mobileMoneyNumber: profileData.mobileMoneyNumber || undefined,
         mobileMoneyNetwork:
-          (profileData.mobileMoneyNetwork as any) || undefined,
+          (profileData.mobileMoneyNetwork as UpdateUserDto["mobileMoneyNetwork"]) ||
+          undefined,
       },
     });
   };
 
+  const isGhana = influencerFormData.country === "GHA";
+
   const validateInfluencerForm = () => {
-    if (!influencerFormData.mobileMoneyNumber.trim()) {
-      setInfluencerFormError("Mobile money number is required");
+    if (!influencerFormData.country) {
+      setInfluencerFormError("Country is required");
       return false;
     }
-    if (!influencerFormData.mobileMoneyNetwork) {
-      setInfluencerFormError("Mobile money network is required");
-      return false;
+    if (isGhana) {
+      if (!influencerFormData.mobileMoneyNumber.trim()) {
+        setInfluencerFormError("Mobile money number is required");
+        return false;
+      }
+      if (!influencerFormData.mobileMoneyNetwork) {
+        setInfluencerFormError("Mobile money network is required");
+        return false;
+      }
+    } else {
+      if (!influencerFormData.bankName.trim()) {
+        setInfluencerFormError("Bank name is required");
+        return false;
+      }
+      if (!influencerFormData.bankAccountNumber.trim()) {
+        setInfluencerFormError("Bank account number is required");
+        return false;
+      }
     }
     if (!influencerFormData.occupation.trim()) {
       setInfluencerFormError("Occupation is required");
@@ -240,10 +273,22 @@ export default function SettingsPage() {
     if (!user.id) return;
     if (!validateInfluencerForm()) return;
 
-    const payload: UpdateUserDto = {
-      mobileMoneyNumber: influencerFormData.mobileMoneyNumber,
-      mobileMoneyNetwork:
-        influencerFormData.mobileMoneyNetwork as UpdateUserDto["mobileMoneyNetwork"],
+    const payload: UpdateUserDto & {
+      country?: string;
+      bankName?: string;
+      bankAccountNumber?: string;
+    } = {
+      country: influencerFormData.country,
+      mobileMoneyNumber: isGhana
+        ? influencerFormData.mobileMoneyNumber
+        : undefined,
+      mobileMoneyNetwork: isGhana
+        ? (influencerFormData.mobileMoneyNetwork as UpdateUserDto["mobileMoneyNetwork"])
+        : undefined,
+      bankName: !isGhana ? influencerFormData.bankName : undefined,
+      bankAccountNumber: !isGhana
+        ? influencerFormData.bankAccountNumber
+        : undefined,
       occupation: influencerFormData.occupation,
       isStudent: influencerFormData.isStudent,
       schoolName: influencerFormData.isStudent
@@ -379,57 +424,111 @@ export default function SettingsPage() {
                         Payment Information
                       </h3>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="mobileMoneyNumber">
-                            Mobile Money Number *
-                          </Label>
-                          <Input
-                            id="mobileMoneyNumber"
-                            type="tel"
-                            placeholder="e.g., 0241234567"
-                            value={influencerFormData.mobileMoneyNumber}
-                            onChange={(e) =>
-                              setInfluencerFormData((p) => ({
-                                ...p,
-                                mobileMoneyNumber: e.target.value,
-                              }))
-                            }
-                            required
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="mobileMoneyNetwork">
-                            Mobile Money Network *
-                          </Label>
-                          <Select
-                            value={influencerFormData.mobileMoneyNetwork}
-                            onValueChange={(value) =>
-                              setInfluencerFormData((p) => ({
-                                ...p,
-                                mobileMoneyNetwork:
-                                  value as InfluencerFormState["mobileMoneyNetwork"],
-                              }))
-                            }
-                          >
-                            <SelectTrigger id="mobileMoneyNetwork">
-                              <SelectValue placeholder="Select network" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="MTN">
-                                MTN Mobile Money
-                              </SelectItem>
-                              <SelectItem value="Vodafone">
-                                Vodafone Cash
-                              </SelectItem>
-                              <SelectItem value="AirtelTigo">
-                                AirtelTigo Money
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="country">Country *</Label>
+                        <CountryDropdown
+                          placeholder="Select country"
+                          defaultValue={influencerFormData.country}
+                          onChange={(country) =>
+                            setInfluencerFormData((p) => ({
+                              ...p,
+                              country: country.alpha3,
+                            }))
+                          }
+                        />
                       </div>
+
+                      {isGhana ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="mobileMoneyNumber">
+                              Mobile Money Number *
+                            </Label>
+                            <Input
+                              id="mobileMoneyNumber"
+                              type="tel"
+                              placeholder="e.g., 0241234567"
+                              value={influencerFormData.mobileMoneyNumber}
+                              onChange={(e) =>
+                                setInfluencerFormData((p) => ({
+                                  ...p,
+                                  mobileMoneyNumber: e.target.value,
+                                }))
+                              }
+                              required
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="mobileMoneyNetwork">
+                              Mobile Money Network *
+                            </Label>
+                            <Select
+                              value={influencerFormData.mobileMoneyNetwork}
+                              onValueChange={(value) =>
+                                setInfluencerFormData((p) => ({
+                                  ...p,
+                                  mobileMoneyNetwork:
+                                    value as InfluencerFormState["mobileMoneyNetwork"],
+                                }))
+                              }
+                            >
+                              <SelectTrigger id="mobileMoneyNetwork">
+                                <SelectValue placeholder="Select network" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="MTN">
+                                  MTN Mobile Money
+                                </SelectItem>
+                                <SelectItem value="Vodafone">
+                                  Vodafone Cash
+                                </SelectItem>
+                                <SelectItem value="AirtelTigo">
+                                  AirtelTigo Money
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      ) : influencerFormData.country ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="bankName">Bank Name *</Label>
+                            <Input
+                              id="bankName"
+                              type="text"
+                              placeholder="e.g., Bank of America"
+                              value={influencerFormData.bankName}
+                              onChange={(e) =>
+                                setInfluencerFormData((p) => ({
+                                  ...p,
+                                  bankName: e.target.value,
+                                }))
+                              }
+                              required
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="bankAccountNumber">
+                              Bank Account Number *
+                            </Label>
+                            <Input
+                              id="bankAccountNumber"
+                              type="text"
+                              placeholder="e.g., 1234567890"
+                              value={influencerFormData.bankAccountNumber}
+                              onChange={(e) =>
+                                setInfluencerFormData((p) => ({
+                                  ...p,
+                                  bankAccountNumber: e.target.value,
+                                }))
+                              }
+                              required
+                            />
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
 
                     <div className="space-y-4">

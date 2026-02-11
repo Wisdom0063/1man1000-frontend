@@ -112,13 +112,33 @@ export default function InfluencerDashboard() {
 
   const availableCampaigns = availableCampaignsResponse?.data || [];
   const availableCampaignsPreview = availableCampaigns.slice(0, 3).map((c) => {
-    const potentialMin = (c.targetViewRange?.min || 0) * (c.ratePerView || 0);
-    const potentialMax = (c.targetViewRange?.max || 0) * (c.ratePerView || 0);
+    // Calculate potential earnings using payment tiers
+    const tiers = c.paymentTiers || [];
+    const targetMin = c.targetViewRange?.min || 0;
+    const targetMax = c.targetViewRange?.max || 0;
+
+    // Find the appropriate tier for min and max views
+    const getTierAmount = (views: number) => {
+      if (tiers.length === 0) return 0;
+      // Find tier where views falls within lowerLimit and upperLimit
+      const tier = tiers.find(
+        (t) =>
+          views >= t.lowerLimit &&
+          (!t.upperLimit || views <= (t.upperLimit as unknown as number)),
+      );
+      // If no specific tier found, use the highest tier (last one)
+      return tier?.amount || tiers[tiers.length - 1]?.amount || 0;
+    };
+
+    // Calculate potential based on target view range and tiers
+    const potentialMin = targetMin * getTierAmount(targetMin);
+    const potentialMax = targetMax * getTierAmount(targetMax);
+
     return {
       id: c.id,
       name: c.title || c.brandName,
-      brand: c.client?.name || c.client?.name || c.brandName,
-      ratePerView: c.ratePerView || 0,
+      brand: c.client?.name || c.brandName,
+      paymentTiers: tiers,
       potential: { min: potentialMin, max: potentialMax },
       status: c.status,
     };
@@ -142,7 +162,7 @@ export default function InfluencerDashboard() {
       };
     });
 
-  const payments = (paymentsResponse || []) as Array<any>;
+  const payments = (paymentsResponse?.data || []) as Array<any>;
   const earnings = payments
     .filter((p: any) => p.status === "paid")
     .slice(0, 3)
@@ -338,7 +358,18 @@ export default function InfluencerDashboard() {
                       <div className="flex items-center gap-3 pt-1">
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
-                          GH₵{Number(campaign.ratePerView || 0).toFixed(3)}/view
+                          {campaign.paymentTiers &&
+                          campaign.paymentTiers.length > 0 ? (
+                            <>
+                              GH₵
+                              {Number(
+                                campaign.paymentTiers[0]?.amount || 0,
+                              ).toFixed(3)}
+                              /view
+                            </>
+                          ) : (
+                            "Tiered pricing"
+                          )}
                         </span>
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <Target className="h-3 w-3" />

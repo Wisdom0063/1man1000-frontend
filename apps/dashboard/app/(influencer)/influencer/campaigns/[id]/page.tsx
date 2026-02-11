@@ -25,27 +25,8 @@ import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import Link from "next/link";
 import VideoPlayerComponent from "@/components/video-player";
-
-type Campaign = {
-  id: string;
-  brandName: string;
-  title?: string;
-  description?: string;
-  budget: number;
-  targetViewRange: { min: number; max: number };
-  targetAudience: string;
-  industry: string;
-  status: string;
-  ratePerView?: number;
-  startDate: string;
-  endDate: string;
-  campaignAsset?: string;
-  submissionDeadlineDays?: number;
-  adCreatives?: string[];
-  client?: { id: string; name: string; email: string; company?: string };
-  _count?: { assignments: number; submissions: number };
-  createdAt: string;
-};
+import { downloadCampaignAsset } from "@/lib/services/downloadService";
+import { isCampaignExpired } from "@/lib/campaign-utils";
 
 const statusColors = {
   active: "bg-green-100 text-green-800",
@@ -66,7 +47,7 @@ export default function CampaignDetailPage() {
     isError,
     refetch,
   } = useCampaignsControllerFindOne(campaignId);
-  const campaign = response as Campaign | undefined;
+  const campaign = response;
 
   if (isLoading) {
     return <LoadingState text="Loading campaign details..." />;
@@ -82,10 +63,7 @@ export default function CampaignDetailPage() {
     );
   }
 
-  const potentialEarnings = {
-    min: (campaign.targetViewRange?.min || 0) * (campaign.ratePerView || 0),
-    max: (campaign.targetViewRange?.max || 0) * (campaign.ratePerView || 0),
-  };
+  const isExpired = isCampaignExpired(campaign.endDate);
 
   return (
     <div className="space-y-6">
@@ -117,68 +95,19 @@ export default function CampaignDetailPage() {
             </p>
           </div>
         </div>
-        <Button size="lg" asChild>
-          <Link href={`/influencer/campaigns/${campaignId}/submit`}>
-            <Upload className="h-4 w-4 mr-2" />
-            Submit Work
-          </Link>
-        </Button>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Target Views
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold">
-              {campaign.targetViewRange?.min?.toLocaleString()} -{" "}
-              {campaign.targetViewRange?.max?.toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Rate per View
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-emerald-600">
-              GH₵{campaign.ratePerView?.toFixed(3) || "0.000"}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Potential Earnings
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-green-600">
-              GH₵{potentialEarnings.min.toFixed(2)} - GH₵
-              {potentialEarnings.max.toFixed(2)}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Campaign Budget
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold">
-              GH₵{campaign.budget?.toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
+        {isExpired ? (
+          <Button size="lg" disabled variant="secondary">
+            <Clock className="h-4 w-4 mr-2" />
+            Campaign Expired
+          </Button>
+        ) : (
+          <Button size="lg" asChild>
+            <Link href={`/influencer/campaigns/${campaignId}/submit`}>
+              <Upload className="h-4 w-4 mr-2" />
+              Submit Work
+            </Link>
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -210,16 +139,14 @@ export default function CampaignDetailPage() {
               <p className="text-sm">{campaign.industry}</p>
             </div>
 
-            {campaign.submissionDeadlineDays && (
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                  Submission Deadline
-                </h3>
-                <p className="text-sm">
-                  {campaign.submissionDeadlineDays} days after assignment
-                </p>
-              </div>
-            )}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                Submission Deadline
+              </h3>
+              <p className="text-sm">
+                {new Date(campaign.endDate).toLocaleDateString()}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-6 text-sm text-muted-foreground pt-2 border-t">
@@ -267,17 +194,18 @@ export default function CampaignDetailPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  const apiBaseUrl =
-                    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-                  const downloadUrl = `${apiBaseUrl}/campaigns/download/asset?url=${encodeURIComponent(campaign.campaignAsset!)}`;
-                  const link = document.createElement("a");
-                  link.href = downloadUrl;
-                  link.download = `${campaign.title || campaign.brandName}-asset`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
+                onClick={() =>
+                  downloadCampaignAsset(
+                    campaign.campaignAsset!,
+                    campaign.title || campaign.brandName,
+                    {
+                      onError: (err) => {
+                        console.error("Download failed:", err);
+                        alert(err.message || "Failed to download asset");
+                      },
+                    },
+                  )
+                }
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download Asset

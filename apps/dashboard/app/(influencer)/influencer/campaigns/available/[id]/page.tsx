@@ -41,26 +41,6 @@ import {
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 
-type Campaign = {
-  id: string;
-  brandName: string;
-  title?: string;
-  description?: string;
-  budget: number;
-  targetViewRange: { min: number; max: number };
-  targetAudience: string;
-  industry: string;
-  status: string;
-  ratePerView?: number;
-  startDate: string;
-  endDate: string;
-  submissionDeadlineDays?: number;
-  adCreatives?: string[];
-  client?: { id: string; name: string; email: string; company?: string };
-  _count?: { assignments: number; submissions: number };
-  createdAt: string;
-};
-
 const statusColors = {
   active: "bg-green-100 text-green-800",
   pending: "bg-yellow-100 text-yellow-800",
@@ -82,7 +62,7 @@ export default function AvailableCampaignDetailPage() {
     isError,
     refetch,
   } = useCampaignsControllerFindOne(campaignId);
-  const campaign = response as Campaign;
+  const campaign = response;
 
   const requestMutation = useCampaignsControllerRequestParticipation({
     mutation: {
@@ -122,11 +102,6 @@ export default function AvailableCampaignDetailPage() {
       />
     );
   }
-
-  const potentialEarnings = {
-    min: (campaign.targetViewRange?.min || 0) * (campaign.ratePerView || 0),
-    max: (campaign.targetViewRange?.max || 0) * (campaign.ratePerView || 0),
-  };
 
   return (
     <div className="space-y-6">
@@ -206,62 +181,6 @@ export default function AvailableCampaignDetailPage() {
         </Card>
       )}
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Target Views
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold">
-              {campaign.targetViewRange?.min?.toLocaleString()} -{" "}
-              {campaign.targetViewRange?.max?.toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Rate per View
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-emerald-600">
-              GH₵{campaign.ratePerView?.toFixed(3) || "0.000"}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Potential Earnings
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-green-600">
-              GH₵{potentialEarnings.min.toFixed(2)} - GH₵
-              {potentialEarnings.max.toFixed(2)}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Campaign Budget
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold">
-              GH₵{campaign.budget?.toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <Card>
         <CardHeader>
           <CardTitle>Campaign Details</CardTitle>
@@ -291,16 +210,14 @@ export default function AvailableCampaignDetailPage() {
               <p className="text-sm">{campaign.industry}</p>
             </div>
 
-            {campaign.submissionDeadlineDays && (
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                  Submission Deadline
-                </h3>
-                <p className="text-sm">
-                  {campaign.submissionDeadlineDays} days after assignment
-                </p>
-              </div>
-            )}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                Submission Deadline
+              </h3>
+              <p className="text-sm">
+                {new Date(campaign.endDate).toLocaleDateString()}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-6 text-sm text-muted-foreground pt-2 border-t">

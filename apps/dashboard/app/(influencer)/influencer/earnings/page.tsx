@@ -225,24 +225,61 @@ export default function InfluencerEarningsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Payment Settings</CardTitle>
-            <CardDescription>Your mobile money details</CardDescription>
+            <CardDescription>
+              {typedProfile?.country === "GHA" || !typedProfile?.country
+                ? "Your mobile money details"
+                : "Your bank account details"}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="p-4 rounded-lg bg-muted/50 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Network</span>
-                <span className="text-sm font-medium">
-                  {typedProfile?.mobileMoneyNetwork || "Not set"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Phone Number
-                </span>
-                <span className="text-sm font-medium">
-                  {typedProfile?.mobileMoneyNumber || "Not set"}
-                </span>
-              </div>
+              {typedProfile?.country === "GHA" || !typedProfile?.country ? (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Network
+                    </span>
+                    <span className="text-sm font-medium">
+                      {typedProfile?.mobileMoneyNetwork || "Not set"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Phone Number
+                    </span>
+                    <span className="text-sm font-medium">
+                      {typedProfile?.mobileMoneyNumber || "Not set"}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Country
+                    </span>
+                    <span className="text-sm font-medium">
+                      {typedProfile?.country || "Not set"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Bank Name
+                    </span>
+                    <span className="text-sm font-medium">
+                      {typedProfile?.bankName || "Not set"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Account Number
+                    </span>
+                    <span className="text-sm font-medium">
+                      {typedProfile?.bankAccountNumber || "Not set"}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
             <Button variant="outline" className="w-full" asChild>
               <Link href="/settings">Update Payment Details</Link>

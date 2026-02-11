@@ -36,28 +36,6 @@ import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { StatusBadge } from "@/components/ui/status-badge";
 
-type User = {
-  id: string;
-  email: string;
-  role: "client" | "influencer" | "admin" | string;
-  status: "pending" | "approved" | "rejected" | string;
-  name?: string;
-  company?: string;
-  phone?: string;
-  publicInfluencerId?: string | null;
-  mobileMoneyNumber?: string | null;
-  mobileMoneyNetwork?: string | null;
-  occupation?: string | null;
-  isStudent?: boolean;
-  schoolName?: string | null;
-  gender?: string | null;
-  ageBracket?: string | null;
-  profileCompleted?: boolean;
-  registrationDate?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
 const FieldRow = ({ label, value }: { label: string; value?: string }) => {
   return (
     <div className="flex items-center justify-between gap-6">
@@ -76,8 +54,7 @@ export default function AdminUserDetailPage() {
 
   const { data, isLoading, isError, refetch } =
     useUsersControllerFindOne(userId);
-  const user = data as unknown as User | undefined;
-
+  const user = data;
   const updateStatusMutation = useUsersControllerUpdateStatus({
     mutation: {
       onSuccess: () => {
@@ -282,14 +259,30 @@ export default function AdminUserDetailPage() {
                   <Wallet className="h-4 w-4 text-muted-foreground" />
                   <span>Payment</span>
                 </div>
-                <FieldRow
-                  label="Mobile Money Network"
-                  value={user.mobileMoneyNetwork || undefined}
-                />
-                <FieldRow
-                  label="Mobile Money Number"
-                  value={user.mobileMoneyNumber || undefined}
-                />
+                <FieldRow label="Country" value={user.country || undefined} />
+                {user.country === "GHA" ? (
+                  <>
+                    <FieldRow
+                      label="Mobile Money Network"
+                      value={user.mobileMoneyNetwork || undefined}
+                    />
+                    <FieldRow
+                      label="Mobile Money Number"
+                      value={user.mobileMoneyNumber || undefined}
+                    />
+                  </>
+                ) : user.country ? (
+                  <>
+                    <FieldRow
+                      label="Bank Name"
+                      value={user.bankName || undefined}
+                    />
+                    <FieldRow
+                      label="Bank Account Number"
+                      value={user.bankAccountNumber || undefined}
+                    />
+                  </>
+                ) : null}
               </>
             )}
 

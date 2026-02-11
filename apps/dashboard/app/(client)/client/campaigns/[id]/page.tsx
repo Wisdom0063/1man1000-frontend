@@ -38,6 +38,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import Link from "next/link";
 import Image from "next/image";
 import VideoPlayerComponent from "@/components/video-player";
+import { downloadCampaignAsset } from "@/lib/services/downloadService";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,35 +51,6 @@ import {
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 
-type Campaign = {
-  id: string;
-  brandName: string;
-  title?: string;
-  description?: string;
-  client?: { id: string; name: string; email: string };
-  budget: number;
-  targetViewRange: { min: number; max: number };
-  targetAudience: string;
-  industry: string;
-  status: string;
-  ratePerView?: number;
-  paymentType?: string;
-  paymentViewsThreshold?: number;
-  submissionDeadlineDays?: number;
-  adCreatives?: string[];
-  campaignAsset?: string;
-  totalViews?: number;
-  _count?: { assignments: number; submissions: number };
-  assignments?: Array<{
-    id: string;
-    influencer?: { id: string; name: string; email: string };
-  }>;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
 export default function CampaignDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -86,6 +58,10 @@ export default function CampaignDetailPage() {
   const campaignId = params.id as string;
   const [submissionsPage, setSubmissionsPage] = useState(1);
   const submissionsLimit = 10;
+  const [sortBy, setSortBy] = useState<"submissionDate" | "views">(
+    "submissionDate",
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const {
     data: response,
@@ -99,6 +75,8 @@ export default function CampaignDetailPage() {
     useSubmissionsControllerGetCampaignSubmissions(campaignId, {
       page: submissionsPage,
       limit: submissionsLimit,
+      sortBy,
+      sortOrder,
     });
 
   const submissions = submissionsResponse?.data || [];
@@ -129,7 +107,7 @@ export default function CampaignDetailPage() {
     );
   }
 
-  const c = campaign as Campaign;
+  const c = campaign;
 
   return (
     <div className="space-y-6">
@@ -291,7 +269,32 @@ export default function CampaignDetailPage() {
       {/* Submissions Table */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Submissions ({c._count?.submissions || 0})</CardTitle>
+          <div className="flex items-center gap-4">
+            <CardTitle>Submissions ({c._count?.submissions || 0})</CardTitle>
+            <div className="flex items-center gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value as "submissionDate" | "views");
+                  setSubmissionsPage(1);
+                }}
+                className="text-sm border rounded px-2 py-1 bg-background"
+              >
+                <option value="submissionDate">Sort by Date</option>
+                <option value="views">Sort by Views</option>
+              </select>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+                  setSubmissionsPage(1);
+                }}
+              >
+                {sortOrder === "asc" ? "↑ Asc" : "↓ Desc"}
+              </Button>
+            </div>
+          </div>
           {submissionsMeta &&
             (submissionsMeta as { totalPages?: number }).totalPages! > 1 && (
               <div className="flex items-center gap-2">
@@ -418,33 +421,6 @@ export default function CampaignDetailPage() {
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Rate per View
-                </h4>
-                <p className="text-sm font-medium">
-                  GH₵{c.ratePerView?.toFixed(2) || "0.00"}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Payment Type
-                </h4>
-                <p className="text-sm font-medium capitalize">
-                  {c.paymentType?.replace("_", " ") || "Per View"}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Submission Deadline
-                </h4>
-                <p className="text-sm font-medium">
-                  {c.submissionDeadlineDays || 7} days
-                </p>
-              </div>
-            </div>
-
             {c.campaignAsset && (
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-2">
@@ -467,18 +443,18 @@ export default function CampaignDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      const apiBaseUrl =
-                        process.env.NEXT_PUBLIC_API_URL ||
-                        "http://localhost:3001";
-                      const downloadUrl = `${apiBaseUrl}/campaigns/download/asset?url=${encodeURIComponent(c.campaignAsset!)}`;
-                      const link = document.createElement("a");
-                      link.href = downloadUrl;
-                      link.download = `${c.title || c.brandName}-asset`;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
+                    onClick={() =>
+                      downloadCampaignAsset(
+                        c.campaignAsset!,
+                        c.title || c.brandName,
+                        {
+                          onError: (err: Error) => {
+                            console.error("Download failed:", err);
+                            alert(err.message || "Failed to download asset");
+                          },
+                        },
+                      )
+                    }
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download Asset

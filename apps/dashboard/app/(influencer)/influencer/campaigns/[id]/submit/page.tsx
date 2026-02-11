@@ -42,6 +42,7 @@ import { submissionSchema, type SubmissionFormData } from "@/lib/schemas";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { extractViewCount } from "@/lib/services/ocrService";
+import { isCampaignExpired } from "@/lib/campaign-utils";
 import {
   validateImage,
   type Platform,
@@ -226,6 +227,48 @@ export default function SubmitCampaignPage() {
   }
 
   const c = campaign as Campaign;
+  const isExpired = isCampaignExpired(c.endDate);
+
+  if (isExpired) {
+    return (
+      <div className="space-y-6 max-w-2xl">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href={`/influencer/campaigns/${campaignId}`}>
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Campaign Expired
+            </h1>
+            <p className="text-muted-foreground">{c.title || c.brandName}</p>
+          </div>
+        </div>
+
+        <Card>
+          <CardContent className="p-6 text-center space-y-4">
+            <div className="rounded-full bg-destructive/10 w-16 h-16 mx-auto flex items-center justify-center">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold">Submissions Closed</h2>
+              <p className="text-muted-foreground mt-1">
+                This campaign has expired. The deadline was{" "}
+                {new Date(c.endDate).toLocaleDateString()}. Submissions are no
+                longer being accepted.
+              </p>
+            </div>
+            <Button asChild>
+              <Link href={`/influencer/campaigns/${campaignId}`}>
+                Go Back to Campaign
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-2xl">

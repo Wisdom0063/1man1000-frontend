@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useAuthControllerGetProfile,
   useUsersControllerUpdate,
   type ProfileResponseDto,
   type UpdateUserDto,
+  getAuthControllerGetProfileQueryKey,
 } from "@workspace/client";
 import { useAuthStore } from "@/lib/auth-store";
 import {
@@ -27,12 +29,16 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
+import { CountryDropdown } from "@workspace/ui/components/country-dropdown";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 
 type FormState = {
+  country: string;
   mobileMoneyNumber: string;
   mobileMoneyNetwork: "MTN" | "Vodafone" | "AirtelTigo" | "";
+  bankName: string;
+  bankAccountNumber: string;
   occupation: string;
   isStudent: boolean;
   schoolName: string;
@@ -79,6 +85,7 @@ const allSchoolOptions = [
 
 export default function InfluencerCompleteProfilePage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const [formError, setFormError] = useState<string>("");
 
@@ -96,8 +103,11 @@ export default function InfluencerCompleteProfilePage() {
   const typedProfile = profile as ProfileResponseDto | undefined;
 
   const [formData, setFormData] = useState<FormState>({
+    country: "",
     mobileMoneyNumber: "",
     mobileMoneyNetwork: "",
+    bankName: "",
+    bankAccountNumber: "",
     occupation: "",
     isStudent: false,
     schoolName: "",
@@ -107,20 +117,30 @@ export default function InfluencerCompleteProfilePage() {
 
   useEffect(() => {
     if (!typedProfile) return;
+    const profile = typedProfile as ProfileResponseDto;
     setFormData({
-      mobileMoneyNumber: typedProfile.mobileMoneyNumber || "",
-      mobileMoneyNetwork: typedProfile.mobileMoneyNetwork || "",
-      occupation: typedProfile.occupation || "",
-      isStudent: typedProfile.isStudent || false,
-      schoolName: typedProfile.schoolName || "",
-      gender: typedProfile.gender || "",
-      ageBracket: typedProfile.ageBracket || "",
+      country: profile.country || "",
+      mobileMoneyNumber: profile.mobileMoneyNumber || "",
+      mobileMoneyNetwork: profile.mobileMoneyNetwork || "",
+      bankName: profile.bankName || "",
+      bankAccountNumber: profile.bankAccountNumber || "",
+      occupation: profile.occupation || "",
+      isStudent: profile.isStudent || false,
+      schoolName: profile.schoolName || "",
+      gender: profile.gender || "",
+      ageBracket: profile.ageBracket || "",
     });
   }, [typedProfile]);
 
+  console.log(formData);
+
   const updateMutation = useUsersControllerUpdate({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async () => {
+        // Force refresh profile query to get updated data
+        await queryClient.invalidateQueries({
+          queryKey: getAuthControllerGetProfileQueryKey(),
+        });
         router.push("/influencer");
       },
       onError: (e: unknown) => {
@@ -164,14 +184,31 @@ export default function InfluencerCompleteProfilePage() {
     );
   }
 
+  const isGhana = formData.country === "GHA";
+
   const validate = () => {
-    if (!formData.mobileMoneyNumber.trim()) {
-      setFormError("Mobile money number is required");
+    if (!formData.country) {
+      setFormError("Country is required");
       return false;
     }
-    if (!formData.mobileMoneyNetwork) {
-      setFormError("Mobile money network is required");
-      return false;
+    if (isGhana) {
+      if (!formData.mobileMoneyNumber.trim()) {
+        setFormError("Mobile money number is required");
+        return false;
+      }
+      if (!formData.mobileMoneyNetwork) {
+        setFormError("Mobile money network is required");
+        return false;
+      }
+    } else {
+      if (!formData.bankName.trim()) {
+        setFormError("Bank name is required");
+        return false;
+      }
+      if (!formData.bankAccountNumber.trim()) {
+        setFormError("Bank account number is required");
+        return false;
+      }
     }
     if (!formData.occupation.trim()) {
       setFormError("Occupation is required");
@@ -194,14 +231,22 @@ export default function InfluencerCompleteProfilePage() {
     return true;
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
-    const payload: UpdateUserDto = {
-      mobileMoneyNumber: formData.mobileMoneyNumber,
-      mobileMoneyNetwork:
-        formData.mobileMoneyNetwork as UpdateUserDto["mobileMoneyNetwork"],
+    const payload: UpdateUserDto & {
+      country?: string;
+      bankName?: string;
+      bankAccountNumber?: string;
+    } = {
+      country: formData.country,
+      mobileMoneyNumber: isGhana ? formData.mobileMoneyNumber : undefined,
+      mobileMoneyNetwork: isGhana
+        ? (formData.mobileMoneyNetwork as UpdateUserDto["mobileMoneyNetwork"])
+        : undefined,
+      bankName: !isGhana ? formData.bankName : undefined,
+      bankAccountNumber: !isGhana ? formData.bankAccountNumber : undefined,
       occupation: formData.occupation,
       isStudent: formData.isStudent,
       schoolName: formData.isStudent ? formData.schoolName : undefined,
@@ -209,7 +254,7 @@ export default function InfluencerCompleteProfilePage() {
       ageBracket: formData.ageBracket as UpdateUserDto["ageBracket"],
     };
 
-    updateMutation.mutate({
+    await updateMutation.mutateAsync({
       id: typedProfile.id,
       data: payload,
     });
@@ -236,53 +281,104 @@ export default function InfluencerCompleteProfilePage() {
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Payment Information</h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="mobileMoneyNumber">
-                    Mobile Money Number *
-                  </Label>
-                  <Input
-                    id="mobileMoneyNumber"
-                    type="tel"
-                    placeholder="e.g., 0241234567"
-                    value={formData.mobileMoneyNumber}
-                    onChange={(e) =>
-                      setFormData((p) => ({
-                        ...p,
-                        mobileMoneyNumber: e.target.value,
-                      }))
-                    }
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="mobileMoneyNetwork">
-                    Mobile Money Network *
-                  </Label>
-                  <Select
-                    value={formData.mobileMoneyNetwork}
-                    onValueChange={(value) =>
-                      setFormData((p) => ({
-                        ...p,
-                        mobileMoneyNetwork:
-                          value as FormState["mobileMoneyNetwork"],
-                      }))
-                    }
-                  >
-                    <SelectTrigger id="mobileMoneyNetwork">
-                      <SelectValue placeholder="Select network" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="MTN">MTN Mobile Money</SelectItem>
-                      <SelectItem value="Vodafone">Vodafone Cash</SelectItem>
-                      <SelectItem value="AirtelTigo">
-                        AirtelTigo Money
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="country">Country *</Label>
+                <CountryDropdown
+                  placeholder="Select country"
+                  defaultValue={formData.country}
+                  onChange={(country) =>
+                    setFormData((p) => ({ ...p, country: country.alpha3 }))
+                  }
+                />
               </div>
+
+              {isGhana ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="mobileMoneyNumber">
+                      Mobile Money Number *
+                    </Label>
+                    <Input
+                      id="mobileMoneyNumber"
+                      type="tel"
+                      placeholder="e.g., 0241234567"
+                      value={formData.mobileMoneyNumber}
+                      onChange={(e) =>
+                        setFormData((p) => ({
+                          ...p,
+                          mobileMoneyNumber: e.target.value,
+                        }))
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="mobileMoneyNetwork">
+                      Mobile Money Network *
+                    </Label>
+                    <Select
+                      value={formData.mobileMoneyNetwork}
+                      onValueChange={(value) =>
+                        setFormData((p) => ({
+                          ...p,
+                          mobileMoneyNetwork:
+                            value as FormState["mobileMoneyNetwork"],
+                        }))
+                      }
+                    >
+                      <SelectTrigger id="mobileMoneyNetwork">
+                        <SelectValue placeholder="Select network" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="MTN">MTN Mobile Money</SelectItem>
+                        <SelectItem value="Vodafone">Vodafone Cash</SelectItem>
+                        <SelectItem value="AirtelTigo">
+                          AirtelTigo Money
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              ) : formData.country ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="bankName">Bank Name *</Label>
+                    <Input
+                      id="bankName"
+                      type="text"
+                      placeholder="e.g., Bank of America"
+                      value={formData.bankName}
+                      onChange={(e) =>
+                        setFormData((p) => ({
+                          ...p,
+                          bankName: e.target.value,
+                        }))
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="bankAccountNumber">
+                      Bank Account Number *
+                    </Label>
+                    <Input
+                      id="bankAccountNumber"
+                      type="text"
+                      placeholder="e.g., 1234567890"
+                      value={formData.bankAccountNumber}
+                      onChange={(e) =>
+                        setFormData((p) => ({
+                          ...p,
+                          bankAccountNumber: e.target.value,
+                        }))
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             <div className="space-y-4">
@@ -305,6 +401,7 @@ export default function InfluencerCompleteProfilePage() {
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="isStudent"
+                  key={formData.isStudent ? "checked" : "unchecked"}
                   checked={formData.isStudent}
                   onCheckedChange={(checked) =>
                     setFormData((p) => ({ ...p, isStudent: !!checked }))
@@ -318,6 +415,7 @@ export default function InfluencerCompleteProfilePage() {
                   <Label htmlFor="schoolName">School/University Name *</Label>
 
                   <Select
+                    key={formData.schoolName}
                     value={formData.schoolName}
                     onValueChange={(value) =>
                       setFormData((p) => ({
@@ -344,6 +442,7 @@ export default function InfluencerCompleteProfilePage() {
                 <div className="space-y-2">
                   <Label htmlFor="gender">Gender *</Label>
                   <Select
+                    key={formData.gender}
                     value={formData.gender}
                     onValueChange={(value) =>
                       setFormData((p) => ({
@@ -369,6 +468,7 @@ export default function InfluencerCompleteProfilePage() {
                 <div className="space-y-2">
                   <Label htmlFor="ageBracket">Age Bracket *</Label>
                   <Select
+                    key={formData.ageBracket}
                     value={formData.ageBracket}
                     onValueChange={(value) =>
                       setFormData((p) => ({

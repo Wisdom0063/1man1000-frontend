@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   useSurveysControllerStartSurvey,
   useSurveysControllerSubmitResponse,
-  getSubmissionsControllerGetInfluencerSubmissionsQueryKey,
+  useSurveysControllerGetSurveyResponses,
   getSurveysControllerGetInfluencerSurveysQueryKey,
   getSurveysControllerGetInfluencerStatsQueryKey,
 } from "@workspace/client";
@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@workspace/ui/lib/utils";
+import { useAuthStore } from "@/lib/auth-store";
 
 type Question = {
   id: string;
@@ -65,6 +66,21 @@ export default function TakeSurveyPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [survey, setSurvey] = useState<Survey | null>(null);
+  const currentUserId = useAuthStore((state) => state.user?.id);
+
+  const { data: existingResponses } = useSurveysControllerGetSurveyResponses(
+    surveyId,
+    {
+      query: {
+        enabled: !!surveyId && !!currentUserId,
+      },
+    },
+  );
+
+  const hasAlreadySubmitted = existingResponses?.some(
+    (response: { respondentId: string }) =>
+      response.respondentId === currentUserId,
+  );
 
   const startMutation = useSurveysControllerStartSurvey({
     mutation: {
@@ -91,9 +107,14 @@ export default function TakeSurveyPage() {
     },
   });
 
-  // Start survey on mount
+  // Start survey on mount (only if not already submitted)
   useState(() => {
-    if (surveyId && !survey && !startMutation.isPending) {
+    if (
+      surveyId &&
+      !survey &&
+      !startMutation.isPending &&
+      !hasAlreadySubmitted
+    ) {
       startMutation.mutate({ id: surveyId });
     }
   });
@@ -137,6 +158,40 @@ export default function TakeSurveyPage() {
         message="There was an error loading the survey."
         onRetry={() => startMutation.mutate({ id: surveyId })}
       />
+    );
+  }
+
+  // Show message if already submitted
+  if (hasAlreadySubmitted) {
+    return (
+      <div className="space-y-6 max-w-3xl mx-auto">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/influencer/surveys">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Surveys
+            </Link>
+          </Button>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Survey Already Completed</CardTitle>
+            <CardDescription>
+              You have already submitted a response to this survey.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <span>Your response has been recorded.</span>
+            </div>
+            <Button className="mt-6" asChild>
+              <Link href="/influencer/surveys">Back to Surveys</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

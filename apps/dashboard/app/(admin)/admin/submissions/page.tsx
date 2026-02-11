@@ -39,17 +39,19 @@ import {
 } from "@workspace/ui/components/dialog";
 import { Label } from "@workspace/ui/components/label";
 import {
+  Download,
+  ImageIcon,
   Search,
   CheckCircle,
   XCircle,
-  ExternalLink,
   Loader2,
-  ImageIcon,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
+import Image from "next/image";
+import { downloadCampaignAsset } from "@/lib/services/downloadService";
 
 type Submission = {
   id: string;
@@ -69,6 +71,7 @@ interface SubmissionListItemProps {
   item: Submission;
   onApprove: (submission: Submission) => void;
   onReject: (submission: Submission) => void;
+  onViewScreenshot: (submission: Submission) => void;
   isPending: boolean;
 }
 
@@ -76,6 +79,7 @@ function SubmissionListItem({
   item: submission,
   onApprove,
   onReject,
+  onViewScreenshot,
   isPending,
 }: SubmissionListItemProps) {
   return (
@@ -83,10 +87,12 @@ function SubmissionListItem({
       <div className="flex items-center gap-4">
         <div className="h-20 w-28 rounded-lg bg-muted overflow-hidden border border-border/60">
           {submission.screenshotUrl ? (
-            <img
+            <Image
               src={submission.screenshotUrl}
               alt="Screenshot"
               className="h-full w-full object-cover"
+              width={100}
+              height={100}
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center">
@@ -95,23 +101,23 @@ function SubmissionListItem({
           )}
         </div>
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Avatar className="h-7 w-7">
-              <AvatarImage src={submission.influencer?.avatarUrl} />
-              <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white text-xs">
-                {submission.influencer?.name?.slice(0, 2).toUpperCase() || "??"}
-              </AvatarFallback>
-            </Avatar>
-            <p className="font-semibold">
-              {submission.influencer?.name || "Unknown"}
-            </p>
-          </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="font-semibold">
             {submission.campaign?.title ||
               submission.campaign?.brandName ||
               "Unknown Campaign"}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 mt-1">
+            <Avatar className="h-5 w-5">
+              <AvatarImage src={submission.influencer?.avatarUrl} />
+              <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white text-[10px]">
+                {submission.influencer?.name?.slice(0, 2).toUpperCase() || "??"}
+              </AvatarFallback>
+            </Avatar>
+            <p className="text-sm text-muted-foreground">
+              {submission.influencer?.name || "Unknown"}
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
             {new Date(submission.createdAt).toLocaleString()}
           </p>
         </div>
@@ -129,14 +135,12 @@ function SubmissionListItem({
         <StatusBadge status={submission.approvalStatus} />
         <div className="flex items-center gap-2">
           {submission.screenshotUrl && (
-            <Button variant="outline" size="icon-sm" asChild>
-              <a
-                href={submission.screenshotUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </a>
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={() => onViewScreenshot(submission)}
+            >
+              <ImageIcon className="h-4 w-4" />
             </Button>
           )}
           {submission.approvalStatus === "pending" && (
@@ -184,6 +188,9 @@ export default function AdminSubmissionsPage() {
     useState<Submission | null>(null);
   const [approvingSubmission, setApprovingSubmission] =
     useState<Submission | null>(null);
+  const [viewingScreenshot, setViewingScreenshot] = useState<Submission | null>(
+    null,
+  );
   const [reviewNote, setReviewNote] = useState("");
   const [verifiedViews, setVerifiedViews] = useState<string>("");
   const queryClient = useQueryClient();
@@ -266,6 +273,10 @@ export default function AdminSubmissionsPage() {
 
   const handleReject = (submission: Submission) => {
     setReviewingSubmission(submission);
+  };
+
+  const handleViewScreenshot = (submission: Submission) => {
+    setViewingScreenshot(submission);
   };
 
   const confirmReject = () => {
@@ -397,6 +408,7 @@ export default function AdminSubmissionsPage() {
                     {...props}
                     onApprove={handleApprove}
                     onReject={handleReject}
+                    onViewScreenshot={handleViewScreenshot}
                     isPending={reviewMutation.isPending}
                   />
                 )}
@@ -507,7 +519,6 @@ export default function AdminSubmissionsPage() {
             <Button
               onClick={confirmApprove}
               disabled={reviewMutation.isPending}
-              // className="bg-emerald-600 hover:bg-emerald-700"
             >
               {reviewMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -517,6 +528,47 @@ export default function AdminSubmissionsPage() {
               Approve Submission
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!viewingScreenshot}
+        onOpenChange={() => setViewingScreenshot(null)}
+      >
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Screenshot</DialogTitle>
+          </DialogHeader>
+          {viewingScreenshot && (
+            <div className="space-y-4">
+              <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                <Image
+                  src={viewingScreenshot.screenshotUrl}
+                  alt="Screenshot"
+                  className="h-full w-full object-contain"
+                  fill
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  onClick={() =>
+                    downloadCampaignAsset(
+                      viewingScreenshot.screenshotUrl,
+                      viewingScreenshot.campaign?.title ||
+                        viewingScreenshot.campaign?.brandName ||
+                        "Unknown Campaign",
+                      {
+                        filename: `${viewingScreenshot.campaign?.title || viewingScreenshot.campaign?.brandName || "campaign"}-screenshot`,
+                      },
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

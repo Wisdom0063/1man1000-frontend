@@ -45,6 +45,7 @@ import {
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { downloadCampaignAsset } from "@/lib/services/downloadService";
 import Link from "next/link";
 import VideoPlayerComponent from "@/components/video-player";
 import {
@@ -69,38 +70,6 @@ import {
 import { Label } from "@workspace/ui/components/label";
 import Image from "next/image";
 
-type Campaign = {
-  id: string;
-  brandName: string;
-  title?: string;
-  description?: string;
-  client?: { id: string; name: string; email: string };
-  budget: number;
-  targetViewRange: { min: number; max: number };
-  targetAudience: string;
-  industry: string;
-  status: string;
-  paymentTiers?: {
-    lowerLimit: number;
-    upperLimit?: number | null;
-    amount: number;
-  }[];
-  paymentType?: string;
-  submissionDeadlineDays?: number;
-  adCreatives?: string[];
-  campaignAsset?: string;
-  totalViews?: number;
-  _count?: { assignments: number; submissions: number };
-  assignments?: Array<{
-    id: string;
-    influencer?: { id: string; name: string; email: string };
-  }>;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
 export default function CampaignDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -109,6 +78,10 @@ export default function CampaignDetailPage() {
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [submissionsPage, setSubmissionsPage] = useState(1);
   const submissionsLimit = 10;
+  const [sortBy, setSortBy] = useState<"submissionDate" | "views">(
+    "submissionDate",
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Approval modal state
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -128,6 +101,8 @@ export default function CampaignDetailPage() {
     useSubmissionsControllerGetCampaignSubmissions(campaignId, {
       page: submissionsPage,
       limit: submissionsLimit,
+      sortBy,
+      sortOrder,
     });
 
   const submissions = submissionsResponse?.data || [];
@@ -193,7 +168,7 @@ export default function CampaignDetailPage() {
         id: campaignId,
         data: {
           status: UpdateCampaignDtoStatus.approved,
-          paymentTiers: validTiers,
+          paymentTiers: validTiers as any,
         },
       });
       setShowApproveModal(false);
@@ -217,7 +192,7 @@ export default function CampaignDetailPage() {
     );
   }
 
-  const c = campaign as Campaign;
+  const c = campaign;
 
   return (
     <div className="space-y-6">
@@ -407,203 +382,35 @@ export default function CampaignDetailPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Campaign Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {c.description && (
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Description
-                </h4>
-                <p className="text-sm">{c.description}</p>
-              </div>
-            )}
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Industry
-                </h4>
-                <Badge variant="outline">{c.industry}</Badge>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Target Audience
-                </h4>
-                <p className="text-sm">{c.targetAudience}</p>
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="sm:col-span-2">
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Payment Tiers
-                </h4>
-                {c.paymentTiers && c.paymentTiers.length > 0 ? (
-                  <div className="space-y-2">
-                    {c.paymentTiers.map((tier, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 text-sm"
-                      >
-                        <Badge variant="outline" className="font-mono">
-                          {tier.lowerLimit.toLocaleString()}
-                          {tier.upperLimit
-                            ? ` - ${tier.upperLimit.toLocaleString()}`
-                            : "+"}
-                        </Badge>
-                        <span className="text-muted-foreground">→</span>
-                        <span className="font-medium">
-                          GH₵{tier.amount.toFixed(2)}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          per view
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No payment tiers configured
-                  </p>
-                )}
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Payment Type
-                </h4>
-                <p className="text-sm font-medium capitalize">
-                  {c.paymentType?.replace("_", " ") || "Per View"}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Submission Deadline
-                </h4>
-                <p className="text-sm font-medium">
-                  {c.submissionDeadlineDays || 7} days
-                </p>
-              </div>
-            </div>
-
-            {c.campaignAsset && (
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Campaign Asset
-                </h4>
-                <div className="space-y-3">
-                  <div className="relative aspect-video rounded-lg bg-muted max-w-2xl">
-                    {c.campaignAsset.match(/\.(mp4|webm|ogg)$/i) ? (
-                      <VideoPlayerComponent src={c.campaignAsset} />
-                    ) : (
-                      <img
-                        src={c.campaignAsset}
-                        alt="Campaign asset"
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const apiBaseUrl =
-                        process.env.NEXT_PUBLIC_API_URL ||
-                        "http://localhost:3001";
-                      const downloadUrl = `${apiBaseUrl}/campaigns/download/asset?url=${encodeURIComponent(c.campaignAsset!)}`;
-                      const link = document.createElement("a");
-                      link.href = downloadUrl;
-                      link.download = `${c.title || c.brandName}-asset`;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Asset
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {c.adCreatives && c.adCreatives.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Ad Creatives
-                </h4>
-                <div className="grid gap-2 grid-cols-2 sm:grid-cols-3">
-                  {c.adCreatives.map((url, index) => (
-                    <a
-                      key={index}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
-                    >
-                      <Image
-                        src={url}
-                        alt={`Creative ${index + 1}`}
-                        className="w-full h-24 object-cover"
-                        width={500}
-                        height={500}
-                      />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Assigned Influencers</CardTitle>
-            <Button size="sm" asChild>
-              <Link href={`/admin/campaigns/${campaignId}/influencers`}>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Assign
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {!c.assignments || c.assignments.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No influencers assigned yet
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {c.assignments.map((assignment) => (
-                  <div
-                    key={assignment.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"
-                  >
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold">
-                      {assignment.influencer?.name?.slice(0, 2).toUpperCase() ||
-                        "??"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {assignment.influencer?.name || "Unknown"}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {assignment.influencer?.email}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Submissions Table */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Submissions ({c._count?.submissions || 0})</CardTitle>
+          <div className="flex items-center gap-4">
+            <CardTitle>Submissions ({c._count?.submissions || 0})</CardTitle>
+            <div className="flex items-center gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value as "submissionDate" | "views");
+                  setSubmissionsPage(1);
+                }}
+                className="text-sm border rounded px-2 py-1 bg-background"
+              >
+                <option value="submissionDate">Sort by Date</option>
+                <option value="views">Sort by Views</option>
+              </select>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+                  setSubmissionsPage(1);
+                }}
+              >
+                {sortOrder === "asc" ? "↑ Asc" : "↓ Desc"}
+              </Button>
+            </div>
+          </div>
           {submissionsMeta &&
             (submissionsMeta as { totalPages?: number }).totalPages! > 1 && (
               <div className="flex items-center gap-2">
@@ -716,6 +523,182 @@ export default function CampaignDetailPage() {
         </CardContent>
       </Card>
 
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Campaign Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {c.description && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Description
+                </h4>
+                <p className="text-sm">{c.description}</p>
+              </div>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Industry
+                </h4>
+                <Badge variant="outline">{c.industry}</Badge>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Target Audience
+                </h4>
+                <p className="text-sm">{c.targetAudience}</p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="sm:col-span-2">
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Payment Tiers
+                </h4>
+                {c.paymentTiers && c.paymentTiers.length > 0 ? (
+                  <div className="space-y-2">
+                    {c.paymentTiers.map((tier, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <Badge variant="outline" className="font-mono">
+                          {tier.lowerLimit.toLocaleString()}
+                          {tier.upperLimit
+                            ? ` - ${tier.upperLimit.toLocaleString()}`
+                            : "+"}
+                        </Badge>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="font-medium">
+                          GH₵{tier.amount.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No payment tiers configured
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {c.campaignAsset && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Campaign Asset
+                </h4>
+                <div className="space-y-3">
+                  <div className="relative aspect-video rounded-lg bg-muted max-w-2xl">
+                    {c.campaignAsset.match(/\.(mp4|webm|ogg)$/i) ? (
+                      <VideoPlayerComponent src={c.campaignAsset} />
+                    ) : (
+                      <Image
+                        src={c.campaignAsset}
+                        alt="Campaign asset"
+                        className="w-full h-full object-cover"
+                        width={500}
+                        height={500}
+                      />
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      downloadCampaignAsset(
+                        c.campaignAsset!,
+                        c.title || c.brandName,
+                        {
+                          onError: (err: Error) => {
+                            console.error("Download failed:", err);
+                            alert(err.message || "Failed to download asset");
+                          },
+                        },
+                      )
+                    }
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Asset
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {c.adCreatives && c.adCreatives.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Ad Creatives
+                </h4>
+                <div className="grid gap-2 grid-cols-2 sm:grid-cols-3">
+                  {c.adCreatives.map((url, index) => (
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
+                    >
+                      <Image
+                        src={url}
+                        alt={`Creative ${index + 1}`}
+                        className="w-full h-24 object-cover"
+                        width={500}
+                        height={500}
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Assigned Influencers</CardTitle>
+            <Button size="sm" asChild>
+              <Link href={`/admin/campaigns/${campaignId}/influencers`}>
+                <UserPlus className="h-4 w-4 mr-2" />
+                Assign
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {!c.assignments || c.assignments.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No influencers assigned yet
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {c.assignments.map((assignment) => (
+                  <div
+                    key={assignment.id}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"
+                  >
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold">
+                      {assignment.influencer?.name?.slice(0, 2).toUpperCase() ||
+                        "??"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {assignment.influencer?.name || "Unknown"}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {assignment.influencer?.email}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {c.campaignAsset && showAssetModal && (
         <CampaignAssetModal
           assetUrl={c.campaignAsset}
@@ -769,7 +752,7 @@ export default function CampaignDetailPage() {
                         placeholder="0"
                         value={tier.lowerLimit}
                         onChange={(e) => {
-                          const newTiers = [...paymentTiers];
+                          const newTiers = [...paymentTiers] as any;
                           newTiers[index].lowerLimit = e.target.value;
                           setPaymentTiers(newTiers);
                         }}
@@ -785,7 +768,7 @@ export default function CampaignDetailPage() {
                         placeholder="∞ (empty = infinity)"
                         value={tier.upperLimit}
                         onChange={(e) => {
-                          const newTiers = [...paymentTiers];
+                          const newTiers = [...paymentTiers] as any;
                           newTiers[index].upperLimit = e.target.value;
                           setPaymentTiers(newTiers);
                         }}
@@ -801,7 +784,7 @@ export default function CampaignDetailPage() {
                           placeholder="0.50"
                           value={tier.amount}
                           onChange={(e) => {
-                            const newTiers = [...paymentTiers];
+                            const newTiers = [...paymentTiers] as any;
                             newTiers[index].amount = e.target.value;
                             setPaymentTiers(newTiers);
                           }}

@@ -123,7 +123,7 @@ export default function AdminCampaignsPage() {
         .filter((tier) => tier.amount && parseFloat(tier.amount) > 0)
         .map((tier) => ({
           lowerLimit: parseInt(tier.lowerLimit) || 0,
-          upperLimit: tier.upperLimit ? parseInt(tier.upperLimit) : null,
+          upperLimit: tier.upperLimit ? parseInt(tier.upperLimit) : undefined,
           amount: parseFloat(tier.amount) || 0,
         }));
 
@@ -474,7 +474,9 @@ export default function AdminCampaignsPage() {
             <DialogTitle>Approve Campaign</DialogTitle>
             <DialogDescription>
               Configure payment tiers for &quot;
-              {approvingCampaign?.title || approvingCampaign?.brandName}&quot;
+              {(approvingCampaign?.title as any) ||
+                approvingCampaign?.brandName}
+              &quot;
             </DialogDescription>
           </DialogHeader>
 
@@ -503,7 +505,7 @@ export default function AdminCampaignsPage() {
                         placeholder="0"
                         value={tier.lowerLimit}
                         onChange={(e) => {
-                          const newTiers = [...paymentTiers];
+                          const newTiers = [...paymentTiers] as any;
                           newTiers[index].lowerLimit = e.target.value;
                           setPaymentTiers(newTiers);
                         }}
@@ -519,7 +521,7 @@ export default function AdminCampaignsPage() {
                         placeholder="∞ (empty = infinity)"
                         value={tier.upperLimit}
                         onChange={(e) => {
-                          const newTiers = [...paymentTiers];
+                          const newTiers = [...paymentTiers] as any;
                           newTiers[index].upperLimit = e.target.value;
                           setPaymentTiers(newTiers);
                         }}
@@ -535,7 +537,7 @@ export default function AdminCampaignsPage() {
                           placeholder="0.50"
                           value={tier.amount}
                           onChange={(e) => {
-                            const newTiers = [...paymentTiers];
+                            const newTiers = [...paymentTiers] as any;
                             newTiers[index].amount = e.target.value;
                             setPaymentTiers(newTiers);
                           }}

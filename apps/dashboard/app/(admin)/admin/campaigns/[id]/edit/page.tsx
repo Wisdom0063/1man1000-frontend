@@ -53,7 +53,7 @@ export default function AdminEditCampaignPage() {
                 headers: {
                   "Content-Type": "multipart/form-data",
                 },
-              }
+              },
             );
           } catch (error) {
             console.error("Error uploading asset:", error);
@@ -94,10 +94,8 @@ export default function AdminEditCampaignPage() {
       targetAudience: campaign.targetAudience,
       industry: campaign.industry,
       adCreatives: (campaign.adCreatives as any) || [],
-      ratePerView: campaign.ratePerView,
-      submissionDeadlineDays: campaign.submissionDeadlineDays,
       paymentType: campaign.paymentType as any,
-      paymentViewsThreshold: campaign.paymentViewsThreshold,
+      paymentTiers: campaign.paymentTiers as any,
     };
   }, [campaign]);
 

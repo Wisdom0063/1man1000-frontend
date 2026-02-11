@@ -15,6 +15,13 @@ import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import {
   Tabs,
   TabsContent,
   TabsList,
@@ -34,31 +41,21 @@ import {
   DollarSign,
   Upload,
   CheckCircle,
+  ArrowUpDown,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
-
-type Campaign = {
-  id: string;
-  brandName: string;
-  title?: string;
-  description?: string;
-  budget: number;
-  targetViewRange: { min: number; max: number };
-  status: string;
-  ratePerView?: number;
-  startDate: string;
-  endDate: string;
-  campaignAsset?: string;
-  createdAt: string;
-};
+import { isCampaignExpired } from "@/lib/campaign-utils";
+import Image from "next/image";
 
 export default function InfluencerCampaignsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("active");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
+  const [sortBy, setSortBy] = useState("assignedDate");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [selectedAsset, setSelectedAsset] = useState<{
     url: string;
     title: string;
@@ -69,20 +66,30 @@ export default function InfluencerCampaignsPage() {
     isLoading,
     isError,
     refetch,
-  } = useCampaignsControllerGetInfluencerCampaigns({ page, limit });
-  const campaigns = (response?.data || []) as Campaign[];
+  } = useCampaignsControllerGetInfluencerCampaigns({
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+  });
+  const campaigns = response?.data || [];
 
   const activeCampaigns = campaigns.filter(
-    (c) => c.status === "active" || c.status === "approved",
+    (c) =>
+      c.assignmentStatus === "accepted" || c.assignmentStatus === "pending",
   );
-  const completedCampaigns = campaigns.filter((c) => c.status === "completed");
+  const completedCampaigns = campaigns.filter(
+    (c) => c.assignmentStatus === "completed",
+  );
 
   const filteredCampaigns = (
     activeTab === "active" ? activeCampaigns : completedCampaigns
   ).filter(
     (campaign) =>
       campaign.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.title?.toLowerCase().includes(searchQuery.toLowerCase()),
+      (campaign.title as any)
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()),
   );
 
   if (isLoading) {
@@ -191,6 +198,27 @@ export default function InfluencerCampaignsPage() {
             className="pl-10"
           />
         </div>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-[180px]">
+            <ArrowUpDown className="h-4 w-4 mr-2" />
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="assignedDate">Assigned Date</SelectItem>
+            <SelectItem value="views">Views Count</SelectItem>
+            <SelectItem value="brandName">Brand Name</SelectItem>
+            <SelectItem value="endDate">End Date</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() =>
+            setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+          }
+        >
+          {sortOrder === "asc" ? "↑" : "↓"}
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -226,7 +254,7 @@ export default function InfluencerCampaignsPage() {
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">
-                        {campaign.title || campaign.brandName}
+                        {(campaign.title as any) || campaign.brandName}
                       </CardTitle>
                       <StatusBadge status={campaign.status} />
                     </div>
@@ -238,15 +266,18 @@ export default function InfluencerCampaignsPage() {
                         className="relative aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
                         onClick={() =>
                           setSelectedAsset({
-                            url: campaign.campaignAsset!,
-                            title: campaign.title || campaign.brandName,
+                            url: campaign.campaignAsset as any,
+                            title:
+                              (campaign.title as any) || campaign.brandName,
                           })
                         }
                       >
-                        {campaign.campaignAsset.match(/\.(mp4|webm|ogg)$/i) ? (
+                        {(campaign.campaignAsset as any).match(
+                          /\.(mp4|webm|ogg)$/i,
+                        ) ? (
                           <div className="relative w-full h-full flex items-center justify-center bg-black/80">
                             <video
-                              src={campaign.campaignAsset}
+                              src={campaign.campaignAsset as any}
                               className="w-full h-full object-cover"
                               muted
                             />
@@ -263,15 +294,17 @@ export default function InfluencerCampaignsPage() {
                             </div>
                           </div>
                         ) : (
-                          <img
-                            src={campaign.campaignAsset}
+                          <Image
+                            src={campaign.campaignAsset as any}
                             alt="Campaign asset"
                             className="w-full h-full object-cover"
+                            width={500}
+                            height={500}
                           />
                         )}
                       </div>
                     )}
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
                           <Target className="h-3.5 w-3.5" />
@@ -291,7 +324,7 @@ export default function InfluencerCampaignsPage() {
                           GH₵{campaign.ratePerView?.toFixed(2) || "0.00"}
                         </p>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -312,16 +345,29 @@ export default function InfluencerCampaignsPage() {
                           Details
                         </Link>
                       </Button>
-                      {campaign.status !== "completed" && (
-                        <Button size="sm" className="flex-1" asChild>
-                          <Link
-                            href={`/influencer/campaigns/${campaign.id}/submit`}
+                      {campaign.status !== "completed" &&
+                        !isCampaignExpired(campaign.endDate) && (
+                          <Button size="sm" className="flex-1" asChild>
+                            <Link
+                              href={`/influencer/campaigns/${campaign.id}/submit`}
+                            >
+                              <Upload className="mr-1.5 h-4 w-4" />
+                              Submit
+                            </Link>
+                          </Button>
+                        )}
+                      {campaign.status !== "completed" &&
+                        isCampaignExpired(campaign.endDate) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-muted-foreground"
+                            disabled
                           >
-                            <Upload className="mr-1.5 h-4 w-4" />
-                            Submit
-                          </Link>
-                        </Button>
-                      )}
+                            <Clock className="mr-1.5 h-4 w-4" />
+                            Expired
+                          </Button>
+                        )}
                       {campaign.status === "completed" && (
                         <Button
                           variant="outline"

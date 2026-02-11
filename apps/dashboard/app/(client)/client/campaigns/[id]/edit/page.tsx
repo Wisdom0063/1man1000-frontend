@@ -68,10 +68,6 @@ export default function ClientEditCampaignPage() {
       targetAudience: campaign.targetAudience,
       industry: campaign.industry,
       adCreatives: (campaign.adCreatives as any) || [],
-      ratePerView: campaign.ratePerView,
-      submissionDeadlineDays: campaign.submissionDeadlineDays,
-      paymentType: campaign.paymentType as any,
-      paymentViewsThreshold: campaign.paymentViewsThreshold,
     };
   }, [campaign]);
 
@@ -110,7 +106,7 @@ export default function ClientEditCampaignPage() {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
 
         // Refresh campaign data after asset upload

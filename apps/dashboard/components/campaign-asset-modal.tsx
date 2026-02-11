@@ -10,6 +10,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Download, X } from "lucide-react";
 import VideoPlayerComponent from "./video-player";
 import Image from "next/image";
+import { downloadCampaignAsset } from "@/lib/services/downloadService";
 
 interface CampaignAssetModalProps {
   assetUrl: string;
@@ -29,15 +30,12 @@ export function CampaignAssetModal({
   console.log(isVideo, assetUrl);
 
   const handleDownload = () => {
-    const apiBaseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-    const downloadUrl = `${apiBaseUrl}/campaigns/download/asset?url=${encodeURIComponent(assetUrl)}`;
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = `${campaignTitle}-asset`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadCampaignAsset(assetUrl, campaignTitle, {
+      onError: (err) => {
+        console.error("Download failed:", err);
+        alert(err.message || "Failed to download asset");
+      },
+    });
   };
 
   return (
