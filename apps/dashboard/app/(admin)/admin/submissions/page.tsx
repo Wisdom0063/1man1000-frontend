@@ -49,6 +49,7 @@ import {
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
 
 type Submission = {
   id: string;
@@ -64,9 +65,121 @@ type Submission = {
   createdAt: string;
 };
 
+interface SubmissionListItemProps {
+  item: Submission;
+  onApprove: (submission: Submission) => void;
+  onReject: (submission: Submission) => void;
+  isPending: boolean;
+}
+
+function SubmissionListItem({
+  item: submission,
+  onApprove,
+  onReject,
+  isPending,
+}: SubmissionListItemProps) {
+  return (
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center gap-4">
+        <div className="h-20 w-28 rounded-lg bg-muted overflow-hidden border border-border/60">
+          {submission.screenshotUrl ? (
+            <img
+              src={submission.screenshotUrl}
+              alt="Screenshot"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full flex items-center justify-center">
+              <ImageIcon className="h-6 w-6 text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Avatar className="h-7 w-7">
+              <AvatarImage src={submission.influencer?.avatarUrl} />
+              <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white text-xs">
+                {submission.influencer?.name?.slice(0, 2).toUpperCase() || "??"}
+              </AvatarFallback>
+            </Avatar>
+            <p className="font-semibold">
+              {submission.influencer?.name || "Unknown"}
+            </p>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {submission.campaign?.title ||
+              submission.campaign?.brandName ||
+              "Unknown Campaign"}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {new Date(submission.createdAt).toLocaleString()}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="text-right">
+          <p className="text-lg font-bold">
+            {(typeof submission.verifiedViewCount === "number"
+              ? submission.verifiedViewCount
+              : submission.extractedViewCount || 0
+            ).toLocaleString()}
+          </p>
+          <p className="text-xs text-muted-foreground">views</p>
+        </div>
+        <StatusBadge status={submission.approvalStatus} />
+        <div className="flex items-center gap-2">
+          {submission.screenshotUrl && (
+            <Button variant="outline" size="icon-sm" asChild>
+              <a
+                href={submission.screenshotUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
+          )}
+          {submission.approvalStatus === "pending" && (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                onClick={() => onApprove(submission)}
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <CheckCircle className="mr-1 h-4 w-4" />
+                    Approve
+                  </>
+                )}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-destructive border-red-200 hover:bg-red-50"
+                onClick={() => onReject(submission)}
+                disabled={isPending}
+              >
+                <XCircle className="mr-1 h-4 w-4" />
+                Reject
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminSubmissionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("pending");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20);
   const [reviewingSubmission, setReviewingSubmission] =
     useState<Submission | null>(null);
   const [approvingSubmission, setApprovingSubmission] =
@@ -80,7 +193,7 @@ export default function AdminSubmissionsPage() {
     isLoading,
     isError,
     refetch,
-  } = useSubmissionsControllerFindAll();
+  } = useSubmissionsControllerFindAll({ page, limit });
   const submissions = (response?.data || []) as Submission[];
 
   const reviewMutation = useSubmissionsControllerReview({
@@ -277,116 +390,22 @@ export default function AdminSubmissionsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {filteredSubmissions.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No submissions found
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {filteredSubmissions.map((submission) => (
-                    <div
-                      key={submission.id}
-                      className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card hover:shadow-md transition-all"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="h-20 w-28 rounded-lg bg-muted overflow-hidden border border-border/60">
-                          {submission.screenshotUrl ? (
-                            <img
-                              src={submission.screenshotUrl}
-                              alt="Screenshot"
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center">
-                              <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <Avatar className="h-7 w-7">
-                              <AvatarImage
-                                src={submission.influencer?.avatarUrl}
-                              />
-                              <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white text-xs">
-                                {submission.influencer?.name
-                                  ?.slice(0, 2)
-                                  .toUpperCase() || "??"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <p className="font-semibold">
-                              {submission.influencer?.name || "Unknown"}
-                            </p>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {submission.campaign?.title ||
-                              submission.campaign?.brandName ||
-                              "Unknown Campaign"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(submission.createdAt).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="text-lg font-bold">
-                            {(typeof submission.verifiedViewCount === "number"
-                              ? submission.verifiedViewCount
-                              : submission.extractedViewCount || 0
-                            ).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-muted-foreground">views</p>
-                        </div>
-                        <StatusBadge status={submission.approvalStatus} />
-                        <div className="flex items-center gap-2">
-                          {submission.screenshotUrl && (
-                            <Button variant="outline" size="icon-sm" asChild>
-                              <a
-                                href={submission.screenshotUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
-                            </Button>
-                          )}
-                          {submission.approvalStatus === "pending" && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
-                                onClick={() => handleApprove(submission)}
-                                disabled={reviewMutation.isPending}
-                              >
-                                {reviewMutation.isPending ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <>
-                                    <CheckCircle className="mr-1 h-4 w-4" />
-                                    Approve
-                                  </>
-                                )}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-destructive border-red-200 hover:bg-red-50"
-                                onClick={() => handleReject(submission)}
-                                disabled={reviewMutation.isPending}
-                              >
-                                <XCircle className="mr-1 h-4 w-4" />
-                                Reject
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <ListPaginationWrapper
+                data={filteredSubmissions}
+                ListItem={(props) => (
+                  <SubmissionListItem
+                    {...props}
+                    onApprove={handleApprove}
+                    onReject={handleReject}
+                    isPending={reviewMutation.isPending}
+                  />
+                )}
+                isLoading={isLoading}
+                emptyMessage="No submissions found"
+                meta={response?.meta}
+                page={page}
+                onPageChange={setPage}
+              />
             </CardContent>
           </Card>
         </TabsContent>

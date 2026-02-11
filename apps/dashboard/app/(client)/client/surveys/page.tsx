@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSurveysControllerGetClientSurveys } from "@workspace/client";
+import {
+  useSurveysControllerGetClientSurveys,
+  useSurveysControllerDelete,
+} from "@workspace/client";
 import {
   Card,
   CardContent,
@@ -18,7 +21,25 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { Plus, Eye, BarChart3, Users, ClipboardList } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
+import {
+  Plus,
+  Eye,
+  BarChart3,
+  Users,
+  ClipboardList,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 
@@ -32,6 +53,11 @@ const statusColors = {
 
 export default function ClientSurveysPage() {
   const [activeTab, setActiveTab] = useState("all");
+  const [surveyToDelete, setSurveyToDelete] = useState<{
+    id: string;
+    title: string;
+    status: string;
+  } | null>(null);
 
   const {
     data: response,
@@ -39,6 +65,15 @@ export default function ClientSurveysPage() {
     isError,
     refetch,
   } = useSurveysControllerGetClientSurveys();
+
+  const deleteMutation = useSurveysControllerDelete({
+    mutation: {
+      onSuccess: () => {
+        refetch();
+        setSurveyToDelete(null);
+      },
+    },
+  });
 
   const surveys = (response || []) as Array<{
     id: string;
@@ -49,6 +84,23 @@ export default function ClientSurveysPage() {
     paymentPerResponse?: number;
     createdAt: string;
   }>;
+
+  const handleDelete = (survey: (typeof surveys)[number]) => {
+    if (survey.status === "approved") {
+      alert("Cannot delete an approved survey");
+      return;
+    }
+    setSurveyToDelete(survey);
+  };
+
+  const confirmDelete = async () => {
+    if (!surveyToDelete) return;
+    try {
+      await deleteMutation.mutateAsync({ id: surveyToDelete.id });
+    } catch (error) {
+      console.error("Error deleting survey:", error);
+    }
+  };
 
   const filteredSurveys = surveys.filter((s) => {
     if (activeTab === "all") return true;
@@ -226,6 +278,18 @@ export default function ClientSurveysPage() {
                           Analytics
                         </Link>
                       </Button>
+                      {survey.status !== "approved" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(survey)}
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 className="mr-1 h-4 w-4" />
+                          Delete
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -234,6 +298,40 @@ export default function ClientSurveysPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!surveyToDelete}
+        onOpenChange={(open) => !open && setSurveyToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Survey</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{surveyToDelete?.title}
+              &quot;? This action cannot be undone. All associated data
+              including responses will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSurveyToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Delete Survey
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

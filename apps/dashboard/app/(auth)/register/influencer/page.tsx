@@ -72,13 +72,12 @@ export default function RegisterInfluencerPage() {
   const verifyEmailMutation = useAuthControllerVerifyEmail({
     mutation: {
       onSuccess: () => {
-        // loginMutation.mutate({
-        //   data: {
-        //     email: formData.email,
-        //     password: formData.password,
-        //   },
-        // });
-        setStep("complete");
+        loginMutation.mutate({
+          data: {
+            email: formData.email,
+            password: formData.password,
+          },
+        });
       },
       onError: (error: any) => {
         setError(error?.response?.data?.message || "Invalid verification code");
@@ -87,21 +86,21 @@ export default function RegisterInfluencerPage() {
     },
   });
 
-  // const loginMutation = useAuthControllerLogin({
-  //   mutation: {
-  //     onSuccess: (data) => {
-  //       const response = data as unknown as RegisterResponse;
-  //       setToken(response.accessToken);
-  //       setUser(response.user);
-  //       setStep("complete");
-  //       setTimeout(() => router.push("/influencer"), 2000);
-  //     },
-  //     onError: (error: any) => {
-  //       setError(error?.response?.data?.message || "Login failed");
-  //       setIsLoading(false);
-  //     },
-  //   },
-  // });
+  const loginMutation = useAuthControllerLogin({
+    mutation: {
+      onSuccess: (data) => {
+        const response = data as unknown as RegisterResponse;
+        setToken(response.accessToken);
+        setUser(response.user);
+        setStep("complete");
+        setTimeout(() => router.push("/influencer"), 2000);
+      },
+      onError: (error: any) => {
+        setError(error?.response?.data?.message || "Login failed");
+        setIsLoading(false);
+      },
+    },
+  });
 
   const resendCodeMutation = useAuthControllerResendVerificationCode({
     mutation: {
@@ -184,22 +183,36 @@ export default function RegisterInfluencerPage() {
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
               <CheckCircle2 className="h-8 w-8" />
             </div>
-            <CardTitle className="text-2xl">Registration Successful!</CardTitle>
+            <CardTitle className="text-2xl">Registration Complete!</CardTitle>
             <CardDescription>
-              Your influencer account has been created successfully. Please wait
-              for admin approval before logging in.
+              Your account has been created successfully. Redirecting to
+              dashboard...
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-muted-foreground mb-4">
-              An admin will review your account shortly.
-            </p>
-            <Button asChild className="w-full">
-              <Link href="/login">Go to Login</Link>
-            </Button>
-          </CardContent>
         </Card>
       </div>
+      // <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+      //   <Card className="w-full max-w-md">
+      //     <CardHeader className="text-center space-y-4">
+      //       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
+      //         <CheckCircle2 className="h-8 w-8" />
+      //       </div>
+      //       <CardTitle className="text-2xl">Registration Successful!</CardTitle>
+      //       <CardDescription>
+      //         Your influencer account has been created successfully. Please wait
+      //         for admin approval before logging in.
+      //       </CardDescription>
+      //     </CardHeader>
+      //     <CardContent className="text-center">
+      //       <p className="text-sm text-muted-foreground mb-4">
+      //         An admin will review your account shortly.
+      //       </p>
+      //       <Button asChild className="w-full">
+      //         <Link href="/login">Go to Login</Link>
+      //       </Button>
+      //     </CardContent>
+      //   </Card>
+      // </div>
     );
   }
 

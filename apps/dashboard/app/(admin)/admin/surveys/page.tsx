@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   useSurveysControllerFindAll,
   useSurveysControllerUpdateStatus,
+  useSurveysControllerDelete,
   UpdateSurveyStatusDtoStatus,
   SurveysListResponseDto,
 } from "@workspace/client";
@@ -20,6 +21,7 @@ import {
   Plus,
   Loader2,
   ArrowUpDown,
+  Trash2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -28,6 +30,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
 import { DataTable } from "@workspace/ui/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
@@ -55,6 +67,9 @@ export default function AdminSurveysPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [surveys, setSurveys] = useState<SurveysListResponseDto["data"]>([]);
+  const [surveyToDelete, setSurveyToDelete] = useState<
+    SurveysListResponseDto["data"][number] | null
+  >(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -93,6 +108,31 @@ export default function AdminSurveysPage() {
     },
   });
 
+  const deleteMutation = useSurveysControllerDelete({
+    mutation: {
+      onSuccess: () => {
+        refetch();
+        setSurveyToDelete(null);
+      },
+    },
+  });
+
+  const handleDelete = useCallback(
+    async (survey: SurveysListResponseDto["data"][number]) => {
+      setSurveyToDelete(survey);
+    },
+    [],
+  );
+
+  const confirmDelete = useCallback(async () => {
+    if (!surveyToDelete) return;
+    try {
+      await deleteMutation.mutateAsync({ id: surveyToDelete.id });
+    } catch (error) {
+      console.error("Error deleting survey:", error);
+    }
+  }, [deleteMutation, surveyToDelete]);
+
   const handleApprove = useCallback(
     async (id: string) => {
       if (window.confirm("Are you sure you want to approve this survey?")) {
@@ -106,7 +146,7 @@ export default function AdminSurveysPage() {
         }
       }
     },
-    [updateStatusMutation]
+    [updateStatusMutation],
   );
 
   const handleReject = useCallback(
@@ -122,7 +162,7 @@ export default function AdminSurveysPage() {
         }
       }
     },
-    [updateStatusMutation]
+    [updateStatusMutation],
   );
 
   const columns: ColumnDef<SurveysListResponseDto["data"][number]>[] = useMemo(
@@ -289,13 +329,36 @@ export default function AdminSurveysPage() {
                     </DropdownMenuItem>
                   </>
                 )}
+                {survey.status !== "approved" && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(survey);
+                      }}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           );
         },
       },
     ],
-    [router, updateStatusMutation.isPending, handleApprove, handleReject]
+    [
+      router,
+      updateStatusMutation.isPending,
+      handleApprove,
+      handleReject,
+      deleteMutation.isPending,
+      handleDelete,
+    ],
   );
 
   const SurveyFilter = useCallback(() => {
@@ -401,6 +464,40 @@ export default function AdminSurveysPage() {
           },
         }}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!surveyToDelete}
+        onOpenChange={(open) => !open && setSurveyToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Survey</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{surveyToDelete?.title}"? This
+              action cannot be undone. All associated data including responses
+              will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSurveyToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Delete Survey
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

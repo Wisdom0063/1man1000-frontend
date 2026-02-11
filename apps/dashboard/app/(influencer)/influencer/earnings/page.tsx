@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -27,8 +28,12 @@ import {
 } from "@workspace/client";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
 
 export default function InfluencerEarningsPage() {
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+
   const {
     data: earningsSummary,
     isLoading: isLoadingEarnings,
@@ -37,11 +42,14 @@ export default function InfluencerEarningsPage() {
   } = usePaymentsControllerGetInfluencerEarnings();
 
   const {
-    data: payments,
+    data: paymentsResponse,
     isLoading: isLoadingPayments,
     isError: isErrorPayments,
     refetch: refetchPayments,
-  } = usePaymentsControllerGetInfluencerPayments();
+  } = usePaymentsControllerGetInfluencerPayments({
+    page,
+    limit,
+  });
 
   const {
     data: profile,
@@ -73,7 +81,8 @@ export default function InfluencerEarningsPage() {
   const typedEarningsSummary = earningsSummary as
     | InfluencerEarningsResponseDto
     | undefined;
-  const typedPayments = (payments || []) as PaymentResponseDto[];
+  const typedPayments = (paymentsResponse?.data || []) as PaymentResponseDto[];
+  const paymentsMeta = paymentsResponse?.meta;
   const typedProfile = profile as ProfileResponseDto | undefined;
 
   const totalEarnings = typedEarningsSummary?.totalEarnings ?? 0;
@@ -170,52 +179,46 @@ export default function InfluencerEarningsPage() {
             <CardDescription>Your recent payments</CardDescription>
           </CardHeader>
           <CardContent>
-            {paymentsWithCampaign.length === 0 ? (
-              <div className="text-center py-10 text-muted-foreground">
-                <p className="text-sm">No payments yet</p>
-                <p className="text-xs mt-1">
-                  When you receive payments, they will show up here.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {paymentsWithCampaign.map((earning) => (
-                  <div
-                    key={earning.id}
-                    className="flex items-center justify-between p-3 rounded-lg border"
-                  >
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{earning.campaign}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {earning.date}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`text-sm font-semibold ${earning.status === "paid" ? "text-green-600" : "text-yellow-600"}`}
-                      >
-                        GH₵{earning.amount.toFixed(2)}
-                      </span>
-                      <Badge
-                        variant={
-                          earning.status === "paid" ? "default" : "secondary"
-                        }
-                      >
-                        {earning.status === "paid" ? (
-                          <>
-                            <CheckCircle className="mr-1 h-3 w-3" /> Paid
-                          </>
-                        ) : (
-                          <>
-                            <Clock className="mr-1 h-3 w-3" /> Pending
-                          </>
-                        )}
-                      </Badge>
-                    </div>
+            <ListPaginationWrapper
+              data={paymentsWithCampaign}
+              ListItem={({ item: earning }) => (
+                <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">{earning.campaign}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {earning.date}
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-sm font-semibold ${earning.status === "paid" ? "text-green-600" : "text-yellow-600"}`}
+                    >
+                      GH₵{earning.amount.toFixed(2)}
+                    </span>
+                    <Badge
+                      variant={
+                        earning.status === "paid" ? "default" : "secondary"
+                      }
+                    >
+                      {earning.status === "paid" ? (
+                        <>
+                          <CheckCircle className="mr-1 h-3 w-3" /> Paid
+                        </>
+                      ) : (
+                        <>
+                          <Clock className="mr-1 h-3 w-3" /> Pending
+                        </>
+                      )}
+                    </Badge>
+                  </div>
+                </div>
+              )}
+              isLoading={isLoadingPayments}
+              emptyMessage="No payments yet. When you receive payments, they will show up here."
+              meta={paymentsMeta}
+              page={page}
+              onPageChange={setPage}
+            />
           </CardContent>
         </Card>
 

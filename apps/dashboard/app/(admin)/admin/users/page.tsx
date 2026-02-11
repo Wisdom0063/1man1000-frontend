@@ -6,6 +6,7 @@ import {
   useUsersControllerFindAll,
   useUsersControllerUpdateStatus,
   useUsersControllerDelete,
+  useUsersControllerGetAdminStats,
   getUsersControllerFindAllQueryKey,
   UpdateUserStatusDtoStatus,
 } from "@workspace/client";
@@ -60,11 +61,141 @@ import {
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
 import Link from "next/link";
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  avatarUrl?: string;
+  createdAt: string;
+};
+
+function UserListItem({
+  item: user,
+  onDelete,
+  onApprove,
+  onReject,
+  onSuspend,
+  onUnsuspend,
+  isStatusPending,
+  isDeletePending,
+}: {
+  item: User;
+  onDelete: (user: User) => void;
+  onApprove: (id: string) => void;
+  onReject: (id: string) => void;
+  onSuspend: (id: string) => void;
+  onUnsuspend: (id: string) => void;
+  isStatusPending: boolean;
+  isDeletePending: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center gap-4">
+        <Avatar className="h-11 w-11">
+          <AvatarImage src={user.avatarUrl} />
+          <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white font-semibold">
+            {user.name?.slice(0, 2).toUpperCase() || "??"}
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="font-semibold">{user.name}</p>
+          <p className="text-sm text-muted-foreground">{user.email}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <Badge variant="outline" className="capitalize border-border/60">
+          {user.role}
+        </Badge>
+        <StatusBadge status={user.status} />
+        <span className="text-xs text-muted-foreground hidden sm:inline">
+          {new Date(user.createdAt).toLocaleDateString()}
+        </span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon-sm">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link href={`/admin/users/${user.id}`}>
+                <Eye className="mr-2 h-4 w-4" />
+                View Details
+              </Link>
+            </DropdownMenuItem>
+            {user.status === "pending" && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-emerald-600"
+                  onClick={() => onApprove(user.id)}
+                  disabled={isStatusPending}
+                >
+                  <UserCheck className="mr-2 h-4 w-4" />
+                  Approve
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => onReject(user.id)}
+                  disabled={isStatusPending}
+                >
+                  <UserX className="mr-2 h-4 w-4" />
+                  Reject
+                </DropdownMenuItem>
+              </>
+            )}
+
+            {user.status !== "suspended" ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => onSuspend(user.id)}
+                  disabled={isStatusPending}
+                >
+                  <Ban className="mr-2 h-4 w-4" />
+                  Suspend
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-emerald-600"
+                  onClick={() => onUnsuspend(user.id)}
+                  disabled={isStatusPending}
+                >
+                  <Ban className="mr-2 h-4 w-4" />
+                  Unsuspend
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => onDelete(user)}
+              disabled={isDeletePending}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
   const [userToDelete, setUserToDelete] = useState<
     (typeof users)[number] | null
   >(null);
@@ -75,7 +206,20 @@ export default function AdminUsersPage() {
     isLoading,
     isError,
     refetch,
-  } = useUsersControllerFindAll();
+  } = useUsersControllerFindAll({
+    limit,
+    page,
+    search: searchQuery || undefined,
+    role: (activeTab === "all" ? undefined : activeTab) as
+      | "influencer"
+      | "client"
+      | "admin"
+      | undefined,
+  });
+
+  const { data: statsResponse, isLoading: isLoadingStats } =
+    useUsersControllerGetAdminStats();
+
   const users = (response?.data || []) as Array<{
     id: string;
     name: string;
@@ -85,6 +229,15 @@ export default function AdminUsersPage() {
     avatarUrl?: string;
     createdAt: string;
   }>;
+
+  const stats = statsResponse || {
+    totalUsers: 0,
+    influencerCount: 0,
+    clientCount: 0,
+    adminCount: 0,
+    pendingCount: 0,
+    approvedCount: 0,
+  };
 
   const updateStatusMutation = useUsersControllerUpdateStatus({
     mutation: {
@@ -108,15 +261,14 @@ export default function AdminUsersPage() {
   });
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab =
       activeTab === "all" ||
       (activeTab === "influencer" && user.role === "influencer") ||
       (activeTab === "client" && user.role === "client");
-    return matchesSearch && matchesTab;
+    return matchesTab;
   });
+
+  const { totalUsers, influencerCount, clientCount, pendingCount } = stats;
 
   const handleApprove = (id: string) => {
     updateStatusMutation.mutate({
@@ -156,10 +308,6 @@ export default function AdminUsersPage() {
     }
   };
 
-  if (isLoading) {
-    return <LoadingState text="Loading users..." />;
-  }
-
   if (isError) {
     return (
       <ErrorState
@@ -169,10 +317,6 @@ export default function AdminUsersPage() {
       />
     );
   }
-
-  const pendingCount = users.filter((u) => u.status === "pending").length;
-  const influencerCount = users.filter((u) => u.role === "influencer").length;
-  const clientCount = users.filter((u) => u.role === "client").length;
 
   return (
     <div className="space-y-6">
@@ -191,7 +335,9 @@ export default function AdminUsersPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{users.length}</div>
+            <div className="text-2xl font-bold">
+              {isLoadingStats ? "..." : totalUsers}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -201,7 +347,9 @@ export default function AdminUsersPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{influencerCount}</div>
+            <div className="text-2xl font-bold">
+              {isLoadingStats ? "..." : influencerCount}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -211,7 +359,9 @@ export default function AdminUsersPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{clientCount}</div>
+            <div className="text-2xl font-bold">
+              {isLoadingStats ? "..." : clientCount}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -222,7 +372,7 @@ export default function AdminUsersPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
-              {pendingCount}
+              {isLoadingStats ? "..." : pendingCount}
             </div>
           </CardContent>
         </Card>
@@ -234,15 +384,24 @@ export default function AdminUsersPage() {
           <Input
             placeholder="Search users..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1); // Reset to first page when searching
+            }}
             className="pl-10"
           />
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => {
+          setActiveTab(value);
+          setPage(1); // Reset to first page when changing tabs
+        }}
+      >
         <TabsList>
-          <TabsTrigger value="all">All Users ({users.length})</TabsTrigger>
+          <TabsTrigger value="all">All Users ({totalUsers})</TabsTrigger>
           <TabsTrigger value="influencer">
             Influencers ({influencerCount})
           </TabsTrigger>
@@ -258,118 +417,26 @@ export default function AdminUsersPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {filteredUsers.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No users found
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {filteredUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card hover:shadow-md transition-all"
-                    >
-                      <div className="flex items-center gap-4">
-                        <Avatar className="h-11 w-11">
-                          <AvatarImage src={user.avatarUrl} />
-                          <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white font-semibold">
-                            {user.name?.slice(0, 2).toUpperCase() || "??"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-semibold">{user.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {user.email}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge
-                          variant="outline"
-                          className="capitalize border-border/60"
-                        >
-                          {user.role}
-                        </Badge>
-                        <StatusBadge status={user.status} />
-                        <span className="text-xs text-muted-foreground hidden sm:inline">
-                          {new Date(user.createdAt).toLocaleDateString()}
-                        </span>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon-sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/users/${user.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </Link>
-                            </DropdownMenuItem>
-                            {user.status === "pending" && (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-emerald-600"
-                                  onClick={() => handleApprove(user.id)}
-                                  disabled={updateStatusMutation.isPending}
-                                >
-                                  <UserCheck className="mr-2 h-4 w-4" />
-                                  Approve
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-destructive"
-                                  onClick={() => handleReject(user.id)}
-                                  disabled={updateStatusMutation.isPending}
-                                >
-                                  <UserX className="mr-2 h-4 w-4" />
-                                  Reject
-                                </DropdownMenuItem>
-                              </>
-                            )}
-
-                            {user.status !== "suspended" ? (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-destructive"
-                                  onClick={() => handleSuspend(user.id)}
-                                  disabled={updateStatusMutation.isPending}
-                                >
-                                  <Ban className="mr-2 h-4 w-4" />
-                                  Suspend
-                                </DropdownMenuItem>
-                              </>
-                            ) : (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-emerald-600"
-                                  onClick={() => handleUnsuspend(user.id)}
-                                  disabled={updateStatusMutation.isPending}
-                                >
-                                  <Ban className="mr-2 h-4 w-4" />
-                                  Unsuspend
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDelete(user)}
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <ListPaginationWrapper
+                data={filteredUsers}
+                ListItem={(props) => (
+                  <UserListItem
+                    {...props}
+                    onDelete={handleDelete}
+                    onApprove={handleApprove}
+                    onReject={handleReject}
+                    onSuspend={handleSuspend}
+                    onUnsuspend={handleUnsuspend}
+                    isStatusPending={updateStatusMutation.isPending}
+                    isDeletePending={deleteMutation.isPending}
+                  />
+                )}
+                isLoading={isLoading}
+                emptyMessage="No users found"
+                meta={response?.meta}
+                page={page}
+                onPageChange={setPage}
+              />
             </CardContent>
           </Card>
         </TabsContent>

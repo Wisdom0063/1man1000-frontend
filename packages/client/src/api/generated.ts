@@ -271,6 +271,15 @@ export interface UsersListResponseDto {
   meta: UsersListResponseDtoMeta;
 }
 
+export interface UsersStatsResponseDto {
+  totalUsers: number;
+  influencerCount: number;
+  clientCount: number;
+  adminCount: number;
+  pendingCount: number;
+  approvedCount: number;
+}
+
 export type UpdateUserDtoMobileMoneyNetwork = typeof UpdateUserDtoMobileMoneyNetwork[keyof typeof UpdateUserDtoMobileMoneyNetwork];
 
 
@@ -444,10 +453,8 @@ export interface CampaignResponseDto {
   campaignAsset?: CampaignResponseDtoCampaignAsset;
   status: CampaignResponseDtoStatus;
   totalViews: number;
-  ratePerView: number;
   submissionDeadlineDays: number;
   paymentType: CampaignResponseDtoPaymentType;
-  paymentViewsThreshold: number;
   client?: ClientInfoDto;
   assignedInfluencers?: InfluencerAssignmentDto[];
   createdAt: string;
@@ -520,10 +527,8 @@ export interface ClientCampaignResponseDto {
   campaignAsset?: ClientCampaignResponseDtoCampaignAsset;
   status: ClientCampaignResponseDtoStatus;
   totalViews: number;
-  ratePerView: number;
   submissionDeadlineDays: number;
   paymentType: ClientCampaignResponseDtoPaymentType;
-  paymentViewsThreshold: number;
   client?: ClientInfoDto;
   assignedInfluencers?: InfluencerAssignmentDto[];
   createdAt: string;
@@ -959,6 +964,13 @@ export interface PaymentResponseDto {
   campaign?: PaymentCampaignDto;
 }
 
+export type PaymentsListResponseDtoMeta = { [key: string]: unknown };
+
+export interface PaymentsListResponseDto {
+  data: PaymentResponseDto[];
+  meta: PaymentsListResponseDtoMeta;
+}
+
 export interface InfluencerEarningsResponseDto {
   totalEarnings: number;
   paidEarnings: number;
@@ -1248,14 +1260,8 @@ export const AuthControllerResendVerificationCodeType = {
 export type UsersControllerFindAllParams = {
 role?: UsersControllerFindAllRole;
 status?: UsersControllerFindAllStatus;
-/**
- * @minimum 1
- */
+search?: string;
 page?: number;
-/**
- * @minimum 1
- * @maximum 100
- */
 limit?: number;
 };
 
@@ -1406,6 +1412,10 @@ export type CampaignsControllerRequestParticipation201 = {
   influencer?: CampaignsControllerRequestParticipation201Influencer;
 };
 
+export type CampaignsControllerDownloadAssetParams = {
+url: string;
+};
+
 export type SubmissionsControllerFindAllParams = {
 campaignId?: string;
 influencerId?: string;
@@ -1447,6 +1457,8 @@ export type PaymentsControllerFindAllParams = {
 influencerId?: string;
 campaignId?: string;
 status?: PaymentsControllerFindAllStatus;
+page?: number;
+limit?: number;
 };
 
 export type PaymentsControllerFindAllStatus = typeof PaymentsControllerFindAllStatus[keyof typeof PaymentsControllerFindAllStatus];
@@ -1457,6 +1469,11 @@ export const PaymentsControllerFindAllStatus = {
   pending: 'pending',
   paid: 'paid',
 } as const;
+
+export type PaymentsControllerGetInfluencerPaymentsParams = {
+page?: number;
+limit?: number;
+};
 
 export type SurveysControllerFindAllParams = {
 status?: string;
@@ -2260,6 +2277,99 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getUsersControllerFindAllQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary Get users stats (Admin only)
+ */
+export const usersControllerGetAdminStats = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<UsersStatsResponseDto>(
+      {url: `/api/users/stats`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getUsersControllerGetAdminStatsQueryKey = () => {
+    return [
+    `/api/users/stats`
+    ] as const;
+    }
+
+    
+export const getUsersControllerGetAdminStatsQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerGetAdminStatsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerGetAdminStats>>> = ({ signal }) => usersControllerGetAdminStats(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerGetAdminStatsQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerGetAdminStats>>>
+export type UsersControllerGetAdminStatsQueryError = unknown
+
+
+export function useUsersControllerGetAdminStats<TData = Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerGetAdminStats>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerGetAdminStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetAdminStats<TData = Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerGetAdminStats>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerGetAdminStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerGetAdminStats<TData = Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get users stats (Admin only)
+ */
+
+export function useUsersControllerGetAdminStats<TData = Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerGetAdminStats>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUsersControllerGetAdminStatsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -4039,6 +4149,100 @@ export const useCampaignsControllerBulkAssignInfluencers = <TError = void,
     }
     
 /**
+ * @summary Download campaign asset from storage
+ */
+export const campaignsControllerDownloadAsset = (
+    params: CampaignsControllerDownloadAssetParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/campaigns/download/asset`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getCampaignsControllerDownloadAssetQueryKey = (params?: CampaignsControllerDownloadAssetParams,) => {
+    return [
+    `/api/campaigns/download/asset`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getCampaignsControllerDownloadAssetQueryOptions = <TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCampaignsControllerDownloadAssetQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>> = ({ signal }) => campaignsControllerDownloadAsset(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CampaignsControllerDownloadAssetQueryResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>>
+export type CampaignsControllerDownloadAssetQueryError = void
+
+
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>,
+          TError,
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>,
+          TError,
+          Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Download campaign asset from storage
+ */
+
+export function useCampaignsControllerDownloadAsset<TData = Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError = void>(
+ params: CampaignsControllerDownloadAssetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof campaignsControllerDownloadAsset>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCampaignsControllerDownloadAssetQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
  * @summary Create a notification (Admin only)
  */
 export const notificationsControllerCreate = (
@@ -5278,7 +5482,7 @@ export const paymentsControllerFindAll = (
 ) => {
       
       
-      return axiosInstance<PaymentResponseDto[]>(
+      return axiosInstance<PaymentsListResponseDto>(
       {url: `/api/payments`, method: 'GET',
         params, signal
     },
@@ -5367,13 +5571,14 @@ export function usePaymentsControllerFindAll<TData = Awaited<ReturnType<typeof p
  * @summary Get current influencer payments
  */
 export const paymentsControllerGetInfluencerPayments = (
-    
+    params?: PaymentsControllerGetInfluencerPaymentsParams,
  signal?: AbortSignal
 ) => {
       
       
-      return axiosInstance<PaymentResponseDto[]>(
-      {url: `/api/payments/my-payments`, method: 'GET', signal
+      return axiosInstance<PaymentsListResponseDto>(
+      {url: `/api/payments/my-payments`, method: 'GET',
+        params, signal
     },
       );
     }
@@ -5381,23 +5586,23 @@ export const paymentsControllerGetInfluencerPayments = (
 
 
 
-export const getPaymentsControllerGetInfluencerPaymentsQueryKey = () => {
+export const getPaymentsControllerGetInfluencerPaymentsQueryKey = (params?: PaymentsControllerGetInfluencerPaymentsParams,) => {
     return [
-    `/api/payments/my-payments`
+    `/api/payments/my-payments`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getPaymentsControllerGetInfluencerPaymentsQueryOptions = <TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
+export const getPaymentsControllerGetInfluencerPaymentsQueryOptions = <TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(params?: PaymentsControllerGetInfluencerPaymentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getPaymentsControllerGetInfluencerPaymentsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getPaymentsControllerGetInfluencerPaymentsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>> = ({ signal }) => paymentsControllerGetInfluencerPayments(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>> = ({ signal }) => paymentsControllerGetInfluencerPayments(params, signal);
 
       
 
@@ -5411,7 +5616,7 @@ export type PaymentsControllerGetInfluencerPaymentsQueryError = unknown
 
 
 export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>> & Pick<
+ params: undefined |  PaymentsControllerGetInfluencerPaymentsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
           TError,
@@ -5421,7 +5626,7 @@ export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<Retur
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>> & Pick<
+ params?: PaymentsControllerGetInfluencerPaymentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>,
           TError,
@@ -5431,7 +5636,7 @@ export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<Retur
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
+ params?: PaymentsControllerGetInfluencerPaymentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -5439,11 +5644,11 @@ export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<Retur
  */
 
 export function usePaymentsControllerGetInfluencerPayments<TData = Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
+ params?: PaymentsControllerGetInfluencerPaymentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof paymentsControllerGetInfluencerPayments>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getPaymentsControllerGetInfluencerPaymentsQueryOptions(options)
+  const queryOptions = getPaymentsControllerGetInfluencerPaymentsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

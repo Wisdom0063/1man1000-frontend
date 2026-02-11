@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
 import {
   usePaymentsControllerFindAll,
   usePaymentsControllerUpdateStatus,
+  usePaymentsControllerGetAdminStats,
   type PaymentResponseDto,
   type UpdatePaymentStatusDto,
 } from "@workspace/client";
@@ -43,26 +42,87 @@ import {
   DollarSign,
   TrendingUp,
 } from "lucide-react";
-import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
   paid: "bg-green-100 text-green-800",
 };
 
-type PaymentsStats = {
-  totalPaid: number;
-  pendingPayouts: number;
-  pendingCount: number;
-  paidThisMonth: number;
-  paidCount: number;
-  totalCount: number;
-};
+type Payment = PaymentResponseDto;
+
+interface PaymentListItemProps {
+  item: Payment;
+  onMarkPaid: (payment: Payment) => void;
+  isUpdatingStatus: boolean;
+}
+
+function PaymentListItem({
+  item: payment,
+  onMarkPaid,
+  isUpdatingStatus,
+}: PaymentListItemProps) {
+  const influencerName =
+    (payment.influencer?.name as never as string) || "Influencer";
+  const avatarText = influencerName.slice(0, 2).toUpperCase();
+  const campaignName = payment.campaign?.title || "Campaign";
+
+  const dateSource =
+    payment.status === "paid"
+      ? payment.paymentDate || payment.updatedAt
+      : payment.createdAt;
+  const dateLabel = dateSource ? new Date(dateSource).toLocaleDateString() : "";
+
+  return (
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center gap-4">
+        <Avatar>
+          <AvatarFallback>{avatarText}</AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="font-medium">{influencerName as string}</p>
+          <p className="text-sm text-muted-foreground">
+            {campaignName as string}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="text-right">
+          <p className="font-semibold">
+            GH₵{(payment.totalAmount || 0).toFixed(2)}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {payment.status === "paid"
+              ? `Paid ${dateLabel}`
+              : `Created ${dateLabel}`}
+          </p>
+        </div>
+        <Badge
+          className={statusColors[payment.status as keyof typeof statusColors]}
+        >
+          {payment.status}
+        </Badge>
+        {payment.status === "pending" && (
+          <Button
+            size="sm"
+            disabled={isUpdatingStatus}
+            onClick={() => onMarkPaid(payment)}
+          >
+            <CheckCircle className="mr-1 h-4 w-4" />
+            Mark Paid
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function AdminPaymentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("pending");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] =
     useState<PaymentResponseDto | null>(null);
@@ -75,31 +135,30 @@ export default function AdminPaymentsPage() {
     isLoading,
     isError,
     refetch,
-  } = usePaymentsControllerFindAll(
-    statusParam ? { status: statusParam } : undefined,
-    {
-      query: {
-        staleTime: 10_000,
-      },
-    },
-  );
+  } = usePaymentsControllerFindAll({
+    limit,
+    page,
+    status: statusParam,
+  });
 
   const {
     data: stats,
     isLoading: isLoadingStats,
     isError: isErrorStats,
     refetch: refetchStats,
-  } = useQuery({
-    queryKey: ["adminPaymentsStats"],
-    queryFn: async () => {
-      const { data } = await axios.get<PaymentsStats>("/api/payments/stats");
-      return data;
+  } = usePaymentsControllerGetAdminStats({
+    query: {
+      staleTime: 10_000,
     },
-    staleTime: 10_000,
   });
 
   const { mutateAsync: updatePaymentStatus, isPending: isUpdatingStatus } =
     usePaymentsControllerUpdateStatus();
+
+  const handleMarkPaid = (payment: Payment) => {
+    setSelectedPayment(payment);
+    setConfirmOpen(true);
+  };
 
   if (isError || isErrorStats) {
     return (
@@ -114,7 +173,8 @@ export default function AdminPaymentsPage() {
     );
   }
 
-  const typedPayments = (paymentsResponse || []) as PaymentResponseDto[];
+  const typedPayments = paymentsResponse?.data || [];
+  const paymentsMeta = paymentsResponse?.meta;
 
   const queryLower = searchQuery.trim().toLowerCase();
   const filteredPayments = typedPayments.filter((payment) => {
@@ -248,89 +308,21 @@ export default function AdminPaymentsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
-                <LoadingState text="Loading payments..." />
-              ) : filteredPayments.length === 0 ? (
-                <div className="text-center py-10 text-muted-foreground">
-                  <p className="text-sm">No payments found</p>
-                  <p className="text-xs mt-1">
-                    Try adjusting your search or filter.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredPayments.map((payment) => {
-                    const influencerName =
-                      (payment.influencer?.name as never as string) ||
-                      "Influencer";
-                    const avatarText = influencerName.slice(0, 2).toUpperCase();
-                    const campaignName = payment.campaign?.title || "Campaign";
-
-                    const dateSource =
-                      payment.status === "paid"
-                        ? payment.paymentDate || payment.updatedAt
-                        : payment.createdAt;
-                    const dateLabel = dateSource
-                      ? new Date(dateSource).toLocaleDateString()
-                      : "";
-
-                    return (
-                      <div
-                        key={payment.id}
-                        className="flex items-center justify-between p-4 rounded-lg border"
-                      >
-                        <div className="flex items-center gap-4">
-                          <Avatar>
-                            <AvatarFallback>{avatarText}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">
-                              {influencerName as string}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {campaignName as string}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="font-semibold">
-                              GH₵{(payment.totalAmount || 0).toFixed(2)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {payment.status === "paid"
-                                ? `Paid ${dateLabel}`
-                                : `Created ${dateLabel}`}
-                            </p>
-                          </div>
-                          <Badge
-                            className={
-                              statusColors[
-                                payment.status as keyof typeof statusColors
-                              ]
-                            }
-                          >
-                            {payment.status}
-                          </Badge>
-                          {payment.status === "pending" && (
-                            <Button
-                              size="sm"
-                              disabled={isUpdatingStatus}
-                              onClick={async () => {
-                                setSelectedPayment(payment);
-                                setConfirmOpen(true);
-                              }}
-                            >
-                              <CheckCircle className="mr-1 h-4 w-4" />
-                              Mark Paid
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <ListPaginationWrapper
+                data={typedPayments}
+                ListItem={(props) => (
+                  <PaymentListItem
+                    {...props}
+                    onMarkPaid={handleMarkPaid}
+                    isUpdatingStatus={isUpdatingStatus}
+                  />
+                )}
+                isLoading={isLoading}
+                emptyMessage="No payments found"
+                meta={paymentsMeta}
+                page={page}
+                onPageChange={setPage}
+              />
             </CardContent>
           </Card>
         </TabsContent>
