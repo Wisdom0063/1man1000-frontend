@@ -16,11 +16,13 @@ import {
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
+import { Input } from "@workspace/ui/components/input";
 import {
   ArrowLeft,
   Calendar,
@@ -38,6 +40,7 @@ import {
   FileCheck,
   ChevronLeft,
   ChevronRight,
+  Plus,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -55,6 +58,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
+import { Label } from "@workspace/ui/components/label";
 import Image from "next/image";
 
 type Campaign = {
@@ -68,9 +80,12 @@ type Campaign = {
   targetAudience: string;
   industry: string;
   status: string;
-  ratePerView?: number;
+  paymentTiers?: {
+    lowerLimit: number;
+    upperLimit?: number | null;
+    amount: number;
+  }[];
   paymentType?: string;
-  paymentViewsThreshold?: number;
   submissionDeadlineDays?: number;
   adCreatives?: string[];
   campaignAsset?: string;
@@ -94,6 +109,12 @@ export default function CampaignDetailPage() {
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [submissionsPage, setSubmissionsPage] = useState(1);
   const submissionsLimit = 10;
+
+  // Approval modal state
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [paymentTiers, setPaymentTiers] = useState<
+    { lowerLimit: string; upperLimit: string; amount: string }[]
+  >([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
 
   const {
     data: response,
@@ -135,6 +156,52 @@ export default function CampaignDetailPage() {
       },
     },
   });
+
+  const handleApproveClick = () => {
+    // Pre-fill if campaign already has payment tiers
+    if (c.paymentTiers && c.paymentTiers.length > 0) {
+      setPaymentTiers(
+        c.paymentTiers.map((tier) => ({
+          lowerLimit: String(tier.lowerLimit),
+          upperLimit: tier.upperLimit ? String(tier.upperLimit) : "",
+          amount: String(tier.amount),
+        })),
+      );
+    } else {
+      setPaymentTiers([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
+    }
+    setShowApproveModal(true);
+  };
+
+  const confirmApprove = async () => {
+    try {
+      // Validate and transform payment tiers
+      const validTiers = paymentTiers
+        .filter((tier) => tier.amount && parseFloat(tier.amount) > 0)
+        .map((tier) => ({
+          lowerLimit: parseInt(tier.lowerLimit) || 0,
+          upperLimit: tier.upperLimit ? parseInt(tier.upperLimit) : null,
+          amount: parseFloat(tier.amount) || 0,
+        }));
+
+      if (validTiers.length === 0) {
+        alert("Please configure at least one payment tier with a valid amount");
+        return;
+      }
+
+      await updateMutation.mutateAsync({
+        id: campaignId,
+        data: {
+          status: UpdateCampaignDtoStatus.approved,
+          paymentTiers: validTiers,
+        },
+      });
+      setShowApproveModal(false);
+      setPaymentTiers([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
+    } catch (error) {
+      console.error("Error approving campaign:", error);
+    }
+  };
 
   if (isLoading) {
     return <LoadingState text="Loading campaign details..." />;
@@ -179,12 +246,7 @@ export default function CampaignDetailPage() {
               <Button
                 variant="outline"
                 className="text-emerald-600 border-emerald-600 hover:bg-emerald-50"
-                onClick={() =>
-                  updateMutation.mutate({
-                    id: campaignId,
-                    data: { status: UpdateCampaignDtoStatus.approved },
-                  })
-                }
+                onClick={handleApproveClick}
                 disabled={updateMutation.isPending}
               >
                 {updateMutation.isPending ? (
@@ -376,13 +438,38 @@ export default function CampaignDetailPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
+              <div className="sm:col-span-2">
                 <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Rate per View
+                  Payment Tiers
                 </h4>
-                <p className="text-sm font-medium">
-                  GH₵{c.ratePerView?.toFixed(2) || "0.00"}
-                </p>
+                {c.paymentTiers && c.paymentTiers.length > 0 ? (
+                  <div className="space-y-2">
+                    {c.paymentTiers.map((tier, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <Badge variant="outline" className="font-mono">
+                          {tier.lowerLimit.toLocaleString()}
+                          {tier.upperLimit
+                            ? ` - ${tier.upperLimit.toLocaleString()}`
+                            : "+"}
+                        </Badge>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="font-medium">
+                          GH₵{tier.amount.toFixed(2)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          per view
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No payment tiers configured
+                  </p>
+                )}
               </div>
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-2">
@@ -423,8 +510,12 @@ export default function CampaignDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
+                      const apiBaseUrl =
+                        process.env.NEXT_PUBLIC_API_URL ||
+                        "http://localhost:3001";
+                      const downloadUrl = `${apiBaseUrl}/campaigns/download/asset?url=${encodeURIComponent(c.campaignAsset!)}`;
                       const link = document.createElement("a");
-                      link.href = c.campaignAsset!;
+                      link.href = downloadUrl;
                       link.download = `${c.title || c.brandName}-asset`;
                       document.body.appendChild(link);
                       link.click();
@@ -633,6 +724,154 @@ export default function CampaignDetailPage() {
           onClose={() => setShowAssetModal(false)}
         />
       )}
+
+      {/* Approval Modal with Payment Tier Settings */}
+      <Dialog
+        open={showApproveModal}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowApproveModal(false);
+            setPaymentTiers([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Approve Campaign</DialogTitle>
+            <DialogDescription>
+              Configure payment tiers for &quot;{c.title || c.brandName}
+              &quot;
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Payment Tiers</CardTitle>
+                <CardDescription>
+                  Define payment ranges for influencers. Leave upper limit empty
+                  for infinity.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {paymentTiers.map((tier, index) => (
+                  <div
+                    key={index}
+                    className="grid gap-4 sm:grid-cols-3 items-end"
+                  >
+                    <div className="space-y-2">
+                      <Label htmlFor={`lowerLimit-${index}`}>
+                        Lower Limit (views)
+                      </Label>
+                      <Input
+                        id={`lowerLimit-${index}`}
+                        type="number"
+                        placeholder="0"
+                        value={tier.lowerLimit}
+                        onChange={(e) => {
+                          const newTiers = [...paymentTiers];
+                          newTiers[index].lowerLimit = e.target.value;
+                          setPaymentTiers(newTiers);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`upperLimit-${index}`}>
+                        Upper Limit (views)
+                      </Label>
+                      <Input
+                        id={`upperLimit-${index}`}
+                        type="number"
+                        placeholder="∞ (empty = infinity)"
+                        value={tier.upperLimit}
+                        onChange={(e) => {
+                          const newTiers = [...paymentTiers];
+                          newTiers[index].upperLimit = e.target.value;
+                          setPaymentTiers(newTiers);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`amount-${index}`}>Amount (GH₵)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={`amount-${index}`}
+                          type="number"
+                          step="0.01"
+                          placeholder="0.50"
+                          value={tier.amount}
+                          onChange={(e) => {
+                            const newTiers = [...paymentTiers];
+                            newTiers[index].amount = e.target.value;
+                            setPaymentTiers(newTiers);
+                          }}
+                        />
+                        {paymentTiers.length > 1 && (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              const newTiers = paymentTiers.filter(
+                                (_, i) => i !== index,
+                              );
+                              setPaymentTiers(newTiers);
+                            }}
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setPaymentTiers([
+                      ...paymentTiers,
+                      { lowerLimit: "", upperLimit: "", amount: "" },
+                    ])
+                  }
+                  className="w-full"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Payment Tier
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowApproveModal(false);
+                setPaymentTiers([
+                  { lowerLimit: "0", upperLimit: "", amount: "" },
+                ]);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmApprove}
+              disabled={
+                updateMutation.isPending ||
+                !paymentTiers.some(
+                  (tier) => tier.amount && parseFloat(tier.amount) > 0,
+                )
+              }
+            >
+              {updateMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCircle className="h-4 w-4 mr-2" />
+              )}
+              Approve Campaign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

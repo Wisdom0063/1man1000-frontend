@@ -29,8 +29,11 @@ export function CampaignAssetModal({
   console.log(isVideo, assetUrl);
 
   const handleDownload = () => {
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const downloadUrl = `${apiBaseUrl}/campaigns/download/asset?url=${encodeURIComponent(assetUrl)}`;
     const link = document.createElement("a");
-    link.href = assetUrl;
+    link.href = downloadUrl;
     link.download = `${campaignTitle}-asset`;
     document.body.appendChild(link);
     link.click();

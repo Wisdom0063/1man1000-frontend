@@ -342,6 +342,12 @@ export interface TargetViewRangeDto {
   max: number;
 }
 
+export interface PaymentTierDto {
+  lowerLimit: number;
+  upperLimit?: number;
+  amount: number;
+}
+
 export type CreateCampaignDtoPaymentType = typeof CreateCampaignDtoPaymentType[keyof typeof CreateCampaignDtoPaymentType];
 
 
@@ -362,10 +368,8 @@ export interface CreateCampaignDto {
   targetAudience: string;
   industry: string;
   adCreatives?: string[];
-  ratePerView?: number;
-  submissionDeadlineDays?: number;
+  paymentTiers?: PaymentTierDto[];
   paymentType?: CreateCampaignDtoPaymentType;
-  paymentViewsThreshold?: number;
 }
 
 export interface TargetViewRangeResponseDto {
@@ -716,10 +720,9 @@ export interface UpdateCampaignDto {
   adCreatives?: string[];
   campaignAsset?: string;
   status?: UpdateCampaignDtoStatus;
-  ratePerView?: number;
+  paymentTiers?: PaymentTierDto[];
   submissionDeadlineDays?: number;
   paymentType?: UpdateCampaignDtoPaymentType;
-  paymentViewsThreshold?: number;
 }
 
 /**
@@ -3782,11 +3785,14 @@ export const useCampaignsControllerDelete = <TError = void,
  */
 export const campaignsControllerUpdateStatus = (
     id: string,
+    updateCampaignDto: UpdateCampaignDto,
  ) => {
       
       
       return axiosInstance<void>(
-      {url: `/api/campaigns/${id}/status`, method: 'PATCH'
+      {url: `/api/campaigns/${id}/status`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCampaignDto
     },
       );
     }
@@ -3794,8 +3800,8 @@ export const campaignsControllerUpdateStatus = (
 
 
 export const getCampaignsControllerUpdateStatusMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string;data: UpdateCampaignDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string;data: UpdateCampaignDto}, TContext> => {
 
 const mutationKey = ['campaignsControllerUpdateStatus'];
 const {mutation: mutationOptions} = options ?
@@ -3807,10 +3813,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, {id: string;data: UpdateCampaignDto}> = (props) => {
+          const {id,data} = props ?? {};
 
-          return  campaignsControllerUpdateStatus(id,)
+          return  campaignsControllerUpdateStatus(id,data,)
         }
 
         
@@ -3819,18 +3825,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type CampaignsControllerUpdateStatusMutationResult = NonNullable<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>>
-    
+    export type CampaignsControllerUpdateStatusMutationBody = UpdateCampaignDto
     export type CampaignsControllerUpdateStatusMutationError = unknown
 
     /**
  * @summary Update campaign status (Admin only)
  */
 export const useCampaignsControllerUpdateStatus = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>, TError,{id: string;data: UpdateCampaignDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof campaignsControllerUpdateStatus>>,
         TError,
-        {id: string},
+        {id: string;data: UpdateCampaignDto},
         TContext
       > => {
 

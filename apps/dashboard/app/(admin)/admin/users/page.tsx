@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useUsersControllerFindAll,
   useUsersControllerUpdateStatus,
+  useUsersControllerDelete,
   getUsersControllerFindAllQueryKey,
   UpdateUserStatusDtoStatus,
 } from "@workspace/client";
@@ -43,15 +44,30 @@ import {
   UserX,
   Eye,
   Ban,
+  Trash2,
+  Loader2,
 } from "lucide-react";
-import { StatusBadge } from "@/components/ui/status-badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { StatusBadge } from "@/components/ui/status-badge";
 import Link from "next/link";
 
 export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [userToDelete, setUserToDelete] = useState<
+    (typeof users)[number] | null
+  >(null);
   const queryClient = useQueryClient();
 
   const {
@@ -76,6 +92,17 @@ export default function AdminUsersPage() {
         queryClient.invalidateQueries({
           queryKey: getUsersControllerFindAllQueryKey(),
         });
+      },
+    },
+  });
+
+  const deleteMutation = useUsersControllerDelete({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getUsersControllerFindAllQueryKey(),
+        });
+        setUserToDelete(null);
       },
     },
   });
@@ -117,6 +144,16 @@ export default function AdminUsersPage() {
       id,
       data: { status: UpdateUserStatusDtoStatus.approved },
     });
+  };
+
+  const handleDelete = (user: (typeof users)[number]) => {
+    setUserToDelete(user);
+  };
+
+  const confirmDelete = () => {
+    if (userToDelete) {
+      deleteMutation.mutate({ id: userToDelete.id });
+    }
   };
 
   if (isLoading) {
@@ -317,6 +354,15 @@ export default function AdminUsersPage() {
                                 </DropdownMenuItem>
                               </>
                             )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => handleDelete(user)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -328,6 +374,41 @@ export default function AdminUsersPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!userToDelete}
+        onOpenChange={(open) => !open && setUserToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{" "}
+              {userToDelete?.name || userToDelete?.email}? This action cannot be
+              undone. All associated data including campaigns, submissions, and
+              payments will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setUserToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Delete User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

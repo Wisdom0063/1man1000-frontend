@@ -10,6 +10,23 @@ import {
 } from "@workspace/client";
 import { Button } from "@workspace/ui/components/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
+import {
   Eye,
   MoreHorizontal,
   CheckCircle,
@@ -41,6 +58,13 @@ export default function AdminCampaignsPage() {
     [],
   );
 
+  const [approvingCampaign, setApprovingCampaign] = useState<
+    CampaignsListResponseDto["data"][number] | null
+  >(null);
+  const [paymentTiers, setPaymentTiers] = useState<
+    { lowerLimit: string; upperLimit: string; amount: string }[]
+  >([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
+
   const queryParams: Record<string, string | number> = {};
   if (statusFilter && statusFilter !== "all") {
     queryParams.status = statusFilter;
@@ -71,21 +95,56 @@ export default function AdminCampaignsPage() {
     },
   });
 
-  const handleApprove = useCallback(
-    async (id: string) => {
-      if (window.confirm("Are you sure you want to approve this campaign?")) {
-        try {
-          await updateStatusMutation.mutateAsync({
-            id,
-            data: { status: UpdateCampaignDtoStatus.approved },
-          });
-        } catch (error) {
-          console.error("Error approving campaign:", error);
-        }
+  const handleApproveClick = useCallback(
+    (campaign: CampaignsListResponseDto["data"][number]) => {
+      setApprovingCampaign(campaign);
+      // Pre-fill if campaign already has payment tiers
+      if (campaign.paymentTiers && campaign.paymentTiers.length > 0) {
+        setPaymentTiers(
+          campaign.paymentTiers.map((tier) => ({
+            lowerLimit: String(tier.lowerLimit),
+            upperLimit: tier.upperLimit ? String(tier.upperLimit) : "",
+            amount: String(tier.amount),
+          })),
+        );
+      } else {
+        setPaymentTiers([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
       }
     },
-    [updateStatusMutation],
+    [],
   );
+
+  const confirmApprove = useCallback(async () => {
+    if (!approvingCampaign) return;
+
+    try {
+      // Validate and transform payment tiers
+      const validTiers = paymentTiers
+        .filter((tier) => tier.amount && parseFloat(tier.amount) > 0)
+        .map((tier) => ({
+          lowerLimit: parseInt(tier.lowerLimit) || 0,
+          upperLimit: tier.upperLimit ? parseInt(tier.upperLimit) : null,
+          amount: parseFloat(tier.amount) || 0,
+        }));
+
+      if (validTiers.length === 0) {
+        alert("Please configure at least one payment tier with a valid amount");
+        return;
+      }
+
+      await updateStatusMutation.mutateAsync({
+        id: approvingCampaign.id,
+        data: {
+          status: UpdateCampaignDtoStatus.approved,
+          paymentTiers: validTiers,
+        },
+      });
+      setApprovingCampaign(null);
+      setPaymentTiers([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
+    } catch (error) {
+      console.error("Error approving campaign:", error);
+    }
+  }, [approvingCampaign, paymentTiers, updateStatusMutation]);
 
   const handleReject = useCallback(
     async (id: string) => {
@@ -227,19 +286,26 @@ export default function AdminCampaignsPage() {
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent
+                  align="end"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <DropdownMenuItem
-                    onClick={() =>
-                      router.push(`/admin/campaigns/${campaign.id}`)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/admin/campaigns/${campaign.id}`);
+                    }}
                   >
                     <Eye className="mr-2 h-4 w-4" />
                     View Details
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() =>
-                      router.push(`/admin/campaigns/${campaign.id}/influencers`)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(
+                        `/admin/campaigns/${campaign.id}/influencers`,
+                      );
+                    }}
                   >
                     <Users className="mr-2 h-4 w-4" />
                     Manage Influencers
@@ -249,7 +315,10 @@ export default function AdminCampaignsPage() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-emerald-600"
-                        onClick={() => handleApprove(campaign.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleApproveClick(campaign);
+                        }}
                         disabled={updateStatusMutation.isPending}
                       >
                         <CheckCircle className="mr-2 h-4 w-4" />
@@ -257,7 +326,10 @@ export default function AdminCampaignsPage() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => handleReject(campaign.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReject(campaign.id);
+                        }}
                         disabled={updateStatusMutation.isPending}
                       >
                         <XCircle className="mr-2 h-4 w-4" />
@@ -271,7 +343,12 @@ export default function AdminCampaignsPage() {
           },
         },
       ],
-      [router, updateStatusMutation.isPending, handleApprove, handleReject],
+      [
+        router,
+        updateStatusMutation.isPending,
+        handleApproveClick,
+        handleReject,
+      ],
     );
 
   const CampaignFilter = useCallback(() => {
@@ -381,6 +458,154 @@ export default function AdminCampaignsPage() {
           },
         }}
       />
+
+      {/* Approval Modal with Payment Tier Settings */}
+      <Dialog
+        open={!!approvingCampaign}
+        onOpenChange={(open) => {
+          if (!open) {
+            setApprovingCampaign(null);
+            setPaymentTiers([{ lowerLimit: "0", upperLimit: "", amount: "" }]);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Approve Campaign</DialogTitle>
+            <DialogDescription>
+              Configure payment tiers for &quot;
+              {approvingCampaign?.title || approvingCampaign?.brandName}&quot;
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Payment Tiers</CardTitle>
+                <CardDescription>
+                  Define payment ranges for influencers. Leave upper limit empty
+                  for infinity.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {paymentTiers.map((tier, index) => (
+                  <div
+                    key={index}
+                    className="grid gap-4 sm:grid-cols-3 items-end"
+                  >
+                    <div className="space-y-2">
+                      <Label htmlFor={`lowerLimit-${index}`}>
+                        Lower Limit (views)
+                      </Label>
+                      <Input
+                        id={`lowerLimit-${index}`}
+                        type="number"
+                        placeholder="0"
+                        value={tier.lowerLimit}
+                        onChange={(e) => {
+                          const newTiers = [...paymentTiers];
+                          newTiers[index].lowerLimit = e.target.value;
+                          setPaymentTiers(newTiers);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`upperLimit-${index}`}>
+                        Upper Limit (views)
+                      </Label>
+                      <Input
+                        id={`upperLimit-${index}`}
+                        type="number"
+                        placeholder="∞ (empty = infinity)"
+                        value={tier.upperLimit}
+                        onChange={(e) => {
+                          const newTiers = [...paymentTiers];
+                          newTiers[index].upperLimit = e.target.value;
+                          setPaymentTiers(newTiers);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`amount-${index}`}>Amount (GH₵)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={`amount-${index}`}
+                          type="number"
+                          step="0.01"
+                          placeholder="0.50"
+                          value={tier.amount}
+                          onChange={(e) => {
+                            const newTiers = [...paymentTiers];
+                            newTiers[index].amount = e.target.value;
+                            setPaymentTiers(newTiers);
+                          }}
+                        />
+                        {paymentTiers.length > 1 && (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              const newTiers = paymentTiers.filter(
+                                (_, i) => i !== index,
+                              );
+                              setPaymentTiers(newTiers);
+                            }}
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setPaymentTiers([
+                      ...paymentTiers,
+                      { lowerLimit: "", upperLimit: "", amount: "" },
+                    ])
+                  }
+                  className="w-full"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Payment Tier
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setApprovingCampaign(null);
+                setPaymentTiers([
+                  { lowerLimit: "0", upperLimit: "", amount: "" },
+                ]);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmApprove}
+              disabled={
+                updateStatusMutation.isPending ||
+                !paymentTiers.some(
+                  (tier) => tier.amount && parseFloat(tier.amount) > 0,
+                )
+              }
+            >
+              {updateStatusMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCircle className="h-4 w-4 mr-2" />
+              )}
+              Approve Campaign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

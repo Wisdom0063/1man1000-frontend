@@ -288,131 +288,6 @@ export default function CampaignDetailPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Campaign Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {c.description && (
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Description
-                </h4>
-                <p className="text-sm">{c.description}</p>
-              </div>
-            )}
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Industry
-                </h4>
-                <Badge variant="outline">{c.industry}</Badge>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Target Audience
-                </h4>
-                <p className="text-sm">{c.targetAudience}</p>
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Rate per View
-                </h4>
-                <p className="text-sm font-medium">
-                  GH₵{c.ratePerView?.toFixed(2) || "0.00"}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Payment Type
-                </h4>
-                <p className="text-sm font-medium capitalize">
-                  {c.paymentType?.replace("_", " ") || "Per View"}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Submission Deadline
-                </h4>
-                <p className="text-sm font-medium">
-                  {c.submissionDeadlineDays || 7} days
-                </p>
-              </div>
-            </div>
-
-            {c.campaignAsset && (
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Campaign Asset
-                </h4>
-                <div className="space-y-3">
-                  <div className="relative rounded-lg bg-muted max-w-2xl">
-                    {c.campaignAsset.match(/\.(mp4|webm|ogg)$/i) ? (
-                      <VideoPlayerComponent src={c.campaignAsset} />
-                    ) : (
-                      <Image
-                        src={c.campaignAsset}
-                        alt="Campaign asset"
-                        className="w-full h-full object-cover"
-                        width={1000}
-                        height={1000}
-                      />
-                    )}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const link = document.createElement("a");
-                      link.href = c.campaignAsset!;
-                      link.download = `${c.title || c.brandName}-asset`;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Asset
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {c.adCreatives && c.adCreatives.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Ad Creatives
-                </h4>
-                <div className="grid gap-2 grid-cols-2 sm:grid-cols-3">
-                  {c.adCreatives.map((url, index) => (
-                    <a
-                      key={index}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
-                    >
-                      <Image
-                        src={url}
-                        alt={`Creative ${index + 1}`}
-                        className="w-full h-24 object-cover"
-                        width={500}
-                        height={500}
-                      />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Submissions Table */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -512,6 +387,135 @@ export default function CampaignDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Campaign Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {c.description && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Description
+                </h4>
+                <p className="text-sm">{c.description}</p>
+              </div>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Industry
+                </h4>
+                <Badge variant="outline">{c.industry}</Badge>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Target Audience
+                </h4>
+                <p className="text-sm">{c.targetAudience}</p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Rate per View
+                </h4>
+                <p className="text-sm font-medium">
+                  GH₵{c.ratePerView?.toFixed(2) || "0.00"}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Payment Type
+                </h4>
+                <p className="text-sm font-medium capitalize">
+                  {c.paymentType?.replace("_", " ") || "Per View"}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Submission Deadline
+                </h4>
+                <p className="text-sm font-medium">
+                  {c.submissionDeadlineDays || 7} days
+                </p>
+              </div>
+            </div>
+
+            {c.campaignAsset && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Campaign Asset
+                </h4>
+                <div className="space-y-3">
+                  <div className="relative rounded-lg bg-muted max-w-2xl">
+                    {c.campaignAsset.match(/\.(mp4|webm|ogg)$/i) ? (
+                      <VideoPlayerComponent src={c.campaignAsset} />
+                    ) : (
+                      <Image
+                        src={c.campaignAsset}
+                        alt="Campaign asset"
+                        className="w-full h-full object-cover"
+                        width={1000}
+                        height={1000}
+                      />
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const apiBaseUrl =
+                        process.env.NEXT_PUBLIC_API_URL ||
+                        "http://localhost:3001";
+                      const downloadUrl = `${apiBaseUrl}/campaigns/download/asset?url=${encodeURIComponent(c.campaignAsset!)}`;
+                      const link = document.createElement("a");
+                      link.href = downloadUrl;
+                      link.download = `${c.title || c.brandName}-asset`;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Asset
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {c.adCreatives && c.adCreatives.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                  Ad Creatives
+                </h4>
+                <div className="grid gap-2 grid-cols-2 sm:grid-cols-3">
+                  {c.adCreatives.map((url, index) => (
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block rounded-lg overflow-hidden border hover:opacity-80 transition-opacity"
+                    >
+                      <Image
+                        src={url}
+                        alt={`Creative ${index + 1}`}
+                        className="w-full h-24 object-cover"
+                        width={500}
+                        height={500}
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -454,67 +454,6 @@ export function CampaignForm({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Settings</CardTitle>
-          <CardDescription>
-            Configure payment rates for influencers
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="paymentType">Payment Type</Label>
-              <select
-                id="paymentType"
-                {...register("paymentType")}
-                className="flex h-11 w-full rounded-xl border border-border/60 bg-background px-4 py-2 text-sm shadow-sm transition-all hover:border-border focus-visible:border-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20"
-              >
-                <option value="per_view">Per View</option>
-                <option value="per_views">Per Views Threshold</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="ratePerView">Rate per View (GH₵)</Label>
-              <Input
-                id="ratePerView"
-                type="number"
-                step="0.01"
-                placeholder="0.50"
-                {...register("ratePerView", { valueAsNumber: true })}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="paymentViewsThreshold">
-                Views Threshold (for per_views type)
-              </Label>
-              <Input
-                id="paymentViewsThreshold"
-                type="number"
-                placeholder="1000"
-                {...register("paymentViewsThreshold", { valueAsNumber: true })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="submissionDeadlineDays">
-                Submission Deadline (days)
-              </Label>
-              <Input
-                id="submissionDeadlineDays"
-                type="number"
-                placeholder="7"
-                {...register("submissionDeadlineDays", { valueAsNumber: true })}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="flex items-center justify-end gap-4">
         <Button type="button" variant="outline" asChild>
           <Link href={cancelHref}>Cancel</Link>

@@ -23,20 +23,6 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 
-type Campaign = {
-  id: string;
-  brandName: string;
-  title?: string;
-  description?: string;
-  budget: number;
-  targetViewRange: { min: number; max: number };
-  status: string;
-  assignedInfluencers?: Array<{ id: string }>;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-};
-
 export default function ClientCampaignsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
@@ -47,7 +33,7 @@ export default function ClientCampaignsPage() {
     isError,
     refetch,
   } = useCampaignsControllerGetClientCampaigns();
-  const campaigns = (response || []) as Campaign[];
+  const campaigns = response || [];
 
   const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesSearch =
@@ -61,11 +47,11 @@ export default function ClientCampaignsPage() {
   });
 
   const activeCount = campaigns.filter(
-    (c) => c.status === "active" || c.status === "approved"
+    (c) => c.status === "active" || c.status === "approved",
   ).length;
   const pendingCount = campaigns.filter((c) => c.status === "pending").length;
   const completedCount = campaigns.filter(
-    (c) => c.status === "completed"
+    (c) => c.status === "completed",
   ).length;
 
   if (isLoading) {
@@ -196,7 +182,7 @@ export default function ClientCampaignsPage() {
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">
-                        {campaign.title || campaign.brandName}
+                        {(campaign.title as any) || campaign.brandName}
                       </CardTitle>
                       <StatusBadge status={campaign.status} />
                     </div>
@@ -227,7 +213,7 @@ export default function ClientCampaignsPage() {
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-1.5 text-muted-foreground">
                         <Users className="h-4 w-4" />
-                        {campaign.assignedInfluencers?.length || 0} influencers
+                        {campaign._count.assignments || 0} influencers
                       </div>
                       <div className="font-semibold">
                         GH₵{campaign.budget?.toLocaleString()}
@@ -248,7 +234,7 @@ export default function ClientCampaignsPage() {
                       >
                         <Link href={`/client/campaigns/${campaign.id}`}>
                           <Eye className="mr-1.5 h-4 w-4" />
-                          View
+                          Analytics
                         </Link>
                       </Button>
                       <Button
