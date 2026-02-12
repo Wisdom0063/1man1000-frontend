@@ -35,6 +35,7 @@ import Link from "next/link";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { showCountryNameByAlpha3 } from "@/lib/show-country-name";
 
 const FieldRow = ({ label, value }: { label: string; value?: string }) => {
   return (
@@ -259,7 +260,14 @@ export default function AdminUserDetailPage() {
                   <Wallet className="h-4 w-4 text-muted-foreground" />
                   <span>Payment</span>
                 </div>
-                <FieldRow label="Country" value={user.country || undefined} />
+                <FieldRow
+                  label="Country"
+                  value={
+                    user.country
+                      ? showCountryNameByAlpha3(user.country) || user.country
+                      : undefined
+                  }
+                />
                 {user.country === "GHA" ? (
                   <>
                     <FieldRow

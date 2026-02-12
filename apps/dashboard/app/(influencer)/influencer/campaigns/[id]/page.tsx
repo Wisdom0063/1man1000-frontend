@@ -20,6 +20,8 @@ import {
   Upload,
   Clock,
   Download,
+  DollarSign,
+  TrendingUp,
 } from "lucide-react";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
@@ -172,6 +174,61 @@ export default function CampaignDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      {campaign.paymentTiers && campaign.paymentTiers.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-emerald-600" />
+              Payment Tiers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Earn based on your performance. The more views your submission
+                gets, the higher your payout.
+              </p>
+              <div className="grid gap-3">
+                {campaign.paymentTiers.map((tier: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-muted/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-sm font-semibold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {tier.lowerLimit.toLocaleString()} -{" "}
+                          {tier.upperLimit
+                            ? tier.upperLimit.toLocaleString()
+                            : "+"}{" "}
+                          views
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Tier {index + 1}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-emerald-600">
+                        GH₵{tier.amount.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {tier.upperLimit
+                          ? `for ${tier.upperLimit - tier.lowerLimit + 1} views`
+                          : "and above"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {campaign.campaignAsset && (
         <Card>

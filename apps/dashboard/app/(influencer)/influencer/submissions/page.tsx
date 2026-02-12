@@ -36,8 +36,10 @@ type Submission = {
   campaign?: { id: string; brandName: string; title?: string };
   screenshotUrl: string;
   extractedViewCount: number;
+  verifiedViewCount?: number;
   approvalStatus: string;
   reviewNote?: string;
+  reviewNotes?: string;
   reviewedAt?: string;
   createdAt: string;
 };
@@ -221,6 +223,13 @@ export default function InfluencerSubmissionsPage() {
                               submission.campaign?.brandName ||
                               "Unknown Campaign"}
                           </p>
+                          {(submission.reviewNotes ||
+                            submission.reviewNote) && (
+                            <p className="text-sm text-muted-foreground">
+                              <span className="font-medium">Admin Note:</span>{" "}
+                              {submission.reviewNotes || submission.reviewNote}
+                            </p>
+                          )}
                           <p className="text-sm text-muted-foreground">
                             Submitted{" "}
                             {new Date(
@@ -228,9 +237,10 @@ export default function InfluencerSubmissionsPage() {
                             ).toLocaleDateString()}
                           </p>
                           {submission.approvalStatus === "rejected" &&
-                            submission.reviewNote && (
+                            !submission.reviewNotes &&
+                            !submission.reviewNote && (
                               <p className="text-xs text-destructive">
-                                Reason: {submission.reviewNote}
+                                This submission was rejected
                               </p>
                             )}
                         </div>
@@ -238,8 +248,10 @@ export default function InfluencerSubmissionsPage() {
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <p className="text-lg font-bold">
-                            {submission.extractedViewCount?.toLocaleString() ||
-                              0}
+                            {(
+                              submission.verifiedViewCount ??
+                              submission.extractedViewCount
+                            )?.toLocaleString() || 0}
                           </p>
                           <p className="text-xs text-muted-foreground">views</p>
                         </div>

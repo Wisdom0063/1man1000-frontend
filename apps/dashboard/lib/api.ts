@@ -1,5 +1,7 @@
 import axios from "axios";
 
+export const api = axios;
+
 export function initializeApi() {
   // Set base URL for all axios requests
   axios.defaults.baseURL =

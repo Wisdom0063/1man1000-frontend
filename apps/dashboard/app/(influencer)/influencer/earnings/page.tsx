@@ -28,6 +28,7 @@ import {
 } from "@workspace/client";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { showCountryNameByAlpha3 } from "@/lib/show-country-name";
 import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
 
 export default function InfluencerEarningsPage() {
@@ -259,7 +260,10 @@ export default function InfluencerEarningsPage() {
                       Country
                     </span>
                     <span className="text-sm font-medium">
-                      {typedProfile?.country || "Not set"}
+                      {typedProfile?.country
+                        ? showCountryNameByAlpha3(typedProfile.country) ||
+                          typedProfile.country
+                        : "Not set"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
