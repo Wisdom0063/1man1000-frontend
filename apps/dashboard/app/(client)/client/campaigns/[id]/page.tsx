@@ -370,7 +370,7 @@ export default function CampaignDetailPage() {
                         </span>
                       </td>
                       <td className="py-3 px-2">
-                        {submission.extractedViewCount?.toLocaleString() || 0}
+                        {submission.verifiedViewCount?.toLocaleString() || 0}
                       </td>
                       <td className="py-3 px-2">
                         <StatusBadge status={submission.approvalStatus} />

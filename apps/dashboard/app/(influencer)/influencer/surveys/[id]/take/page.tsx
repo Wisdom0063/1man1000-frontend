@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import {
   useSurveysControllerStartSurvey,
   useSurveysControllerSubmitResponse,
-  useSurveysControllerGetSurveyResponses,
   getSurveysControllerGetInfluencerSurveysQueryKey,
   getSurveysControllerGetInfluencerStatsQueryKey,
 } from "@workspace/client";
@@ -66,26 +65,20 @@ export default function TakeSurveyPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [survey, setSurvey] = useState<Survey | null>(null);
+  const [assignmentStatus, setAssignmentStatus] = useState<string | null>(null);
   const currentUserId = useAuthStore((state) => state.user?.id);
 
-  const { data: existingResponses } = useSurveysControllerGetSurveyResponses(
-    surveyId,
-    {
-      query: {
-        enabled: !!surveyId && !!currentUserId,
-      },
-    },
-  );
-
-  const hasAlreadySubmitted = existingResponses?.some(
-    (response: { respondentId: string }) =>
-      response.respondentId === currentUserId,
-  );
+  // Check assignment status from the survey data (like campaigns)
+  const hasAlreadySubmitted = assignmentStatus === "completed";
 
   const startMutation = useSurveysControllerStartSurvey({
     mutation: {
       onSuccess: (data: any) => {
         setSurvey(data);
+        // Capture assignment status from the response (like campaigns)
+        if (data.assignment?.status) {
+          setAssignmentStatus(data.assignment.status);
+        }
       },
       onError: (error: any) => {
         console.error("Failed to start survey:", error);

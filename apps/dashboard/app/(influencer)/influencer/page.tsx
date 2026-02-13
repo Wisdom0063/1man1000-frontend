@@ -361,21 +361,22 @@ export default function InfluencerDashboard() {
                           {campaign.paymentTiers &&
                           campaign.paymentTiers.length > 0 ? (
                             <>
-                              GH₵
+                              Up to GH₵
                               {Number(
-                                campaign.paymentTiers[0]?.amount || 0,
+                                campaign.paymentTiers[
+                                  campaign.paymentTiers.length - 1
+                                ]?.amount || 0,
                               ).toFixed(3)}
-                              /view
                             </>
                           ) : (
                             "Tiered pricing"
                           )}
                         </span>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        {/* <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <Target className="h-3 w-3" />
                           GH₵{campaign.potential.min.toFixed(2)} - GH₵
                           {campaign.potential.max.toFixed(2)}
-                        </span>
+                        </span> */}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

@@ -18,6 +18,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
+import { Progress } from "@workspace/ui/components/progress";
 import { Search, Plus, Eye, Users, Edit } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -197,19 +198,23 @@ export default function ClientCampaignsPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">
-                          Target Views
+                          Views Progress
                         </span>
                         <span className="font-medium">
-                          {campaign.targetViewRange?.min?.toLocaleString()} -{" "}
-                          {campaign.targetViewRange?.max?.toLocaleString()}
+                          {campaign.totalViews?.toLocaleString() || 0} /{" "}
+                          {campaign.targetViewRange?.max?.toLocaleString() || 0}
                         </span>
                       </div>
-                      <div className="h-2.5 rounded-full bg-secondary">
-                        <div
-                          className="h-2.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all"
-                          style={{ width: "0%" }}
-                        />
-                      </div>
+                      <Progress
+                        value={
+                          campaign.targetViewRange?.max
+                            ? ((campaign.totalViews || 0) /
+                                campaign.targetViewRange.max) *
+                              100
+                            : 0
+                        }
+                        className="h-2.5"
+                      />
                     </div>
 
                     <div className="flex items-center justify-between text-sm">

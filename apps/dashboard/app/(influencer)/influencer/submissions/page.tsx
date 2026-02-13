@@ -223,13 +223,7 @@ export default function InfluencerSubmissionsPage() {
                               submission.campaign?.brandName ||
                               "Unknown Campaign"}
                           </p>
-                          {(submission.reviewNotes ||
-                            submission.reviewNote) && (
-                            <p className="text-sm text-muted-foreground">
-                              <span className="font-medium">Admin Note:</span>{" "}
-                              {submission.reviewNotes || submission.reviewNote}
-                            </p>
-                          )}
+
                           <p className="text-sm text-muted-foreground">
                             Submitted{" "}
                             {new Date(
@@ -245,6 +239,15 @@ export default function InfluencerSubmissionsPage() {
                             )}
                         </div>
                       </div>
+                      {(submission.reviewNotes || submission.reviewNote) && (
+                        <div className="flex justify-center gap-4 flex-1 min-w-0 mx-5">
+                          <p className="text-sm break-words">
+                            <span className="font-medium">Admin Note:</span>{" "}
+                            {submission.reviewNotes ||
+                              submission.reviewNote}{" "}
+                          </p>
+                        </div>
+                      )}
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <p className="text-lg font-bold">

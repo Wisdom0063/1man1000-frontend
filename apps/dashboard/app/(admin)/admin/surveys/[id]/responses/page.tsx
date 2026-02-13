@@ -2,8 +2,9 @@
 
 import { useParams } from "next/navigation";
 import {
+  GetSurveyResponseDto,
   useSurveysControllerFindOne,
-  useSurveysControllerGetSurveyResponses,
+  useSurveysControllerGetIndividualResponses,
 } from "@workspace/client";
 import {
   Card,
@@ -16,6 +17,7 @@ import { Badge } from "@workspace/ui/components/badge";
 import { ArrowLeft, Users, Download, Eye, Calendar, User } from "lucide-react";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -28,7 +30,10 @@ import {
 export default function AdminSurveyResponsesPage() {
   const params = useParams();
   const surveyId = params.id as string;
-  const [selectedResponse, setSelectedResponse] = useState<any>(null);
+  const [selectedResponse, setSelectedResponse] =
+    useState<GetSurveyResponseDto | null>(null);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
 
   const {
     data: survey,
@@ -37,12 +42,17 @@ export default function AdminSurveyResponsesPage() {
     refetch,
   } = useSurveysControllerFindOne(surveyId);
 
-  const { data: responses, isLoading: responsesLoading } =
-    useSurveysControllerGetSurveyResponses(surveyId);
+  const { data: surveyResponses, isLoading: responsesLoading } =
+    useSurveysControllerGetIndividualResponses(surveyId, {
+      page,
+      pageSize: limit,
+    });
 
   if (isLoading) {
     return <LoadingState text="Loading responses..." />;
   }
+
+  const responses = surveyResponses?.responses || [];
 
   if (isError || !survey) {
     return (
@@ -133,33 +143,32 @@ export default function AdminSurveyResponsesPage() {
         <>
           <Card>
             <CardHeader>
-              <CardTitle>Survey Responses ({responses.length})</CardTitle>
+              <CardTitle>Survey Responses ({surveyResponses?.total})</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {responses.map((response: any) => (
-                  <div
-                    key={response.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-                  >
+              <ListPaginationWrapper
+                data={surveyResponses?.responses || []}
+                ListItem={(response) => (
+                  <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-4">
-                        {!survey.isAnonymous && response.respondent && (
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">
-                              {response.respondent.name || "Unknown"}
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                              ({response.respondent.email})
-                            </span>
-                          </div>
-                        )}
+                        {!survey.isAnonymous &&
+                          response.item.respondentIdentifier && (
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-muted-foreground" />
+                              <span className="font-medium">
+                                {response.item.respondentIdentifier}
+                              </span>
+                              <span className="text-sm text-muted-foreground">
+                                ({response.item.respondentIdentifier})
+                              </span>
+                            </div>
+                          )}
                         {survey.isAnonymous && (
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-muted-foreground" />
                             <span className="font-medium">
-                              {response.respondentIdentifier}
+                              {response.item.respondentIdentifier}
                             </span>
                             <Badge variant="secondary">Anonymous</Badge>
                           </div>
@@ -168,33 +177,37 @@ export default function AdminSurveyResponsesPage() {
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(response.responseDate).toLocaleDateString()}
+                          {new Date(
+                            response.item.responseDate,
+                          ).toLocaleDateString()}
                         </div>
-                        {response.timeTakenMinutes && (
+                        {response.item.timeTakenMinutes && (
                           <span>
-                            Time taken: {response.timeTakenMinutes} min
+                            Time taken: {response.item.timeTakenMinutes} min
                           </span>
                         )}
-                        <Badge
-                          variant={
-                            response.isCompleted ? "default" : "secondary"
-                          }
-                        >
-                          {response.isCompleted ? "Completed" : "Incomplete"}
-                        </Badge>
                       </div>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setSelectedResponse(response)}
+                      onClick={() => setSelectedResponse(response.item)}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       View Details
                     </Button>
                   </div>
-                ))}
-              </div>
+                )}
+                isLoading={responsesLoading}
+                emptyMessage="No responses found"
+                page={page}
+                onPageChange={setPage}
+                meta={{
+                  total: surveyResponses?.total || 0,
+                  page: surveyResponses?.page || 1,
+                  limit: surveyResponses?.pageSize || 10,
+                }}
+              />
             </CardContent>
           </Card>
 
@@ -246,22 +259,13 @@ export default function AdminSurveyResponsesPage() {
                       <p className="text-sm font-medium text-muted-foreground">
                         Status
                       </p>
-                      <Badge
-                        variant={
-                          selectedResponse.isCompleted ? "default" : "secondary"
-                        }
-                      >
-                        {selectedResponse.isCompleted
-                          ? "Completed"
-                          : "Incomplete"}
-                      </Badge>
                     </div>
                   </div>
 
                   <div className="border-t pt-6">
                     <h3 className="text-lg font-semibold mb-4">Answers</h3>
                     <div className="space-y-6">
-                      {selectedResponse.survey?.questions?.map(
+                      {survey?.questions?.map(
                         (question: any, index: number) => {
                           const answer =
                             selectedResponse.answers?.[question.id] ||
@@ -294,7 +298,7 @@ export default function AdminSurveyResponsesPage() {
                                   </pre>
                                 ) : (
                                   <p className="text-muted-foreground">
-                                    {answer || "No answer provided"}
+                                    {(answer as any) || "No answer provided"}
                                   </p>
                                 )}
                               </div>
@@ -311,28 +315,55 @@ export default function AdminSurveyResponsesPage() {
                         Demographics
                       </h3>
                       <div className="grid gap-4 md:grid-cols-3">
-                        {selectedResponse.demographics.age && (
+                        {Object.keys(selectedResponse.demographics.age).length >
+                          0 && (
                           <div>
-                            <p className="text-sm font-medium text-muted-foreground">
+                            <p className="text-sm font-medium text-muted-foreground mb-2">
                               Age
                             </p>
-                            <p>{selectedResponse.demographics.age}</p>
+                            <div className="space-y-1">
+                              {Object.entries(
+                                selectedResponse.demographics.age,
+                              ).map(([range, count]) => (
+                                <p key={range} className="text-sm">
+                                  {range}: {count}
+                                </p>
+                              ))}
+                            </div>
                           </div>
                         )}
-                        {selectedResponse.demographics.gender && (
+                        {Object.keys(selectedResponse.demographics.gender)
+                          .length > 0 && (
                           <div>
-                            <p className="text-sm font-medium text-muted-foreground">
+                            <p className="text-sm font-medium text-muted-foreground mb-2">
                               Gender
                             </p>
-                            <p>{selectedResponse.demographics.gender}</p>
+                            <div className="space-y-1">
+                              {Object.entries(
+                                selectedResponse.demographics.gender,
+                              ).map(([gender, count]) => (
+                                <p key={gender} className="text-sm">
+                                  {gender}: {count}
+                                </p>
+                              ))}
+                            </div>
                           </div>
                         )}
-                        {selectedResponse.demographics.location && (
+                        {Object.keys(selectedResponse.demographics.location)
+                          .length > 0 && (
                           <div>
-                            <p className="text-sm font-medium text-muted-foreground">
+                            <p className="text-sm font-medium text-muted-foreground mb-2">
                               Location
                             </p>
-                            <p>{selectedResponse.demographics.location}</p>
+                            <div className="space-y-1">
+                              {Object.entries(
+                                selectedResponse.demographics.location,
+                              ).map(([location, count]) => (
+                                <p key={location} className="text-sm">
+                                  {location}: {count}
+                                </p>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>

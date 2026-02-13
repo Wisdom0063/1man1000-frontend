@@ -310,11 +310,6 @@ export default function AvailableCampaignDetailPage() {
                       <p className="text-lg font-bold text-emerald-600">
                         GH₵{tier.amount.toLocaleString()}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {tier.upperLimit
-                          ? `for ${tier.upperLimit - tier.lowerLimit + 1} views`
-                          : "and above"}
-                      </p>
                     </div>
                   </div>
                 ))}

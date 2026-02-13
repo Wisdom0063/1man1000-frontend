@@ -1157,38 +1157,6 @@ export interface UpdateSurveyDto {
   questions?: CreateQuestionDto[];
 }
 
-export interface RespondentDto {
-  id: string;
-  name: string;
-  email: string;
-}
-
-export type SurveyInfoDtoQuestionsItem = { [key: string]: unknown };
-
-export interface SurveyInfoDto {
-  title: string;
-  isAnonymous: boolean;
-  questions: SurveyInfoDtoQuestionsItem[];
-}
-
-export type GetSurveyResponseDtoAnswers = { [key: string]: unknown };
-
-export type GetSurveyResponseDtoDemographics = { [key: string]: unknown };
-
-export interface GetSurveyResponseDto {
-  id: string;
-  surveyId: string;
-  respondentId: string;
-  answers: GetSurveyResponseDtoAnswers;
-  demographics?: GetSurveyResponseDtoDemographics;
-  responseDate: string;
-  completionTime: number;
-  createdAt: string;
-  updatedAt: string;
-  respondent?: RespondentDto;
-  survey?: SurveyInfoDto;
-}
-
 export type UpdateSurveyStatusDtoStatus = typeof UpdateSurveyStatusDtoStatus[keyof typeof UpdateSurveyStatusDtoStatus];
 
 
@@ -1215,11 +1183,11 @@ export interface SubmitResponseDto {
   answers: SubmitResponseDtoAnswers;
 }
 
-export type DemographicsDistributionAge = { [key: string]: unknown };
+export type DemographicsDistributionAge = {[key: string]: number};
 
-export type DemographicsDistributionGender = { [key: string]: unknown };
+export type DemographicsDistributionGender = {[key: string]: number};
 
-export type DemographicsDistributionLocation = { [key: string]: unknown };
+export type DemographicsDistributionLocation = {[key: string]: number};
 
 export interface DemographicsDistribution {
   age: DemographicsDistributionAge;
@@ -1274,18 +1242,40 @@ export interface SurveyAnalyticsResponseDto {
   averageTimeMinutes: number;
 }
 
-export type IndividualResponseAnswers = { [key: string]: unknown };
-
-export interface IndividualResponse {
+export interface RespondentDto {
   id: string;
-  respondentIdentifier?: string;
+  name: string;
+  email: string;
+}
+
+export type SurveyInfoDtoQuestionsItem = { [key: string]: unknown };
+
+export interface SurveyInfoDto {
+  title: string;
+  isAnonymous: boolean;
+  questions: SurveyInfoDtoQuestionsItem[];
+}
+
+export type GetSurveyResponseDtoAnswers = { [key: string]: unknown };
+
+export interface GetSurveyResponseDto {
+  id: string;
+  surveyId: string;
+  respondentId: string;
+  answers: GetSurveyResponseDtoAnswers;
+  demographics: DemographicsDistribution;
   responseDate: string;
+  completionTime: number;
+  createdAt: string;
+  updatedAt: string;
+  respondent?: RespondentDto;
+  survey?: SurveyInfoDto;
+  respondentIdentifier?: string;
   timeTakenMinutes: number;
-  answers: IndividualResponseAnswers;
 }
 
 export interface IndividualResponsesDto {
-  responses: IndividualResponse[];
+  responses: GetSurveyResponseDto[];
   total: number;
   page: number;
   pageSize: number;
@@ -1624,6 +1614,10 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
+};
+
+export type SurveysControllerHasUserSubmitted200 = {
+  hasSubmitted?: boolean;
 };
 
 export type SurveysControllerGetIndividualResponsesParams = {
@@ -6874,107 +6868,6 @@ export const useSurveysControllerDelete = <TError = unknown,
     }
     
 /**
- * @summary Get individual survey responses with pagination
- */
-export const surveysControllerGetIndividualResponses = (
-    id: string,
-    params: SurveysControllerGetIndividualResponsesParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return axiosInstance<IndividualResponsesDto>(
-      {url: `/api/surveys/${id}/responses`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-
-
-export const getSurveysControllerGetIndividualResponsesQueryKey = (id?: string,
-    params?: SurveysControllerGetIndividualResponsesParams,) => {
-    return [
-    `/api/surveys/${id}/responses`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getSurveysControllerGetIndividualResponsesQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(id: string,
-    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerGetIndividualResponsesQueryKey(id,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>> = ({ signal }) => surveysControllerGetIndividualResponses(id,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type SurveysControllerGetIndividualResponsesQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>>
-export type SurveysControllerGetIndividualResponsesQueryError = void
-
-
-export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
- id: string,
-    params: SurveysControllerGetIndividualResponsesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>,
-          TError,
-          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
- id: string,
-    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>,
-          TError,
-          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
- id: string,
-    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get individual survey responses with pagination
- */
-
-export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
- id: string,
-    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getSurveysControllerGetIndividualResponsesQueryOptions(id,params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-
-/**
  * @summary Update survey status (Admin only)
  */
 export const surveysControllerUpdateStatus = (
@@ -7103,6 +6996,99 @@ export const useSurveysControllerAssignInfluencer = <TError = unknown,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * @summary Check if current user has submitted response
+ */
+export const surveysControllerHasUserSubmitted = (
+    id: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<SurveysControllerHasUserSubmitted200>(
+      {url: `/api/surveys/${id}/has-submitted`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getSurveysControllerHasUserSubmittedQueryKey = (id?: string,) => {
+    return [
+    `/api/surveys/${id}/has-submitted`
+    ] as const;
+    }
+
+    
+export const getSurveysControllerHasUserSubmittedQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerHasUserSubmittedQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>> = ({ signal }) => surveysControllerHasUserSubmitted(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerHasUserSubmittedQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>>
+export type SurveysControllerHasUserSubmittedQueryError = unknown
+
+
+export function useSurveysControllerHasUserSubmitted<TData = Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerHasUserSubmitted<TData = Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerHasUserSubmitted<TData = Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Check if current user has submitted response
+ */
+
+export function useSurveysControllerHasUserSubmitted<TData = Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerHasUserSubmitted>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSurveysControllerHasUserSubmittedQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
 /**
  * @summary Submit survey response
  */
@@ -7250,6 +7236,107 @@ export function useSurveysControllerGetSurveyAnalytics<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSurveysControllerGetSurveyAnalyticsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary Get individual survey responses with pagination
+ */
+export const surveysControllerGetIndividualResponses = (
+    id: string,
+    params: SurveysControllerGetIndividualResponsesParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<IndividualResponsesDto>(
+      {url: `/api/surveys/${id}/responses`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getSurveysControllerGetIndividualResponsesQueryKey = (id?: string,
+    params?: SurveysControllerGetIndividualResponsesParams,) => {
+    return [
+    `/api/surveys/${id}/responses`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getSurveysControllerGetIndividualResponsesQueryOptions = <TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(id: string,
+    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSurveysControllerGetIndividualResponsesQueryKey(id,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>> = ({ signal }) => surveysControllerGetIndividualResponses(id,params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SurveysControllerGetIndividualResponsesQueryResult = NonNullable<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>>
+export type SurveysControllerGetIndividualResponsesQueryError = void
+
+
+export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
+ id: string,
+    params: SurveysControllerGetIndividualResponsesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
+ id: string,
+    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>,
+          TError,
+          Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
+ id: string,
+    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get individual survey responses with pagination
+ */
+
+export function useSurveysControllerGetIndividualResponses<TData = Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError = void>(
+ id: string,
+    params: SurveysControllerGetIndividualResponsesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof surveysControllerGetIndividualResponses>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSurveysControllerGetIndividualResponsesQueryOptions(id,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
