@@ -80,6 +80,8 @@ export function CampaignForm({
     defaultValues: mergedDefaults,
   });
 
+  console.log("errors", errors);
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 

@@ -26,7 +26,10 @@ export const campaignSchema = z.object({
     .array(
       z.object({
         lowerLimit: z.number().min(1, "Lower limit must be 1 or greater"),
-        upperLimit: z.number().min(1, "Upper limit must be 1 or greater"),
+        upperLimit: z
+          .number()
+          .min(1, "Upper limit must be 1 or greater")
+          .nullable(),
         amount: z.number().min(0, "Amount must be 0 or greater"),
       }),
     )
