@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   usePaymentsControllerFindAll,
   usePaymentsControllerUpdateStatus,
@@ -41,6 +41,7 @@ import {
   Clock,
   DollarSign,
   TrendingUp,
+  ArrowUpDown,
 } from "lucide-react";
 import { ErrorState } from "@/components/ui/error-state";
 import { ListPaginationWrapper } from "@/components/ui/list-pagination-wrapper";
@@ -120,12 +121,25 @@ function PaymentListItem({
 
 export default function AdminPaymentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("pending");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
+  const [sortBy, setSortBy] = useState<"amount" | "date">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] =
     useState<PaymentResponseDto | null>(null);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const statusParam =
     activeTab === "all" ? undefined : (activeTab as "pending" | "paid");
@@ -139,6 +153,9 @@ export default function AdminPaymentsPage() {
     limit,
     page,
     status: statusParam,
+    sortBy,
+    sortOrder,
+    search: debouncedSearch || undefined,
   });
 
   const {
@@ -175,17 +192,6 @@ export default function AdminPaymentsPage() {
 
   const typedPayments = paymentsResponse?.data || [];
   const paymentsMeta = paymentsResponse?.meta;
-
-  const queryLower = searchQuery.trim().toLowerCase();
-  const filteredPayments = typedPayments.filter((payment) => {
-    if (!queryLower) return true;
-    const influencerName = (payment.influencer?.name as never as string) || "";
-    const campaignName = payment.campaign?.brandName || "";
-    return (
-      influencerName.toLowerCase().includes(queryLower) ||
-      campaignName.toLowerCase().includes(queryLower)
-    );
-  });
 
   const totalPaid = stats?.totalPaid ?? 0;
   const pendingPayouts = stats?.pendingPayouts ?? 0;
@@ -279,11 +285,35 @@ export default function AdminPaymentsPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search payments..."
+            placeholder="Search by influencer or campaign..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
           />
+        </div>
+        <div className="flex items-center gap-2">
+          <select
+            value={sortBy}
+            onChange={(e) => {
+              setSortBy(e.target.value as "amount" | "date");
+              setPage(1);
+            }}
+            className="text-sm border rounded px-3 py-2 bg-background"
+          >
+            <option value="date">Sort by Date</option>
+            <option value="amount">Sort by Amount</option>
+          </select>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+              setPage(1);
+            }}
+          >
+            <ArrowUpDown className="h-4 w-4 mr-2" />
+            {sortOrder === "asc" ? "Ascending" : "Descending"}
+          </Button>
         </div>
       </div>
 
@@ -303,9 +333,7 @@ export default function AdminPaymentsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Payment Queue</CardTitle>
-              <CardDescription>
-                {filteredPayments.length} payments
-              </CardDescription>
+              <CardDescription>{typedPayments.length} payments</CardDescription>
             </CardHeader>
             <CardContent>
               <ListPaginationWrapper

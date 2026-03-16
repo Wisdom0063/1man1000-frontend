@@ -24,7 +24,6 @@ export const surveyFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
   description: z.string().optional(),
   targetResponses: z.number().min(10, "Minimum 10 responses").max(10000),
-  isAnonymous: z.boolean(),
   ageRange: z.string().optional(),
   genderFilter: z.string().optional(),
   locationFilter: z.array(z.string()).optional(),

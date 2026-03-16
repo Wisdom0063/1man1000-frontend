@@ -1520,7 +1520,7 @@ export type CampaignsControllerRequestParticipation201 = {
 export type SubmissionsControllerFindAllParams = {
 campaignId?: string;
 influencerId?: string;
-approvalStatus?: SubmissionsControllerFindAllApprovalStatus;
+approvalStatus?: string;
 /**
  * @minimum 1
  */
@@ -1532,15 +1532,17 @@ page?: number;
 limit?: number;
 };
 
-export type SubmissionsControllerFindAllApprovalStatus = typeof SubmissionsControllerFindAllApprovalStatus[keyof typeof SubmissionsControllerFindAllApprovalStatus];
+export type SubmissionsControllerGetStatsParams = {
+campaignId?: string;
+influencerId?: string;
+};
 
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SubmissionsControllerFindAllApprovalStatus = {
-  pending: 'pending',
-  approved: 'approved',
-  rejected: 'rejected',
-} as const;
+export type SubmissionsControllerGetStats200 = {
+  pending?: number;
+  approved?: number;
+  rejected?: number;
+  total?: number;
+};
 
 export type SubmissionsControllerGetCampaignSubmissionsParams = {
 /**
@@ -1586,6 +1588,18 @@ campaignId?: string;
 status?: PaymentsControllerFindAllStatus;
 page?: number;
 limit?: number;
+/**
+ * Sort by field
+ */
+sortBy?: PaymentsControllerFindAllSortBy;
+/**
+ * Sort order
+ */
+sortOrder?: PaymentsControllerFindAllSortOrder;
+/**
+ * Search by influencer name or campaign name
+ */
+search?: string;
 };
 
 export type PaymentsControllerFindAllStatus = typeof PaymentsControllerFindAllStatus[keyof typeof PaymentsControllerFindAllStatus];
@@ -1595,6 +1609,24 @@ export type PaymentsControllerFindAllStatus = typeof PaymentsControllerFindAllSt
 export const PaymentsControllerFindAllStatus = {
   pending: 'pending',
   paid: 'paid',
+} as const;
+
+export type PaymentsControllerFindAllSortBy = typeof PaymentsControllerFindAllSortBy[keyof typeof PaymentsControllerFindAllSortBy];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentsControllerFindAllSortBy = {
+  amount: 'amount',
+  date: 'date',
+} as const;
+
+export type PaymentsControllerFindAllSortOrder = typeof PaymentsControllerFindAllSortOrder[keyof typeof PaymentsControllerFindAllSortOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentsControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type PaymentsControllerGetInfluencerPaymentsParams = {
@@ -5042,6 +5074,100 @@ export const useSubmissionsControllerUploadScreenshot = <TError = unknown,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * @summary Get submission statistics
+ */
+export const submissionsControllerGetStats = (
+    params?: SubmissionsControllerGetStatsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<SubmissionsControllerGetStats200>(
+      {url: `/api/submissions/stats`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getSubmissionsControllerGetStatsQueryKey = (params?: SubmissionsControllerGetStatsParams,) => {
+    return [
+    `/api/submissions/stats`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getSubmissionsControllerGetStatsQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError = unknown>(params?: SubmissionsControllerGetStatsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerGetStatsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerGetStats>>> = ({ signal }) => submissionsControllerGetStats(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SubmissionsControllerGetStatsQueryResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerGetStats>>>
+export type SubmissionsControllerGetStatsQueryError = unknown
+
+
+export function useSubmissionsControllerGetStats<TData = Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError = unknown>(
+ params: undefined |  SubmissionsControllerGetStatsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof submissionsControllerGetStats>>,
+          TError,
+          Awaited<ReturnType<typeof submissionsControllerGetStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetStats<TData = Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError = unknown>(
+ params?: SubmissionsControllerGetStatsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof submissionsControllerGetStats>>,
+          TError,
+          Awaited<ReturnType<typeof submissionsControllerGetStats>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetStats<TData = Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError = unknown>(
+ params?: SubmissionsControllerGetStatsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get submission statistics
+ */
+
+export function useSubmissionsControllerGetStats<TData = Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError = unknown>(
+ params?: SubmissionsControllerGetStatsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetStats>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSubmissionsControllerGetStatsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
 /**
  * @summary Get current influencer submissions
  */

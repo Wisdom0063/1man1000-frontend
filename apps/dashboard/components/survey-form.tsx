@@ -90,7 +90,6 @@ export function SurveyForm({
       title: "",
       description: "",
       targetResponses: 100,
-      isAnonymous: true,
       questions: [],
     },
   });
@@ -218,27 +217,6 @@ export function SurveyForm({
                       </SelectContent>
                     </Select>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="isAnonymous"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Anonymous Responses</FormLabel>
-                      <FormDescription className="text-xs">
-                        Hide respondent identities
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
                   </FormItem>
                 )}
               />

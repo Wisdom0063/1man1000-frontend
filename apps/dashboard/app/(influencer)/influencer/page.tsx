@@ -180,10 +180,7 @@ export default function InfluencerDashboard() {
     .filter((p: any) => p.status === "paid")
     .reduce((sum: number, p: any) => sum + (p.totalAmount || 0), 0);
 
-  const totalViews = campaigns.reduce(
-    (sum: number, c: any) => sum + (c.totalViews || 0),
-    0,
-  );
+  const totalCampaignsParticipated = campaigns.length;
 
   const stats = [
     {
@@ -193,9 +190,9 @@ export default function InfluencerDashboard() {
       color: "text-blue-600",
     },
     {
-      title: "Total Views",
-      value: totalViews.toLocaleString(),
-      icon: Eye,
+      title: "Total Campaigns Participated",
+      value: totalCampaignsParticipated.toString(),
+      icon: Target,
       color: "text-green-600",
     },
     {

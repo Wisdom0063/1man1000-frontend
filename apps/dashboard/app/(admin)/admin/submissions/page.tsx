@@ -5,7 +5,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useSubmissionsControllerFindAll,
   useSubmissionsControllerReview,
+  useSubmissionsControllerGetStats,
   getSubmissionsControllerFindAllQueryKey,
+  getSubmissionsControllerGetStatsQueryKey,
   ReviewSubmissionDtoApprovalStatus,
 } from "@workspace/client";
 import {
@@ -203,11 +205,21 @@ export default function AdminSubmissionsPage() {
   } = useSubmissionsControllerFindAll({ page, limit });
   const submissions = (response?.data || []) as Submission[];
 
+  // Get status counts from dedicated stats endpoint
+  const { data: statsData } = useSubmissionsControllerGetStats();
+  const pendingCount = statsData?.pending || 0;
+  const approvedCount = statsData?.approved || 0;
+  const rejectedCount = statsData?.rejected || 0;
+  const totalCount = statsData?.total || 0;
+
   const reviewMutation = useSubmissionsControllerReview({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: getSubmissionsControllerFindAllQueryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getSubmissionsControllerGetStatsQueryKey(),
         });
         setReviewingSubmission(null);
         setApprovingSubmission(null);
@@ -232,16 +244,6 @@ export default function AdminSubmissionsPage() {
       activeTab === "all" || submission.approvalStatus === activeTab;
     return matchesSearch && matchesTab;
   });
-
-  const pendingCount = submissions.filter(
-    (s) => s.approvalStatus === "pending",
-  ).length;
-  const approvedCount = submissions.filter(
-    (s) => s.approvalStatus === "approved",
-  ).length;
-  const rejectedCount = submissions.filter(
-    (s) => s.approvalStatus === "rejected",
-  ).length;
 
   const handleApprove = (submission: Submission) => {
     setApprovingSubmission(submission);
@@ -389,7 +391,7 @@ export default function AdminSubmissionsPage() {
           </TabsTrigger>
           <TabsTrigger value="approved">Approved ({approvedCount})</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({rejectedCount})</TabsTrigger>
-          <TabsTrigger value="all">All ({submissions.length})</TabsTrigger>
+          <TabsTrigger value="all">All ({totalCount})</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">

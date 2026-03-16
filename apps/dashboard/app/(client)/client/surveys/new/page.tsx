@@ -33,7 +33,6 @@ export default function CreateClientSurveyPage() {
       title: data.title,
       description: data.description,
       targetResponses: data.targetResponses,
-      isAnonymous: data.isAnonymous,
       ageRange: data.ageRange,
       genderFilter: data.genderFilter,
       locationFilter: data.locationFilter,
