@@ -102,9 +102,15 @@ export default function ClientSurveysPage() {
     }
   };
 
+  const mapTabToStatus = {
+    active: "approved",
+    pending: "pending",
+    completed: "completed",
+  } as any;
+
   const filteredSurveys = surveys.filter((s) => {
     if (activeTab === "all") return true;
-    return s.status === activeTab;
+    return s.status === mapTabToStatus[activeTab];
   });
 
   if (isLoading) {
