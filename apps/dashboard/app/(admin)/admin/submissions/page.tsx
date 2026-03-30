@@ -6,6 +6,7 @@ import {
   useSubmissionsControllerFindAll,
   useSubmissionsControllerReview,
   useSubmissionsControllerGetStats,
+  useSubmissionsControllerReverseApproval,
   getSubmissionsControllerFindAllQueryKey,
   getSubmissionsControllerGetStatsQueryKey,
   ReviewSubmissionDtoApprovalStatus,
@@ -47,6 +48,7 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  RotateCcw,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -73,6 +75,7 @@ interface SubmissionListItemProps {
   item: Submission;
   onApprove: (submission: Submission) => void;
   onReject: (submission: Submission) => void;
+  onReverseApproval: (submission: Submission) => void;
   onViewScreenshot: (submission: Submission) => void;
   isPending: boolean;
 }
@@ -81,6 +84,7 @@ function SubmissionListItem({
   item: submission,
   onApprove,
   onReject,
+  onReverseApproval,
   onViewScreenshot,
   isPending,
 }: SubmissionListItemProps) {
@@ -175,6 +179,27 @@ function SubmissionListItem({
               </Button>
             </>
           )}
+          {submission.approvalStatus === "approved" && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-orange-600 border-orange-200 hover:bg-orange-50"
+              onClick={() => onReverseApproval(submission)}
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <RotateCcw className="mr-1 h-4 w-4" />
+                  Reverse
+                </>
+              )}
+            </Button>
+          )}
+          {submission.approvalStatus === "reversed" && (
+            <div className="text-sm text-muted-foreground">Reversed</div>
+          )}
         </div>
       </div>
     </div>
@@ -189,6 +214,8 @@ export default function AdminSubmissionsPage() {
   const [reviewingSubmission, setReviewingSubmission] =
     useState<Submission | null>(null);
   const [approvingSubmission, setApprovingSubmission] =
+    useState<Submission | null>(null);
+  const [reversingSubmission, setReversingSubmission] =
     useState<Submission | null>(null);
   const [viewingScreenshot, setViewingScreenshot] = useState<Submission | null>(
     null,
@@ -229,6 +256,21 @@ export default function AdminSubmissionsPage() {
     },
   });
 
+  const reverseApprovalMutation = useSubmissionsControllerReverseApproval({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getSubmissionsControllerFindAllQueryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getSubmissionsControllerGetStatsQueryKey(),
+        });
+        setReversingSubmission(null);
+        setReviewNote("");
+      },
+    },
+  });
+
   const filteredSubmissions = submissions.filter((submission) => {
     const matchesSearch =
       submission.influencer?.name
@@ -244,6 +286,10 @@ export default function AdminSubmissionsPage() {
       activeTab === "all" || submission.approvalStatus === activeTab;
     return matchesSearch && matchesTab;
   });
+
+  const handleReverseApproval = (submission: Submission) => {
+    setReversingSubmission(submission);
+  };
 
   const handleApprove = (submission: Submission) => {
     setApprovingSubmission(submission);
@@ -289,6 +335,16 @@ export default function AdminSubmissionsPage() {
           approvalStatus: ReviewSubmissionDtoApprovalStatus.rejected,
           reviewNotes: reviewNote,
         },
+      });
+    }
+  };
+
+  const confirmReverseApproval = () => {
+    if (reversingSubmission) {
+      // Use the generated hook with just the id parameter
+      // Note: The reason will need to be handled by the backend as optional or the OpenAPI spec needs to be fixed
+      reverseApprovalMutation.mutate({
+        id: reversingSubmission.id,
       });
     }
   };
@@ -390,6 +446,7 @@ export default function AdminSubmissionsPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="approved">Approved ({approvedCount})</TabsTrigger>
+          <TabsTrigger value="reversed">Reversed</TabsTrigger>
           <TabsTrigger value="rejected">Rejected ({rejectedCount})</TabsTrigger>
           <TabsTrigger value="all">All ({totalCount})</TabsTrigger>
         </TabsList>
@@ -410,8 +467,12 @@ export default function AdminSubmissionsPage() {
                     {...props}
                     onApprove={handleApprove}
                     onReject={handleReject}
+                    onReverseApproval={handleReverseApproval}
                     onViewScreenshot={handleViewScreenshot}
-                    isPending={reviewMutation.isPending}
+                    isPending={
+                      reviewMutation.isPending ||
+                      reverseApprovalMutation.isPending
+                    }
                   />
                 )}
                 isLoading={isLoading}
@@ -528,6 +589,74 @@ export default function AdminSubmissionsPage() {
                 <CheckCircle className="h-4 w-4 mr-2" />
               )}
               Approve Submission
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!reversingSubmission}
+        onOpenChange={(open) => {
+          if (!open) setReversingSubmission(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reverse Approval</DialogTitle>
+            <DialogDescription>
+              This will reverse the approval and remove the verified views from
+              the campaign total.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reverseReason">Reason for Reversal</Label>
+              <textarea
+                id="reverseReason"
+                value={reviewNote}
+                onChange={(e) => setReviewNote(e.target.value)}
+                placeholder="Enter reason for reversal..."
+                className="flex min-h-[100px] w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm shadow-sm transition-all placeholder:text-muted-foreground/70 hover:border-border focus-visible:border-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20"
+              />
+            </div>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <p className="text-sm text-amber-800">
+                <strong>Warning:</strong> This action will:
+              </p>
+              <ul className="text-sm text-amber-700 mt-1 list-disc list-inside">
+                <li>
+                  Remove{" "}
+                  {reversingSubmission?.verifiedViewCount ||
+                    reversingSubmission?.extractedViewCount ||
+                    0}{" "}
+                  views from campaign total
+                </li>
+                <li>Recalculate or remove payment for this submission</li>
+                <li>
+                  Change influencer assignment status back to
+                  &quot;assigned&quot;
+                </li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setReversingSubmission(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmReverseApproval}
+              disabled={reverseApprovalMutation.isPending}
+            >
+              {reverseApprovalMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RotateCcw className="h-4 w-4 mr-2" />
+              )}
+              Reverse Approval
             </Button>
           </DialogFooter>
         </DialogContent>

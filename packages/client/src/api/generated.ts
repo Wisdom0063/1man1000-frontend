@@ -870,6 +870,7 @@ export const ReviewSubmissionDtoApprovalStatus = {
   pending: 'pending',
   approved: 'approved',
   rejected: 'rejected',
+  reversed: 'reversed',
 } as const;
 
 export interface ReviewSubmissionDto {
@@ -877,6 +878,11 @@ export interface ReviewSubmissionDto {
   /** Admin-verified views to use for totals and payments */
   verifiedViewCount?: number;
   reviewNotes?: string;
+}
+
+export interface ReverseApprovalDto {
+  /** Reason for reversing the approval */
+  reason?: string;
 }
 
 export interface PaymentsStatsResponseDto {
@@ -5582,6 +5588,164 @@ export const useSubmissionsControllerReview = <TError = void,
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * @summary Reverse submission approval (Admin only)
+ */
+export const submissionsControllerReverseApproval = (
+    id: string,
+    reverseApprovalDto: ReverseApprovalDto,
+ ) => {
+      
+      
+      return axiosInstance<SubmissionResponseDto>(
+      {url: `/api/submissions/${id}/reverse-approval`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: reverseApprovalDto
+    },
+      );
+    }
+  
+
+
+export const getSubmissionsControllerReverseApprovalMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerReverseApproval>>, TError,{id: string;data: ReverseApprovalDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerReverseApproval>>, TError,{id: string;data: ReverseApprovalDto}, TContext> => {
+
+const mutationKey = ['submissionsControllerReverseApproval'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submissionsControllerReverseApproval>>, {id: string;data: ReverseApprovalDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  submissionsControllerReverseApproval(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmissionsControllerReverseApprovalMutationResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerReverseApproval>>>
+    export type SubmissionsControllerReverseApprovalMutationBody = ReverseApprovalDto
+    export type SubmissionsControllerReverseApprovalMutationError = void
+
+    /**
+ * @summary Reverse submission approval (Admin only)
+ */
+export const useSubmissionsControllerReverseApproval = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submissionsControllerReverseApproval>>, TError,{id: string;data: ReverseApprovalDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof submissionsControllerReverseApproval>>,
+        TError,
+        {id: string;data: ReverseApprovalDto},
+        TContext
+      > => {
+
+      const mutationOptions = getSubmissionsControllerReverseApprovalMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+/**
+ * @summary Get submission approval history
+ */
+export const submissionsControllerGetApprovalHistory = (
+    id: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/api/submissions/${id}/approval-history`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getSubmissionsControllerGetApprovalHistoryQueryKey = (id?: string,) => {
+    return [
+    `/api/submissions/${id}/approval-history`
+    ] as const;
+    }
+
+    
+export const getSubmissionsControllerGetApprovalHistoryQueryOptions = <TData = Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubmissionsControllerGetApprovalHistoryQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>> = ({ signal }) => submissionsControllerGetApprovalHistory(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SubmissionsControllerGetApprovalHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>>
+export type SubmissionsControllerGetApprovalHistoryQueryError = void
+
+
+export function useSubmissionsControllerGetApprovalHistory<TData = Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>,
+          TError,
+          Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetApprovalHistory<TData = Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>,
+          TError,
+          Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmissionsControllerGetApprovalHistory<TData = Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get submission approval history
+ */
+
+export function useSubmissionsControllerGetApprovalHistory<TData = Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submissionsControllerGetApprovalHistory>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSubmissionsControllerGetApprovalHistoryQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
 /**
  * @summary Get payments stats (Admin only)
  */
