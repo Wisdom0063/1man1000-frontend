@@ -82,6 +82,7 @@ export default function CampaignDetailPage() {
     "submissionDate",
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [viewingScreenshot, setViewingScreenshot] = useState<any>(null);
 
   // Approval modal state
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -176,6 +177,10 @@ export default function CampaignDetailPage() {
     } catch (error) {
       console.error("Error approving campaign:", error);
     }
+  };
+
+  const handleViewScreenshot = (submission: any) => {
+    setViewingScreenshot(submission);
   };
 
   if (isLoading) {
@@ -508,10 +513,13 @@ export default function CampaignDetailPage() {
                           : "-"}
                       </td>
                       <td className="py-3 px-2 text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link href={`/admin/submissions/${submission.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewScreenshot(submission)}
+                          disabled={!submission.screenshotUrl}
+                        >
+                          <Eye className="h-4 w-4" />
                         </Button>
                       </td>
                     </tr>
@@ -853,6 +861,55 @@ export default function CampaignDetailPage() {
               Approve Campaign
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Screenshot Dialog */}
+      <Dialog
+        open={!!viewingScreenshot}
+        onOpenChange={() => setViewingScreenshot(null)}
+      >
+        <DialogContent className="max-w-7xl w-[95vw]">
+          <DialogHeader>
+            <DialogTitle>Screenshot</DialogTitle>
+          </DialogHeader>
+          {viewingScreenshot && (
+            <div className="space-y-4">
+              <div className="relative w-full h-[80vh] rounded-lg overflow-hidden bg-muted">
+                <Image
+                  src={viewingScreenshot.screenshotUrl}
+                  alt="Screenshot"
+                  className="h-full w-full object-contain"
+                  fill
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  {viewingScreenshot.influencer?.name} •{" "}
+                  {viewingScreenshot.campaign?.title ||
+                    viewingScreenshot.campaign?.brandName}
+                </div>
+                <Button
+                  onClick={() =>
+                    downloadCampaignAsset(
+                      viewingScreenshot.screenshotUrl,
+                      viewingScreenshot.campaign?.title ||
+                        viewingScreenshot.campaign?.brandName ||
+                        "Unknown Campaign",
+                      {
+                        filename: `${viewingScreenshot.campaign?.title || viewingScreenshot.campaign?.brandName || "campaign"}-screenshot`,
+                      },
+                    )
+                  }
+                  variant="outline"
+                  size="sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
