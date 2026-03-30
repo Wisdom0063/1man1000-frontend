@@ -439,6 +439,7 @@ export const CampaignResponseDtoStatus = {
   active: 'active',
   completed: 'completed',
   rejected: 'rejected',
+  assigned: 'assigned',
 } as const;
 
 export type CampaignResponseDtoPaymentType = typeof CampaignResponseDtoPaymentType[keyof typeof CampaignResponseDtoPaymentType];
@@ -514,6 +515,7 @@ export const ClientCampaignResponseDtoStatus = {
   active: 'active',
   completed: 'completed',
   rejected: 'rejected',
+  assigned: 'assigned',
 } as const;
 
 export type ClientCampaignResponseDtoPaymentType = typeof ClientCampaignResponseDtoPaymentType[keyof typeof ClientCampaignResponseDtoPaymentType];
@@ -1468,6 +1470,7 @@ export const CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignment
   accepted: 'accepted',
   rejected: 'rejected',
   completed: 'completed',
+  assigned: 'assigned',
 } as const;
 
 export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOf = {
@@ -1499,6 +1502,7 @@ export const CampaignsControllerRequestParticipation201Status = {
   pending: 'pending',
   accepted: 'accepted',
   rejected: 'rejected',
+  assigned: 'assigned',
 } as const;
 
 export type CampaignsControllerRequestParticipation201Campaign = {

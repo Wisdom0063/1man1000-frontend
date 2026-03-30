@@ -41,6 +41,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Copy,
+  Check,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -83,6 +85,7 @@ export default function CampaignDetailPage() {
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [viewingScreenshot, setViewingScreenshot] = useState<any>(null);
+  const [copiedDescription, setCopiedDescription] = useState(false);
 
   // Approval modal state
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -181,6 +184,19 @@ export default function CampaignDetailPage() {
 
   const handleViewScreenshot = (submission: any) => {
     setViewingScreenshot(submission);
+  };
+
+  const handleCopyDescription = async () => {
+    if (c.description) {
+      try {
+        await navigator.clipboard.writeText(c.description);
+        setCopiedDescription(true);
+        // Reset after 2 seconds
+        setTimeout(() => setCopiedDescription(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy description:", err);
+      }
+    }
   };
 
   if (isLoading) {
@@ -539,9 +555,23 @@ export default function CampaignDetailPage() {
           <CardContent className="space-y-6">
             {c.description && (
               <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Description
-                </h4>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium text-muted-foreground">
+                    Description
+                  </h4>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyDescription}
+                    className="h-8 w-8 p-0"
+                  >
+                    {copiedDescription ? (
+                      <Check className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
                 <p className="text-sm">{c.description}</p>
               </div>
             )}

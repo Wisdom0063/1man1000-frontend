@@ -76,7 +76,9 @@ export default function InfluencerCampaignsPage() {
 
   const activeCampaigns = campaigns.filter(
     (c) =>
-      c.assignmentStatus === "accepted" || c.assignmentStatus === "pending",
+      c.assignmentStatus === "accepted" ||
+      c.assignmentStatus === "pending" ||
+      c.assignmentStatus === "assigned",
   );
   const completedCampaigns = campaigns.filter(
     (c) => c.assignmentStatus === "completed",

@@ -341,10 +341,11 @@ export default function AdminSubmissionsPage() {
 
   const confirmReverseApproval = () => {
     if (reversingSubmission) {
-      // Use the generated hook with just the id parameter
-      // Note: The reason will need to be handled by the backend as optional or the OpenAPI spec needs to be fixed
       reverseApprovalMutation.mutate({
         id: reversingSubmission.id,
+        data: {
+          reason: reviewNote || "Approval reversed",
+        },
       });
     }
   };

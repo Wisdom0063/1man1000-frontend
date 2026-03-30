@@ -22,6 +22,8 @@ import {
   Download,
   DollarSign,
   TrendingUp,
+  Copy,
+  Check,
 } from "lucide-react";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
@@ -42,6 +44,7 @@ export default function CampaignDetailPage() {
   const params = useParams();
   const campaignId = params.id as string;
   const [showAssetModal, setShowAssetModal] = useState(false);
+  const [copiedDescription, setCopiedDescription] = useState(false);
 
   const {
     data: response,
@@ -66,6 +69,19 @@ export default function CampaignDetailPage() {
   }
 
   const isExpired = isCampaignExpired(campaign.endDate);
+
+  const handleCopyDescription = async () => {
+    if (campaign.description) {
+      try {
+        await navigator.clipboard.writeText(campaign.description);
+        setCopiedDescription(true);
+        // Reset after 2 seconds
+        setTimeout(() => setCopiedDescription(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy description:", err);
+      }
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -119,10 +135,26 @@ export default function CampaignDetailPage() {
         <CardContent className="space-y-4">
           {campaign.description && (
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                Description
-              </h3>
-              <p className="text-sm">{campaign.description}</p>
+              <div className="flex items-center mb-1">
+                <h3 className="text-sm font-medium text-muted-foreground">
+                  Description
+                </h3>
+              </div>
+              <div className="flex items-start gap-2">
+                <p className="text-sm">{campaign.description}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopyDescription}
+                  className="h-8 w-8 p-0 flex-shrink-0"
+                >
+                  {copiedDescription ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </div>
           )}
 

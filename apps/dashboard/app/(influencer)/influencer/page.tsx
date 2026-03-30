@@ -11,7 +11,6 @@ import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
   Megaphone,
-  Eye,
   CreditCard,
   Star,
   ArrowRight,
@@ -20,6 +19,7 @@ import {
   ClipboardList,
   Target,
   DollarSign,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -220,44 +220,16 @@ export default function InfluencerDashboard() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Surveys
-            </CardTitle>
-            <ClipboardList className="h-4 w-4 text-indigo-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {surveyStats.completedSurveys}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              GH₵{surveyStats.totalEarnings} earned
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
+      {/* Mobile-first layout - only visible on mobile */}
+      <div className="lg:hidden space-y-8">
+        {/* Campaigns you're working on - FIRST SECTION (Mobile Only) */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Active Campaigns</CardTitle>
-              <CardDescription>Campaigns you're working on</CardDescription>
+              <CardTitle>Campaigns you're working on</CardTitle>
+              <CardDescription>
+                Active campaigns and submissions
+              </CardDescription>
             </div>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/influencer/campaigns">
@@ -290,10 +262,10 @@ export default function InfluencerDashboard() {
                         {campaign.deadline}
                       </span>
                       {campaign.status === "pending_submission" ? (
-                        <Button size="sm" variant="outline" asChild>
+                        <Button size="sm" asChild>
                           <Link href={`/influencer/campaigns/${campaign.id}`}>
                             <Upload className="mr-1 h-3 w-3" />
-                            Submit
+                            Submit Screenshot
                           </Link>
                         </Button>
                       ) : (
@@ -316,6 +288,7 @@ export default function InfluencerDashboard() {
           </CardContent>
         </Card>
 
+        {/* Available Campaigns - SECOND SECTION (Mobile Only) */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -369,20 +342,14 @@ export default function InfluencerDashboard() {
                             "Tiered pricing"
                           )}
                         </span>
-                        {/* <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Target className="h-3 w-3" />
-                          GH₵{campaign.potential.min.toFixed(2)} - GH₵
-                          {campaign.potential.max.toFixed(2)}
-                        </span> */}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline" asChild>
+                      <Button size="sm" asChild>
                         <Link
                           href={`/influencer/campaigns/available/${campaign.id}`}
                         >
-                          <Eye className="mr-1 h-3 w-3" />
-                          View
+                          Participate
                         </Link>
                       </Button>
                     </div>
@@ -392,119 +359,446 @@ export default function InfluencerDashboard() {
             )}
           </CardContent>
         </Card>
-      </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Recent Earnings</CardTitle>
-            <CardDescription>Your payment history</CardDescription>
-          </div>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/influencer/earnings">
-              View All
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {earnings.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <CreditCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">No earnings yet</p>
+        {/* Available Surveys - THIRD SECTION (Mobile Only) */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Available Surveys</CardTitle>
+              <CardDescription>
+                Complete surveys to earn extra income
+              </CardDescription>
             </div>
-          ) : (
-            <>
-              <div className="space-y-4">
-                {earnings.map((earning, index) => (
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/influencer/surveys">
+                View All
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {availableSurveys.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <ClipboardList className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No surveys available at the moment</p>
+                <p className="text-xs mt-1">
+                  Check back later for new opportunities!
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-3">
+                {availableSurveys.slice(0, 3).map((survey: any) => (
                   <div
-                    key={`${earning.campaign}-${index}`}
-                    className="flex items-center justify-between"
+                    key={survey.id}
+                    className="p-4 rounded-lg border space-y-3"
                   >
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{earning.campaign}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {earning.date}
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-green-600">
+                        GH₵{survey.paymentPerResponse || 0}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {survey._count?.questions || 0} questions
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium line-clamp-1">
+                        {survey.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {survey.client?.name || "Anonymous Client"}
                       </p>
                     </div>
-                    <span className="text-sm font-semibold text-green-600">
-                      +GH₵{earning.amount.toFixed(2)}
-                    </span>
+                    <Button size="sm" className="w-full" asChild>
+                      <Link href={`/influencer/surveys/${survey.id}/take`}>
+                        Start Survey
+                      </Link>
+                    </Button>
                   </div>
                 ))}
               </div>
-              <div className="mt-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Total Earnings</span>
-                  <span className="text-lg font-bold">
-                    GH₵{totalEarnings.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Available Surveys</CardTitle>
-            <CardDescription>
-              Complete surveys to earn extra income
-            </CardDescription>
-          </div>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/influencer/surveys">
-              View All
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {availableSurveys.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <ClipboardList className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">No surveys available at the moment</p>
-              <p className="text-xs mt-1">
-                Check back later for new opportunities!
+      {/* Desktop layout - original layout for desktop and larger screens */}
+      <div className="hidden lg:block space-y-8">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          {stats.map((stat) => (
+            <Card key={stat.title}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Surveys
+              </CardTitle>
+              <ClipboardList className="h-4 w-4 text-indigo-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {surveyStats.completedSurveys}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                GH₵{surveyStats.totalEarnings} earned
               </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Active Campaigns</CardTitle>
+                <CardDescription>Campaigns you're working on</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/influencer/campaigns">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {activeCampaigns.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm">No active campaigns</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activeCampaigns.map((campaign) => (
+                    <div
+                      key={campaign.id}
+                      className="flex items-center justify-between p-3 rounded-lg border"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{campaign.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {campaign.brand}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-muted-foreground">
+                          {campaign.deadline}
+                        </span>
+                        {campaign.status === "pending_submission" ? (
+                          <Button size="sm" variant="outline" asChild>
+                            <Link href={`/influencer/campaigns/${campaign.id}`}>
+                              <Upload className="mr-1 h-3 w-3" />
+                              Submit
+                            </Link>
+                          </Button>
+                        ) : (
+                          <Badge
+                            variant={
+                              campaign.status === "in_progress" ||
+                              campaign.status === "accepted"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {campaign.status.replace("_", " ")}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Available Campaigns</CardTitle>
+                <CardDescription>New campaigns you can join</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/influencer/campaigns/available">
+                  Browse
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {availableCampaignsPreview.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm">No campaigns available right now</p>
+                  <p className="text-xs mt-1">
+                    Check back soon for new opportunities.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {availableCampaignsPreview.map((campaign) => (
+                    <div
+                      key={campaign.id}
+                      className="flex items-center justify-between p-3 rounded-lg border"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          {campaign.name as string}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {campaign.brand as string}
+                        </p>
+                        <div className="flex items-center gap-3 pt-1">
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            {campaign.paymentTiers &&
+                            campaign.paymentTiers.length > 0 ? (
+                              <>
+                                Up to GH₵
+                                {Number(
+                                  campaign.paymentTiers[
+                                    campaign.paymentTiers.length - 1
+                                  ]?.amount || 0,
+                                ).toFixed(3)}
+                              </>
+                            ) : (
+                              "Tiered pricing"
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link
+                            href={`/influencer/campaigns/available/${campaign.id}`}
+                          >
+                            <Eye className="mr-1 h-3 w-3" />
+                            View
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Recent Earnings</CardTitle>
+              <CardDescription>Your payment history</CardDescription>
             </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-3">
-              {availableSurveys.slice(0, 3).map((survey: any) => (
-                <div
-                  key={survey.id}
-                  className="p-4 rounded-lg border space-y-3"
-                >
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/influencer/earnings">
+                View All
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {earnings.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <CreditCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No earnings yet</p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {earnings.map((earning, index) => (
+                    <div
+                      key={`${earning.campaign}-${index}`}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          {earning.campaign}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {earning.date}
+                        </p>
+                      </div>
+                      <span className="text-sm font-semibold text-green-600">
+                        +GH₵{earning.amount.toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-4 border-t">
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-green-600">
-                      GH₵{survey.paymentPerResponse || 0}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {survey._count?.questions || 0} questions
+                    <span className="text-sm font-medium">Total Earnings</span>
+                    <span className="text-lg font-bold">
+                      GH₵{totalEarnings.toFixed(2)}
                     </span>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium line-clamp-1">
-                      {survey.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground line-clamp-1">
-                      {survey.client?.name || "Anonymous Client"}
-                    </p>
-                  </div>
-                  <Button size="sm" className="w-full" asChild>
-                    <Link href={`/influencer/surveys/${survey.id}/take`}>
-                      Start Survey
-                    </Link>
-                  </Button>
                 </div>
-              ))}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Available Surveys</CardTitle>
+              <CardDescription>
+                Complete surveys to earn extra income
+              </CardDescription>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/influencer/surveys">
+                View All
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {availableSurveys.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <ClipboardList className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No surveys available at the moment</p>
+                <p className="text-xs mt-1">
+                  Check back later for new opportunities!
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-3">
+                {availableSurveys.slice(0, 3).map((survey: any) => (
+                  <div
+                    key={survey.id}
+                    className="p-4 rounded-lg border space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-green-600">
+                        GH₵{survey.paymentPerResponse || 0}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {survey._count?.questions || 0} questions
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium line-clamp-1">
+                        {survey.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {survey.client?.name || "Anonymous Client"}
+                      </p>
+                    </div>
+                    <Button size="sm" className="w-full" asChild>
+                      <Link href={`/influencer/surveys/${survey.id}/take`}>
+                        Start Survey
+                      </Link>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Mobile earnings section - shown after main mobile sections */}
+      <div className="lg:hidden">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Recent Earnings</CardTitle>
+              <CardDescription>Your payment history</CardDescription>
+            </div>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/influencer/earnings">
+                View All
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {earnings.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <CreditCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No earnings yet</p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {earnings.map((earning, index) => (
+                    <div
+                      key={`${earning.campaign}-${index}`}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          {earning.campaign}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {earning.date}
+                        </p>
+                      </div>
+                      <span className="text-sm font-semibold text-green-600">
+                        +GH₵{earning.amount.toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Total Earnings</span>
+                    <span className="text-lg font-bold">
+                      GH₵{totalEarnings.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Mobile stats section - shown last on mobile */}
+      <div className="lg:hidden">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          {stats.map((stat) => (
+            <Card key={stat.title}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Surveys
+              </CardTitle>
+              <ClipboardList className="h-4 w-4 text-indigo-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {surveyStats.completedSurveys}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                GH₵{surveyStats.totalEarnings} earned
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
