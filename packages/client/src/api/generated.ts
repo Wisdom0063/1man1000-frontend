@@ -855,6 +855,9 @@ export interface SubmissionResponseDto {
   reviewedBy?: SubmissionReviewerDto;
   createdAt: string;
   updatedAt: string;
+  isDuplicate?: boolean;
+  submissionCount?: number;
+  duplicateSubmissionIds?: string[];
 }
 
 export type SubmissionsListResponseDtoMeta = { [key: string]: unknown };

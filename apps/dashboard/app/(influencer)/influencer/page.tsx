@@ -11,6 +11,7 @@ import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
   Megaphone,
+  Eye,
   CreditCard,
   Star,
   ArrowRight,
@@ -19,7 +20,6 @@ import {
   ClipboardList,
   Target,
   DollarSign,
-  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -201,12 +201,12 @@ export default function InfluencerDashboard() {
       icon: CreditCard,
       color: "text-purple-600",
     },
-    {
-      title: "Rating",
-      value: surveyStats.averageRating.toFixed(1),
-      icon: Star,
-      color: "text-yellow-600",
-    },
+    // {
+    //   title: "Rating",
+    //   value: surveyStats.averageRating.toFixed(1),
+    //   icon: Star,
+    //   color: "text-yellow-600",
+    // },
   ];
 
   return (
@@ -261,9 +261,11 @@ export default function InfluencerDashboard() {
                       <span className="text-xs text-muted-foreground">
                         {campaign.deadline}
                       </span>
-                      {campaign.status === "pending_submission" ? (
+                      {campaign.status === "assigned" ? (
                         <Button size="sm" asChild>
-                          <Link href={`/influencer/campaigns/${campaign.id}`}>
+                          <Link
+                            href={`/influencer/campaigns/${campaign.id}/submit`}
+                          >
                             <Upload className="mr-1 h-3 w-3" />
                             Submit Screenshot
                           </Link>
@@ -424,7 +426,7 @@ export default function InfluencerDashboard() {
 
       {/* Desktop layout - original layout for desktop and larger screens */}
       <div className="hidden lg:block space-y-8">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -493,11 +495,14 @@ export default function InfluencerDashboard() {
                         <span className="text-xs text-muted-foreground">
                           {campaign.deadline}
                         </span>
-                        {campaign.status === "pending_submission" ? (
+
+                        {campaign.status === "assigned" ? (
                           <Button size="sm" variant="outline" asChild>
-                            <Link href={`/influencer/campaigns/${campaign.id}`}>
+                            <Link
+                              href={`/influencer/campaigns/${campaign.id}/submit`}
+                            >
                               <Upload className="mr-1 h-3 w-3" />
-                              Submit
+                              Submit Screenshot
                             </Link>
                           </Button>
                         ) : (

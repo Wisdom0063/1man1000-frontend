@@ -292,13 +292,13 @@ export default function InfluencerSubmissionsPage() {
         open={!!selectedScreenshot}
         onOpenChange={() => setSelectedScreenshot(null)}
       >
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-7xl w-[95vw]">
           <DialogHeader>
             <DialogTitle>Screenshot</DialogTitle>
           </DialogHeader>
           {selectedScreenshot && (
             <div className="space-y-4">
-              <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+              <div className="relative w-full h-[80vh] rounded-lg overflow-hidden bg-muted">
                 <Image
                   src={selectedScreenshot.url}
                   alt="Screenshot"

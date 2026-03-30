@@ -43,6 +43,7 @@ import {
   Plus,
   Copy,
   Check,
+  AlertTriangle,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -487,6 +488,9 @@ export default function CampaignDetailPage() {
                       Influencer
                     </th>
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                      Submissions
+                    </th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">
                       Views
                     </th>
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">
@@ -502,7 +506,12 @@ export default function CampaignDetailPage() {
                 </thead>
                 <tbody>
                   {submissions.map((submission) => (
-                    <tr key={submission.id} className="border-b last:border-0">
+                    <tr
+                      key={submission.id}
+                      className={`border-b last:border-0 ${
+                        submission.isDuplicate ? "bg-orange-50/50" : ""
+                      }`}
+                    >
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2">
                           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white text-xs font-semibold">
@@ -510,9 +519,32 @@ export default function CampaignDetailPage() {
                               ?.slice(0, 2)
                               .toUpperCase() || "??"}
                           </div>
-                          <span className="font-medium">
-                            {submission.influencer?.name || "Unknown"}
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {submission.influencer?.name || "Unknown"}
+                            </span>
+                            {submission.isDuplicate && (
+                              <Badge
+                                variant="outline"
+                                className="text-orange-600 border-orange-200"
+                              >
+                                <AlertTriangle className="h-3 w-3 mr-1" />
+                                Duplicate
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">
+                            {submission.submissionCount || 1}
                           </span>
+                          {submission.isDuplicate && (
+                            <span className="text-xs text-muted-foreground">
+                              submissions
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="py-3 px-2">

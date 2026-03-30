@@ -49,6 +49,7 @@ import {
   XCircle,
   Loader2,
   RotateCcw,
+  AlertTriangle,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -69,6 +70,9 @@ type Submission = {
   approvalStatus: string;
   reviewNote?: string;
   createdAt: string;
+  isDuplicate?: boolean;
+  submissionCount?: number;
+  duplicateSubmissionIds?: string[];
 };
 
 interface SubmissionListItemProps {
@@ -89,7 +93,11 @@ function SubmissionListItem({
   isPending,
 }: SubmissionListItemProps) {
   return (
-    <div className="flex items-center justify-between p-4">
+    <div
+      className={`flex items-center justify-between p-4 ${
+        submission.isDuplicate ? "bg-orange-50/50" : ""
+      }`}
+    >
       <div className="flex items-center gap-4">
         <div className="h-20 w-28 rounded-lg bg-muted overflow-hidden border border-border/60">
           {submission.screenshotUrl ? (
@@ -119,10 +127,26 @@ function SubmissionListItem({
                 {submission.influencer?.name?.slice(0, 2).toUpperCase() || "??"}
               </AvatarFallback>
             </Avatar>
-            <p className="text-sm text-muted-foreground">
-              {submission.influencer?.name || "Unknown"}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                {submission.influencer?.name || "Unknown"}
+              </p>
+              {submission.isDuplicate && (
+                <Badge
+                  variant="outline"
+                  className="text-orange-600 border-orange-200"
+                >
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  Duplicate
+                </Badge>
+              )}
+            </div>
           </div>
+          {submission.isDuplicate && (
+            <p className="text-xs text-orange-600 mt-1">
+              {submission.submissionCount || 1} submissions total
+            </p>
+          )}
           <p className="text-xs text-muted-foreground mt-1">
             {new Date(submission.createdAt).toLocaleString()}
           </p>
