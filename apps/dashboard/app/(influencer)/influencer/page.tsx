@@ -31,6 +31,7 @@ import {
 } from "@workspace/client";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import { isCampaignExpired } from "@/lib/campaign-utils";
 
 export default function InfluencerDashboard() {
   const {
@@ -159,6 +160,7 @@ export default function InfluencerDashboard() {
         brand: c.brandName,
         deadline: daysLeft > 0 ? `${daysLeft} days left` : "Expired",
         status: c.assignmentStatus || "assigned",
+        endDate: c.endDate, // Add original endDate for isCampaignExpired check
       };
     });
 
@@ -261,7 +263,7 @@ export default function InfluencerDashboard() {
                       <span className="text-xs text-muted-foreground">
                         {campaign.deadline}
                       </span>
-                      {campaign.status === "assigned" ? (
+                      {!isCampaignExpired(campaign.endDate) ? (
                         <Button size="sm" asChild>
                           <Link
                             href={`/influencer/campaigns/${campaign.id}/submit`}
@@ -496,7 +498,7 @@ export default function InfluencerDashboard() {
                           {campaign.deadline}
                         </span>
 
-                        {campaign.status === "assigned" ? (
+                        {!isCampaignExpired(campaign.endDate) ? (
                           <Button size="sm" variant="outline" asChild>
                             <Link
                               href={`/influencer/campaigns/${campaign.id}/submit`}

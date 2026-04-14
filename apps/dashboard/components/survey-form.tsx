@@ -288,31 +288,17 @@ export function SurveyForm({
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Questions</CardTitle>
-                <CardDescription>
-                  Add questions to your survey ({fields.length})
-                </CardDescription>
-              </div>
-              <Select value="" onValueChange={addQuestion}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Add Question" />
-                </SelectTrigger>
-                <SelectContent>
-                  {QUESTION_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div>
+              <CardTitle>Questions</CardTitle>
+              <CardDescription>
+                Add questions to your survey ({fields.length})
+              </CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {fields.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                No questions added yet. Use the dropdown above to add your first
+                No questions added yet. Use the dropdown below to add your first
                 question.
               </div>
             )}
@@ -512,6 +498,22 @@ export function SurveyForm({
                 </Card>
               );
             })}
+
+            {/* Add Question button at the bottom */}
+            <div className="flex justify-center pt-4 border-t">
+              <Select value="" onValueChange={addQuestion}>
+                <SelectTrigger className="w-[250px]">
+                  <SelectValue placeholder="Add Question" />
+                </SelectTrigger>
+                <SelectContent>
+                  {QUESTION_TYPES.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </CardContent>
         </Card>
 

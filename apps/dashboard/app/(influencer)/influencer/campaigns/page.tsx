@@ -28,22 +28,14 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import {
-  Calendar,
   Eye,
-  TrendingUp,
   Clock,
   Search,
-  ExternalLink,
-  Download,
-  X,
-  Megaphone,
   Target,
-  DollarSign,
   Upload,
   CheckCircle,
   ArrowUpDown,
 } from "lucide-react";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { isCampaignExpired } from "@/lib/campaign-utils";
@@ -78,10 +70,11 @@ export default function InfluencerCampaignsPage() {
     (c) =>
       c.assignmentStatus === "accepted" ||
       c.assignmentStatus === "pending" ||
-      c.assignmentStatus === "assigned",
+      c.assignmentStatus === "assigned" ||
+      (c.assignmentStatus === "completed" && !isCampaignExpired(c.endDate)),
   );
   const completedCampaigns = campaigns.filter(
-    (c) => c.assignmentStatus === "completed",
+    (c) => c.assignmentStatus === "completed" && isCampaignExpired(c.endDate),
   );
 
   const filteredCampaigns = (
@@ -90,6 +83,9 @@ export default function InfluencerCampaignsPage() {
     (campaign) =>
       campaign.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (campaign.title as any)
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      (campaign.description as any)
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()),
   );
@@ -127,7 +123,7 @@ export default function InfluencerCampaignsPage() {
         </Button>
       </div>
 
-      {response?.meta && response.meta.totalPages! > 1 && (
+      {response?.meta && response.meta.totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <Button
             variant="outline"
@@ -258,7 +254,14 @@ export default function InfluencerCampaignsPage() {
                       <CardTitle className="text-lg">
                         {(campaign.title as any) || campaign.brandName}
                       </CardTitle>
-                      <StatusBadge status={campaign.status} />
+                      {/* <StatusBadge status={campaign.status} /> */}
+
+                      {campaign.hasSubmitted && (
+                        <div className="flex items-center gap-1 text-xs text-emerald-600">
+                          <CheckCircle className="h-3.5 w-3.5" />
+                          <span>Submitted ({campaign.submissionCount})</span>
+                        </div>
+                      )}
                     </div>
                     <CardDescription>{campaign.brandName}</CardDescription>
                   </CardHeader>
@@ -333,6 +336,14 @@ export default function InfluencerCampaignsPage() {
                         <Clock className="h-4 w-4" />
                         {new Date(campaign.endDate).toLocaleDateString()}
                       </div>
+                      {(campaign as any).hasSubmitted && (
+                        <div className="flex items-center gap-1 text-xs text-emerald-600">
+                          <CheckCircle className="h-3.5 w-3.5" />
+                          <span>
+                            Submitted ({(campaign as any).submissionCount})
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex gap-2 pt-2">
@@ -347,30 +358,16 @@ export default function InfluencerCampaignsPage() {
                           Details
                         </Link>
                       </Button>
-                      {campaign.status !== "completed" &&
-                        !isCampaignExpired(campaign.endDate) && (
-                          <Button size="sm" className="flex-1" asChild>
-                            <Link
-                              href={`/influencer/campaigns/${campaign.id}/submit`}
-                            >
-                              <Upload className="mr-1.5 h-4 w-4" />
-                              Submit
-                            </Link>
-                          </Button>
-                        )}
-                      {campaign.status !== "completed" &&
-                        isCampaignExpired(campaign.endDate) && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 text-muted-foreground"
-                            disabled
+                      {!isCampaignExpired(campaign.endDate) ? (
+                        <Button size="sm" className="flex-1" asChild>
+                          <Link
+                            href={`/influencer/campaigns/${campaign.id}/submit`}
                           >
-                            <Clock className="mr-1.5 h-4 w-4" />
-                            Expired
-                          </Button>
-                        )}
-                      {campaign.status === "completed" && (
+                            <Upload className="mr-1.5 h-4 w-4" />
+                            Submit
+                          </Link>
+                        </Button>
+                      ) : campaign.status === "completed" ? (
                         <Button
                           variant="outline"
                           size="sm"
@@ -380,7 +377,17 @@ export default function InfluencerCampaignsPage() {
                           <CheckCircle className="mr-1.5 h-4 w-4" />
                           Completed
                         </Button>
-                      )}
+                      ) : isCampaignExpired(campaign.endDate) ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-muted-foreground"
+                          disabled
+                        >
+                          <Clock className="mr-1.5 h-4 w-4" />
+                          Expired
+                        </Button>
+                      ) : null}
                     </div>
                   </CardContent>
                 </Card>

@@ -320,7 +320,7 @@ export function CampaignForm({
               )}
             </div>
           </div>
-
+{/* 
           {showBudgetEstimate && (
             <div className="rounded-xl bg-muted/50 p-4 flex items-start gap-3">
               <Info className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
@@ -333,7 +333,7 @@ export function CampaignForm({
                 </p>
               </div>
             </div>
-          )}
+          )} */}
         </CardContent>
       </Card>
 

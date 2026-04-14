@@ -407,7 +407,7 @@ export default function AdminSubmissionsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{submissions.length}</div>
+            <div className="text-2xl font-bold">{totalCount}</div>
           </CardContent>
         </Card>
         <Card>

@@ -478,11 +478,18 @@ export interface CampaignResponseDto {
   updatedAt: string;
 }
 
-export type CampaignsListResponseDtoMeta = { [key: string]: unknown };
+export interface PaginationMetaDto {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
 
 export interface CampaignsListResponseDto {
   data: CampaignResponseDto[];
-  meta: CampaignsListResponseDtoMeta;
+  meta: PaginationMetaDto;
 }
 
 export interface CampaignCountsDto {
@@ -596,6 +603,91 @@ export interface DashboardStatsResponseDto {
   stats: DashboardStatsDto;
   recentCampaigns: RecentCampaignDto[];
   recentSubmissions: RecentSubmissionDto[];
+}
+
+/**
+ * @nullable
+ */
+export type InfluencerCampaignResponseDtoTitle = { [key: string]: unknown } | null;
+
+/**
+ * @nullable
+ */
+export type InfluencerCampaignResponseDtoDescription = { [key: string]: unknown } | null;
+
+/**
+ * @nullable
+ */
+export type InfluencerCampaignResponseDtoCampaignAsset = { [key: string]: unknown } | null;
+
+export type InfluencerCampaignResponseDtoStatus = typeof InfluencerCampaignResponseDtoStatus[keyof typeof InfluencerCampaignResponseDtoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InfluencerCampaignResponseDtoStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  active: 'active',
+  completed: 'completed',
+  rejected: 'rejected',
+  assigned: 'assigned',
+} as const;
+
+export type InfluencerCampaignResponseDtoPaymentType = typeof InfluencerCampaignResponseDtoPaymentType[keyof typeof InfluencerCampaignResponseDtoPaymentType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InfluencerCampaignResponseDtoPaymentType = {
+  per_view: 'per_view',
+  per_views: 'per_views',
+} as const;
+
+export type InfluencerCampaignResponseDtoAssignmentStatus = typeof InfluencerCampaignResponseDtoAssignmentStatus[keyof typeof InfluencerCampaignResponseDtoAssignmentStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InfluencerCampaignResponseDtoAssignmentStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  rejected: 'rejected',
+  completed: 'completed',
+  assigned: 'assigned',
+} as const;
+
+export interface InfluencerCampaignResponseDto {
+  id: string;
+  brandName: string;
+  /** @nullable */
+  title?: InfluencerCampaignResponseDtoTitle;
+  /** @nullable */
+  description?: InfluencerCampaignResponseDtoDescription;
+  budget: number;
+  startDate: string;
+  endDate: string;
+  targetViewRange: TargetViewRangeResponseDto;
+  targetAudience: string;
+  industry: string;
+  adCreatives: string[];
+  /** @nullable */
+  campaignAsset?: InfluencerCampaignResponseDtoCampaignAsset;
+  status: InfluencerCampaignResponseDtoStatus;
+  totalViews: number;
+  submissionDeadlineDays: number;
+  paymentType: InfluencerCampaignResponseDtoPaymentType;
+  paymentTiers?: PaymentTierResponseDto[];
+  client?: ClientInfoDto;
+  assignedInfluencers?: InfluencerAssignmentDto[];
+  createdAt: string;
+  updatedAt: string;
+  assignedDate?: string;
+  assignmentStatus: InfluencerCampaignResponseDtoAssignmentStatus;
+  hasSubmitted: boolean;
+  submissionCount: number;
+}
+
+export interface InfluencerCampaignsListResponseDto {
+  data: InfluencerCampaignResponseDto[];
+  meta: PaginationMetaDto;
 }
 
 export interface TargetViewRangeDetailDto {
@@ -860,11 +952,9 @@ export interface SubmissionResponseDto {
   duplicateSubmissionIds?: string[];
 }
 
-export type SubmissionsListResponseDtoMeta = { [key: string]: unknown };
-
 export interface SubmissionsListResponseDto {
   data: SubmissionResponseDto[];
-  meta: SubmissionsListResponseDtoMeta;
+  meta: PaginationMetaDto;
 }
 
 export type ReviewSubmissionDtoApprovalStatus = typeof ReviewSubmissionDtoApprovalStatus[keyof typeof ReviewSubmissionDtoApprovalStatus];
@@ -991,11 +1081,9 @@ export interface PaymentResponseDto {
   campaign?: PaymentCampaignDto;
 }
 
-export type PaymentsListResponseDtoMeta = { [key: string]: unknown };
-
 export interface PaymentsListResponseDto {
   data: PaymentResponseDto[];
-  meta: PaymentsListResponseDtoMeta;
+  meta: PaginationMetaDto;
 }
 
 export interface InfluencerEarningsResponseDto {
@@ -1394,6 +1482,41 @@ export const UsersControllerFindAllStatus = {
   rejected: 'rejected',
 } as const;
 
+export type UsersControllerExportUsersToCsvParams = {
+/**
+ * Filter by user role
+ */
+role?: UsersControllerExportUsersToCsvRole;
+/**
+ * Filter by user status
+ */
+status?: UsersControllerExportUsersToCsvStatus;
+/**
+ * Search by name or email
+ */
+search?: string;
+};
+
+export type UsersControllerExportUsersToCsvRole = typeof UsersControllerExportUsersToCsvRole[keyof typeof UsersControllerExportUsersToCsvRole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersControllerExportUsersToCsvRole = {
+  client: 'client',
+  influencer: 'influencer',
+  admin: 'admin',
+} as const;
+
+export type UsersControllerExportUsersToCsvStatus = typeof UsersControllerExportUsersToCsvStatus[keyof typeof UsersControllerExportUsersToCsvStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersControllerExportUsersToCsvStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
 export type UsersControllerGetInfluencersParams = {
 status?: UsersControllerGetInfluencersStatus;
 };
@@ -1462,39 +1585,6 @@ page?: number;
 limit?: number;
 sortOrder?: unknown;
 sortBy?: unknown;
-};
-
-export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus = typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus[keyof typeof CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus = {
-  pending: 'pending',
-  accepted: 'accepted',
-  rejected: 'rejected',
-  completed: 'completed',
-  assigned: 'assigned',
-} as const;
-
-export type CampaignsControllerGetInfluencerCampaigns200DataItemAllOf = {
-  assignedDate?: string;
-  assignmentStatus?: CampaignsControllerGetInfluencerCampaigns200DataItemAllOfAssignmentStatus;
-};
-
-export type CampaignsControllerGetInfluencerCampaigns200DataItem = CampaignResponseDto & CampaignsControllerGetInfluencerCampaigns200DataItemAllOf;
-
-export type CampaignsControllerGetInfluencerCampaigns200Meta = {
-  page?: number;
-  limit?: number;
-  total?: number;
-  totalPages?: number;
-  hasNextPage?: boolean;
-  hasPreviousPage?: boolean;
-};
-
-export type CampaignsControllerGetInfluencerCampaigns200 = {
-  data?: CampaignsControllerGetInfluencerCampaigns200DataItem[];
-  meta?: CampaignsControllerGetInfluencerCampaigns200Meta;
 };
 
 export type CampaignsControllerRequestParticipation201Status = typeof CampaignsControllerRequestParticipation201Status[keyof typeof CampaignsControllerRequestParticipation201Status];
@@ -2463,6 +2553,101 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getUsersControllerFindAllQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * @summary Export users to CSV (Admin only)
+ */
+export const usersControllerExportUsersToCsv = (
+    params?: UsersControllerExportUsersToCsvParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<Blob>(
+      {url: `/api/users/export`, method: 'GET',
+        params,
+        responseType: 'blob', signal
+    },
+      );
+    }
+  
+
+
+
+export const getUsersControllerExportUsersToCsvQueryKey = (params?: UsersControllerExportUsersToCsvParams,) => {
+    return [
+    `/api/users/export`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getUsersControllerExportUsersToCsvQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError = unknown>(params?: UsersControllerExportUsersToCsvParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUsersControllerExportUsersToCsvQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>> = ({ signal }) => usersControllerExportUsersToCsv(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UsersControllerExportUsersToCsvQueryResult = NonNullable<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>>
+export type UsersControllerExportUsersToCsvQueryError = unknown
+
+
+export function useUsersControllerExportUsersToCsv<TData = Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError = unknown>(
+ params: undefined |  UsersControllerExportUsersToCsvParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerExportUsersToCsv<TData = Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError = unknown>(
+ params?: UsersControllerExportUsersToCsvParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUsersControllerExportUsersToCsv<TData = Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError = unknown>(
+ params?: UsersControllerExportUsersToCsvParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export users to CSV (Admin only)
+ */
+
+export function useUsersControllerExportUsersToCsv<TData = Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError = unknown>(
+ params?: UsersControllerExportUsersToCsvParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerExportUsersToCsv>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUsersControllerExportUsersToCsvQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -3802,7 +3987,7 @@ export const campaignsControllerGetInfluencerCampaigns = (
 ) => {
       
       
-      return axiosInstance<CampaignsControllerGetInfluencerCampaigns200>(
+      return axiosInstance<InfluencerCampaignsListResponseDto>(
       {url: `/api/campaigns/assigned`, method: 'GET',
         params, signal
     },

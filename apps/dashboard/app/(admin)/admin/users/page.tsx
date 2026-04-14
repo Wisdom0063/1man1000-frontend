@@ -9,6 +9,7 @@ import {
   useUsersControllerGetAdminStats,
   getUsersControllerFindAllQueryKey,
   UpdateUserStatusDtoStatus,
+  usersControllerExportUsersToCsv,
 } from "@workspace/client";
 import {
   Card,
@@ -47,6 +48,7 @@ import {
   Ban,
   Trash2,
   Loader2,
+  Download,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -262,6 +264,8 @@ export default function AdminUsersPage() {
     },
   });
 
+  const [isExporting, setIsExporting] = useState(false);
+
   const filteredUsers = users.filter((user) => {
     const matchesTab =
       activeTab === "all" ||
@@ -307,6 +311,34 @@ export default function AdminUsersPage() {
   const confirmDelete = () => {
     if (userToDelete) {
       deleteMutation.mutate({ id: userToDelete.id });
+    }
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const response = await usersControllerExportUsersToCsv({
+        role: (activeTab === "all" ? undefined : activeTab) as
+          | "influencer"
+          | "client"
+          | "admin"
+          | undefined,
+        search: searchQuery || undefined,
+      });
+
+      // Create blob and download
+      const url = window.URL.createObjectURL(response);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `users-export-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -393,6 +425,14 @@ export default function AdminUsersPage() {
             className="pl-10"
           />
         </div>
+        <Button variant="outline" onClick={handleExport} disabled={isExporting}>
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="mr-2 h-4 w-4" />
+          )}
+          Export CSV
+        </Button>
       </div>
 
       <Tabs

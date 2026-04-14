@@ -57,6 +57,7 @@ type Campaign = {
   description?: string;
   targetViewRange: { min: number; max: number };
   ratePerView?: number;
+  paymentTiers?: { lowerLimit: number; upperLimit?: number; amount: number }[];
   endDate: string;
 };
 
@@ -300,10 +301,27 @@ export default function SubmitCampaignPage() {
               </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Rate per View</p>
-              <p className="font-semibold text-emerald-600">
-                GH₵{c.ratePerView?.toFixed(2) || "0.00"}
-              </p>
+              <p className="text-muted-foreground">Payment Rate</p>
+              {c.paymentTiers && c.paymentTiers.length > 0 ? (
+                <div className="space-y-1 max-h-24 overflow-y-auto">
+                  {c.paymentTiers.map((tier, index) => (
+                    <p
+                      key={index}
+                      className="font-semibold text-emerald-600 text-xs"
+                    >
+                      {tier.lowerLimit.toLocaleString()} -{" "}
+                      {tier.upperLimit
+                        ? `${tier.upperLimit.toLocaleString()} views`
+                        : "+ views"}
+                      : GH₵{tier.amount.toFixed(2)}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="font-semibold text-emerald-600">
+                  GH₵{c.ratePerView?.toFixed(2) || "0.00"} per view
+                </p>
+              )}
             </div>
           </div>
           <div>
