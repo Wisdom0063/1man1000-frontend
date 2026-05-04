@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -92,8 +93,14 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r-0">
       <SidebarHeader className="border-b border-sidebar-border/50">
         <div className="flex items-center gap-3 px-3 py-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white font-bold text-sm shadow-lg shadow-orange-500/25">
-            1K
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden shrink-0">
+            <Image
+              src="/1MAN1000-logo.png"
+              alt="1man1000"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain"
+            />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
             <span className="font-bold text-sm text-sidebar-foreground">

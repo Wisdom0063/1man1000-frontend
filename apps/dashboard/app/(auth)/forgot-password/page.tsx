@@ -14,6 +14,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Loader2, CheckCircle } from "lucide-react";
+import Image from "next/image";
 import axios from "axios";
 
 export default function ForgotPasswordPage() {
@@ -41,12 +42,19 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
-            1K
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden">
+            <Image
+              src="/1MAN1000-logo.png"
+              alt="1man1000"
+              width={48}
+              height={48}
+              className="h-13 w-13 object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">Forgot Password</CardTitle>
           <CardDescription>
-            Enter your email and we&apos;ll send you a link to reset your password
+            Enter your email and we&apos;ll send you a link to reset your
+            password
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -55,7 +63,8 @@ export default function ForgotPasswordPage() {
               <Alert className="border-green-500 bg-green-50">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
-                  If an account exists with this email, a password reset link has been sent.
+                  If an account exists with this email, a password reset link
+                  has been sent.
                 </AlertDescription>
               </Alert>
               <div className="text-center">

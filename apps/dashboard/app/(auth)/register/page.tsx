@@ -10,14 +10,21 @@ import {
 } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Building2, Users } from "lucide-react";
+import Image from "next/image";
 
 export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-4xl space-y-6">
         <div className="text-center space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
-            1K
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden">
+            <Image
+              src="/1MAN1000-logo.png"
+              alt="1man1000"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain"
+            />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Join 1man1000</h1>
           <p className="text-muted-foreground">

@@ -15,6 +15,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Loader2, CheckCircle, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 import axios from "axios";
 
 function ResetPasswordForm() {
@@ -78,8 +79,14 @@ function ResetPasswordForm() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
-            1K
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden">
+            <Image
+              src="/1MAN1000-logo.png"
+              alt="1man1000"
+              width={60}
+              height={60}
+              className="h-15 w-15 object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">Reset Password</CardTitle>
           <CardDescription>Enter your new password</CardDescription>
@@ -201,24 +208,32 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center space-y-2">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
-              1K
-            </div>
-            <CardTitle className="text-2xl">Reset Password</CardTitle>
-            <CardDescription>Loading...</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center space-y-2">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden">
+                <Image
+                  src="/1MAN1000-logo.png"
+                  alt="1man1000"
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 object-contain"
+                />
+              </div>
+              <CardTitle className="text-2xl">Reset Password</CardTitle>
+              <CardDescription>Loading...</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
       <ResetPasswordForm />
     </Suspense>
   );

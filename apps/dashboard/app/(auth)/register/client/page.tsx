@@ -30,6 +30,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { VerificationCodeInput } from "@/components/verification-code-input";
+import Image from "next/image";
 
 type RegisterResponse = {
   accessToken: string;
@@ -278,8 +279,14 @@ export default function RegisterClientPage() {
               Back
             </Link>
           </Button>
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
-            1K
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden">
+            <Image
+              src="/1MAN1000-logo.png"
+              alt="1man1000"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain"
+            />
           </div>
           <CardTitle className="text-2xl text-center">
             Create Client Account

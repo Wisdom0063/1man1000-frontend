@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -31,12 +32,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  ImageIcon,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import Link from "next/link";
-import Image from "next/image";
 import VideoPlayerComponent from "@/components/video-player";
 import { downloadCampaignAsset } from "@/lib/services/downloadService";
 import {
@@ -50,6 +51,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
 
 export default function CampaignDetailPage() {
   const params = useParams();
@@ -62,6 +69,10 @@ export default function CampaignDetailPage() {
     "submissionDate",
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [viewingScreenshot, setViewingScreenshot] = useState<{
+    screenshotUrl: string;
+    influencerName: string;
+  } | null>(null);
 
   const {
     data: response,
@@ -347,6 +358,9 @@ export default function CampaignDetailPage() {
                 <thead>
                   <tr className="border-b">
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                      Screenshot
+                    </th>
+                    <th className="text-left py-3 px-2 font-medium text-muted-foreground">
                       Influencer ID
                     </th>
                     <th className="text-left py-3 px-2 font-medium text-muted-foreground">
@@ -363,6 +377,39 @@ export default function CampaignDetailPage() {
                 <tbody>
                   {submissions.map((submission) => (
                     <tr key={submission.id} className="border-b last:border-0">
+                      <td className="py-3 px-2">
+                        <button
+                          className="h-14 w-20 rounded-md bg-muted overflow-hidden border border-border/60 block hover:opacity-80 transition-opacity disabled:opacity-40"
+                          onClick={() =>
+                            (submission as any).screenshotUrl &&
+                            setViewingScreenshot({
+                              screenshotUrl: (submission as any).screenshotUrl,
+                              influencerName:
+                                submission.influencer?.name || "Unknown",
+                            })
+                          }
+                          disabled={!(submission as any).screenshotUrl}
+                          title={
+                            (submission as any).screenshotUrl
+                              ? "View screenshot"
+                              : "No screenshot"
+                          }
+                        >
+                          {(submission as any).screenshotUrl ? (
+                            <Image
+                              src={(submission as any).screenshotUrl}
+                              alt="Screenshot"
+                              className="h-full w-full object-cover"
+                              width={80}
+                              height={56}
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center">
+                              <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                          )}
+                        </button>
+                      </td>
                       <td className="py-3 px-2">
                         <span className="font-mono text-sm text-muted-foreground">
                           {submission.influencer?.publicInfluencerId ||
@@ -492,6 +539,47 @@ export default function CampaignDetailPage() {
           </CardContent>
         </Card>
       </div>
+      {/* Screenshot Modal */}
+      <Dialog
+        open={!!viewingScreenshot}
+        onOpenChange={() => setViewingScreenshot(null)}
+      >
+        <DialogContent className="max-w-7xl w-[95vw]">
+          <DialogHeader>
+            <DialogTitle>
+              Screenshot — {viewingScreenshot?.influencerName}
+            </DialogTitle>
+          </DialogHeader>
+          {viewingScreenshot && (
+            <div className="space-y-4">
+              <div className="relative w-full h-[80vh] rounded-lg overflow-hidden bg-muted">
+                <Image
+                  src={viewingScreenshot.screenshotUrl}
+                  alt="Screenshot"
+                  className="h-full w-full object-contain"
+                  fill
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  onClick={() =>
+                    downloadCampaignAsset(
+                      viewingScreenshot.screenshotUrl,
+                      viewingScreenshot.influencerName,
+                      {
+                        filename: `${viewingScreenshot.influencerName}-screenshot`,
+                      },
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

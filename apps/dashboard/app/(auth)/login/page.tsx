@@ -17,6 +17,7 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { useAuthControllerLogin } from "@workspace/client";
 import { useAuthStore, User } from "@/lib/auth-store";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 type LoginResponse = {
   accessToken: string;
@@ -47,11 +48,11 @@ export default function LoginPage() {
           const phone = response.user.phone || "";
           if (!response.emailVerified) {
             router.push(
-              `/verify/email?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`
+              `/verify/email?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`,
             );
           } else if (!response.phoneVerified) {
             router.push(
-              `/verify/phone?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`
+              `/verify/phone?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`,
             );
           }
           return;
@@ -85,8 +86,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
-            1K
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden">
+            <Image
+              src="/1MAN1000-logo.png"
+              alt="1man1000"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>Sign in to your 1man1000 account</CardDescription>
