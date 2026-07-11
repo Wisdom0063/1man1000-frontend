@@ -38,9 +38,7 @@ export function ListPaginationWrapper<T extends { id: string }>({
   paginationPosition = "bottom",
 }: ListPaginationWrapperProps<T>) {
   const totalPages = meta?.totalPages || 1;
-  const hasPagination = totalPages > 0;
-
-  console.log("meta", meta);
+  const hasPagination = totalPages > 1;
 
   const PaginationControls = () => (
     <div className="flex items-center justify-center gap-2 py-4">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useSubmissionsControllerFindAll,
@@ -232,9 +232,19 @@ function SubmissionListItem({
 
 export default function AdminSubmissionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("pending");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab, debouncedSearch]);
   const [reviewingSubmission, setReviewingSubmission] =
     useState<Submission | null>(null);
   const [approvingSubmission, setApprovingSubmission] =
@@ -253,7 +263,12 @@ export default function AdminSubmissionsPage() {
     isLoading,
     isError,
     refetch,
-  } = useSubmissionsControllerFindAll({ page, limit });
+  } = useSubmissionsControllerFindAll({
+    page,
+    limit,
+    approvalStatus: activeTab === "all" ? undefined : activeTab,
+    search: debouncedSearch || undefined,
+  });
   const submissions = (response?.data || []) as Submission[];
 
   // Get status counts from dedicated stats endpoint
@@ -295,21 +310,6 @@ export default function AdminSubmissionsPage() {
     },
   });
 
-  const filteredSubmissions = submissions.filter((submission) => {
-    const matchesSearch =
-      submission.influencer?.name
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      submission.campaign?.brandName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      submission.campaign?.title
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase());
-    const matchesTab =
-      activeTab === "all" || submission.approvalStatus === activeTab;
-    return matchesSearch && matchesTab;
-  });
 
   const handleReverseApproval = (submission: Submission) => {
     setReversingSubmission(submission);
@@ -481,12 +481,12 @@ export default function AdminSubmissionsPage() {
             <CardHeader>
               <CardTitle>Submission Review</CardTitle>
               <CardDescription>
-                {filteredSubmissions.length} submissions
+                {response?.meta?.total ?? 0} submissions
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ListPaginationWrapper
-                data={filteredSubmissions}
+                data={submissions}
                 ListItem={(props) => (
                   <SubmissionListItem
                     {...props}

@@ -1624,6 +1624,7 @@ export type SubmissionsControllerFindAllParams = {
 campaignId?: string;
 influencerId?: string;
 approvalStatus?: string;
+search?: string;
 /**
  * @minimum 1
  */
