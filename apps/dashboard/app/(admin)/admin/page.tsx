@@ -188,7 +188,7 @@ export default function AdminDashboard() {
             <CardDescription>Latest platform activities</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="max-h-[300px] overflow-y-auto pr-1 space-y-4">
               {recentActivity.map((activity, index) => (
                 <div
                   key={index}

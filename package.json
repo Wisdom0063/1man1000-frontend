@@ -18,5 +18,25 @@
   "packageManager": "pnpm@10.4.1",
   "engines": {
     "node": ">=20"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@swc/core",
+      "@tailwindcss/oxide",
+      "core-js",
+      "core-js-pure",
+      "esbuild",
+      "sharp",
+      "tesseract.js"
+    ],
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "@tailwindcss/oxide",
+      "core-js",
+      "core-js-pure",
+      "esbuild",
+      "sharp",
+      "tesseract.js"
+    ]
   }
 }

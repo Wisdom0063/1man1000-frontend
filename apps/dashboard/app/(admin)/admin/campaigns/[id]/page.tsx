@@ -81,6 +81,8 @@ export default function CampaignDetailPage() {
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [submissionsPage, setSubmissionsPage] = useState(1);
   const submissionsLimit = 10;
+  const [assignmentsPage, setAssignmentsPage] = useState(1);
+  const assignmentsLimit = 10;
   const [sortBy, setSortBy] = useState<"submissionDate" | "views">(
     "submissionDate",
   );
@@ -727,9 +729,11 @@ export default function CampaignDetailPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="flex flex-col overflow-hidden h-full">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Assigned Influencers</CardTitle>
+            <CardTitle>
+              Assigned Influencers ({c.assignments?.length || 0})
+            </CardTitle>
             <Button size="sm" asChild>
               <Link href={`/admin/campaigns/${campaignId}/influencers`}>
                 <UserPlus className="h-4 w-4 mr-2" />
@@ -737,35 +741,76 @@ export default function CampaignDetailPage() {
               </Link>
             </Button>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 overflow-y-auto">
             {!c.assignments || c.assignments.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No influencers assigned yet
               </p>
             ) : (
               <div className="space-y-3">
-                {c.assignments.map((assignment) => (
-                  <div
-                    key={assignment.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"
-                  >
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold">
-                      {assignment.influencer?.name?.slice(0, 2).toUpperCase() ||
-                        "??"}
+                {(c.assignments || [])
+                  .slice(
+                    (assignmentsPage - 1) * assignmentsLimit,
+                    assignmentsPage * assignmentsLimit,
+                  )
+                  .map((assignment) => (
+                    <div
+                      key={assignment.id}
+                      className="flex items-center gap-3 p-3 rounded-lg bg-muted/30"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-sm font-semibold">
+                        {assignment.influencer?.name
+                          ?.slice(0, 2)
+                          .toUpperCase() || "??"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {assignment.influencer?.name || "Unknown"}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {assignment.influencer?.email}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {assignment.influencer?.name || "Unknown"}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {assignment.influencer?.email}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
           </CardContent>
+          {c.assignments &&
+            c.assignments.length > assignmentsLimit && (
+              <div className="border-t p-4 flex items-center justify-between gap-2 bg-card shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAssignmentsPage((p) => Math.max(1, p - 1))}
+                  disabled={assignmentsPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Page {assignmentsPage} of{" "}
+                  {Math.ceil(c.assignments.length / assignmentsLimit)}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setAssignmentsPage((p) =>
+                      Math.min(
+                        Math.ceil(c.assignments!.length / assignmentsLimit),
+                        p + 1,
+                      ),
+                    )
+                  }
+                  disabled={
+                    assignmentsPage >=
+                    Math.ceil(c.assignments.length / assignmentsLimit)
+                  }
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
         </Card>
       </div>
 
