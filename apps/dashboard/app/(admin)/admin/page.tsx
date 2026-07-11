@@ -20,6 +20,19 @@ import {
 } from "lucide-react";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@workspace/ui/components/chart";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 type AdminDashboardResponse = {
   stats: {
@@ -42,6 +55,7 @@ type AdminDashboardResponse = {
     completedToday: number;
   };
   recentActivity: Array<{ action: string; user: string; createdAt: string }>;
+  userGrowth: Array<{ date: string; users: number }>;
 };
 
 export default function AdminDashboard() {
@@ -166,14 +180,67 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] flex items-center justify-center rounded-xl bg-muted/50 border border-border/50">
-              <div className="text-center">
-                <TrendingUp className="h-10 w-10 text-muted-foreground/50 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  Chart visualization
-                </p>
-              </div>
-            </div>
+            <ChartContainer
+              config={{
+                users: {
+                  label: "Users",
+                  color: "hsl(var(--primary))",
+                },
+              } satisfies ChartConfig}
+              className="h-[200px] w-full"
+            >
+              <AreaChart
+                data={data.userGrowth}
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor="hsl(var(--primary))"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="hsl(var(--primary))"
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  }
+                  minTickGap={32}
+                />
+                <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(value) =>
+                        new Date(value as string).toLocaleDateString()
+                      }
+                    />
+                  }
+                />
+                <Area
+                  type="monotone"
+                  dataKey="users"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                  fill="url(#colorUsers)"
+                  fillOpacity={1}
+                />
+              </AreaChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
